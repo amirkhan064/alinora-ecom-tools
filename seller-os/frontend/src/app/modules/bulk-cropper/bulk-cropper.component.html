@@ -1,0 +1,235 @@
+<div class="bulk-cropper-console">
+  
+  <!-- LEFT COLUMN: Filmstrip Queue (Pure White Column, faint border) -->
+  <aside class="filmstrip-panel">
+    <div class="panel-header">
+      <h3>Image Queue</h3>
+      <span class="queue-count">{{ images().length }} / 20</span>
+    </div>
+
+    <!-- Empty State Filmstrip -->
+    <div *ngIf="images().length === 0" class="empty-filmstrip">
+      <span class="material-symbols-outlined filmstrip-icon">photo_library</span>
+      <p>No images loaded</p>
+    </div>
+
+    <!-- Active Filmstrip Scrollbar List -->
+    <div *ngIf="images().length > 0" class="filmstrip-list custom-scrollbar">
+      <div 
+        *ngFor="let img of images(); let i = index" 
+        [class.active]="activeIndex() === i"
+        [class.sync-success-flash]="img.syncSuccess"
+        (click)="selectImage(i)"
+        class="filmstrip-item">
+        
+        <div class="item-thumbnail-wrapper">
+          <img [src]="img.url" alt="thumbnail" />
+          <div class="sync-success-overlay" *ngIf="img.syncSuccess">
+            <span class="material-symbols-outlined sync-check-icon">check_circle</span>
+          </div>
+        </div>
+        
+        <div class="item-meta-group">
+          <span class="item-name" title="{{ img.name }}">{{ img.name }}</span>
+          <span class="item-resolution" *ngIf="img.width && img.height">{{ img.width }} &times; {{ img.height }}px</span>
+        </div>
+        
+        <button (click)="removeImage(i, $event)" class="btn-remove" title="Remove image">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sidebar footer drag-browse link trigger -->
+    <div class="panel-upload-footer">
+      <label class="btn-footer-upload">
+        <span class="material-symbols-outlined">add_photo_alternate</span>
+        Upload Photos
+        <input type="file" multiple (change)="onFilesSelected($event)" accept="image/*" class="hidden-input" />
+      </label>
+    </div>
+  </aside>
+
+  <!-- RIGHT WORKSPACE CANVAS: Soft slate background, flat and spacious -->
+  <section class="workspace-panel">
+    
+    <!-- Top Utility Bar: Flat, spacious typography, actions grouped right -->
+    <header class="utility-top-bar">
+      <div class="utility-title-group">
+        <h2 class="workspace-title">Bulk Crop Canvas</h2>
+        <p class="workspace-subtitle">Adjust the crop frame, click "Apply to All", and export.</p>
+      </div>
+
+      <div class="utility-actions">
+        <!-- Warnings and status loads -->
+        <span *ngIf="showLimitWarning()" class="warning-alert animate-fade-in">
+          <span class="material-symbols-outlined">warning</span> Max 20 files.
+        </span>
+
+        <!-- Aspect Ratio Locks (Segmented Pill Bar) -->
+        <div class="aspect-presets-container" *ngIf="images().length > 0">
+          <span class="aspect-presets-label">Aspect Lock</span>
+          <div class="aspect-pills">
+            <button (click)="setAspectRatio(null)" [class.active]="activeAspectRatio() === null" class="aspect-pill-btn" title="Free size unconstrained">
+              Free
+            </button>
+            <button (click)="setAspectRatio(1)" [class.active]="activeAspectRatio() === 1" class="aspect-pill-btn" title="Square listing image (1:1)">
+              1:1
+            </button>
+            <button (click)="setAspectRatio(0.75)" [class.active]="activeAspectRatio() === 0.75" class="aspect-pill-btn" title="E-commerce listing portrait (3:4)">
+              3:4
+            </button>
+            <button (click)="setAspectRatio(1.7777777777777777)" [class.active]="activeAspectRatio() === 1.7777777777777777" class="aspect-pill-btn" title="Landscape banner (16:9)">
+              16:9
+            </button>
+          </div>
+        </div>
+
+        <button 
+          *ngIf="images().length > 0"
+          (click)="clearWorkspace()" 
+          class="btn btn-secondary">
+          Reset All
+        </button>
+
+        <!-- Bulk Sync Trigger -->
+        <button 
+          (click)="applyToAll()" 
+          [disabled]="activeIndex() === -1"
+          class="btn btn-flat">
+          <span class="material-symbols-outlined">sync_alt</span>
+          Apply to All
+        </button>
+
+        <!-- Primary Export ZIP -->
+        <button 
+          (click)="exportCroppedBatch()" 
+          [disabled]="images().length === 0 || isProcessing()"
+          class="btn btn-primary">
+          <span *ngIf="!isProcessing()" class="btn-content">
+            <span class="material-symbols-outlined">folder_zip</span>
+            Export ZIP
+          </span>
+          <span *ngIf="isProcessing()" class="btn-loader">
+            <span class="spinner"></span>
+            Compiling ZIP...
+          </span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Frame (Airy canvas background slate-50) -->
+    <div class="workspace-canvas" (dragover)="onDragOver($event)" (drop)="onFileDrop($event)">
+      
+      <!-- Borderless Dashed Drag & Drop Zone (disappears when images are loaded) -->
+      <div *ngIf="images().length === 0" class="dashed-drag-drop">
+        <div class="drag-artwork">
+          <span class="material-symbols-outlined drag-icon">cloud_upload</span>
+          <h4>Drop Images Here</h4>
+          <p class="drag-subtext">PNG, JPG, WebP — up to 20 files.</p>
+          <label class="btn btn-primary drag-browse-btn">
+            Browse Files
+            <input type="file" multiple (change)="onFilesSelected($event)" accept="image/*" class="hidden-input" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Centered Interactive Cropping Frame Canvas -->
+      <div *ngIf="images().length > 0 && activeImage" class="cropper-canvas-frame animate-fade-in">
+        <div class="cropper-container">
+          <img 
+            #workspaceImage
+            [src]="activeImage.url" 
+            (load)="onImageLoaded($event)"
+            alt="Workspace Active Cropping Asset"
+            class="active-workspace-img" />
+
+          <!-- Transparent Overlay Container Pinned Directly on Image Bounds -->
+          <div 
+            #cropContainerRef
+            class="crop-overlay-container"
+            [style.width.px]="displayImageWidth"
+            [style.height.px]="displayImageHeight">
+            
+            <!-- Darkened crop veil overlays -->
+            <div class="crop-veil top" [style.height.px]="cropTop"></div>
+            <div class="crop-veil left" [style.top.px]="cropTop" [style.height.px]="cropHeight" [style.width.px]="cropLeft"></div>
+            <div class="crop-veil right" [style.top.px]="cropTop" [style.height.px]="cropHeight" [style.left.px]="cropLeft + cropWidth"></div>
+            <div class="crop-veil bottom" [style.top.px]="cropTop + cropHeight"></div>
+
+            <!-- Free-size Minimalist Drag Crop Box Overlay -->
+            <div 
+              class="crop-drag-box"
+              (mousedown)="startDrag($event, 'box')"
+              [style.left.px]="cropLeft"
+              [style.top.px]="cropTop"
+              [style.width.px]="cropWidth"
+              [style.height.px]="cropHeight">
+              
+              <!-- Subtle inner highlights -->
+              <div class="crop-inner-bounds"></div>
+
+              <!-- Professional Rule-of-Thirds Grid Overlay lines -->
+              <div class="crop-grid-line line-v1"></div>
+              <div class="crop-grid-line line-v2"></div>
+              <div class="crop-grid-line line-h1"></div>
+              <div class="crop-grid-line line-h2"></div>
+
+              <!-- Drag Corner Handles (Styled using primary brand accent color) -->
+              <div class="handle corner top-left" (mousedown)="startDrag($event, 'top-left')"></div>
+              <div class="handle corner top-right" (mousedown)="startDrag($event, 'top-right')"></div>
+              <div class="handle corner bottom-left" (mousedown)="startDrag($event, 'bottom-left')"></div>
+              <div class="handle corner bottom-right" (mousedown)="startDrag($event, 'bottom-right')"></div>
+
+              <!-- Drag Edge Handles (Styled using primary brand accent color) -->
+              <div class="handle edge top" (mousedown)="startDrag($event, 'top')"></div>
+              <div class="handle edge bottom" (mousedown)="startDrag($event, 'bottom')"></div>
+              <div class="handle edge left" (mousedown)="startDrag($event, 'left')"></div>
+              <div class="handle edge right" (mousedown)="startDrag($event, 'right')"></div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- Frosted Glass Lead Capture Gating Overlay Modal -->
+  <div *ngIf="showLeadModal" class="lead-modal-overlay animate-fade-in">
+    <div class="lead-modal-card">
+      <div class="lead-modal-header">
+        <span class="material-symbols-outlined lead-logo-icon">mail_lock</span>
+        <h3>Unlock Bulk Downloads</h3>
+      </div>
+      <p class="lead-modal-copy">Enter your email to unlock free bulk downloads.</p>
+      
+      <div class="lead-form-group">
+        <input 
+          type="email" 
+          [(ngModel)]="leadEmail" 
+          placeholder="E.g., amir@zeraki.com" 
+          class="lead-form-input" 
+          (keyup.enter)="submitLead()" />
+        <p class="lead-error-text" *ngIf="leadError">{{ leadError }}</p>
+      </div>
+
+      <div class="lead-actions-group">
+        <button (click)="closeLeadModal()" class="btn btn-secondary lead-btn-cancel">Cancel</button>
+        <button (click)="submitLead()" [disabled]="!leadEmail" class="btn btn-primary lead-btn-submit">
+          <span *ngIf="!isSavingLead" class="btn-content">
+            <span class="material-symbols-outlined">verified</span>
+            Unlock Now
+          </span>
+          <span *ngIf="isSavingLead" class="btn-loader-flex">
+            <span class="spinner"></span>
+            Verifying...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+

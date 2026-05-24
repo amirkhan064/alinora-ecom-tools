@@ -1,0 +1,77 @@
+<div class="seller-os-container">
+  <!-- Left Side Navigation Drawer -->
+  <aside class="seller-os-sidebar">
+    <div class="sidebar-header">
+      <div class="logo-area">
+        <span class="material-symbols-outlined logo-icon">hub</span>
+        <div class="brand-text">
+          <span class="system-name">Seller<span class="highlight">OS</span></span>
+        </div>
+      </div>
+      <div class="badge">V2.4</div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Core Utilities</div>
+      
+      <a routerLink="/image-downloader" routerLinkActive="active-link" class="nav-link">
+        <span class="material-symbols-outlined nav-icon">download_for_offline</span>
+        <span class="nav-label">Image Downloader</span>
+        <span class="nav-hover-pill"></span>
+      </a>
+
+      <a routerLink="/label-cropper" routerLinkActive="active-link" class="nav-link">
+        <span class="material-symbols-outlined nav-icon">crop_free</span>
+        <span class="nav-label">Label Cropper</span>
+        <span class="nav-hover-pill"></span>
+      </a>
+      
+      <a routerLink="/bulk-cropper" routerLinkActive="active-link" class="nav-link">
+        <span class="material-symbols-outlined nav-icon">grid_view</span>
+        <span class="nav-label">Bulk Cropper</span>
+        <span class="nav-hover-pill"></span>
+      </a>
+
+      <a routerLink="/listing-builder" routerLinkActive="active-link" class="nav-link">
+        <span class="material-symbols-outlined nav-icon">auto_awesome</span>
+        <span class="nav-label">AI Listing Builder</span>
+        <span class="nav-hover-pill"></span>
+      </a>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <div class="user-profile">
+        <div class="avatar">AK</div>
+        <div class="user-info">
+          <div class="username">Amir Khan</div>
+          <div class="role">Verified Seller</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Viewport Context -->
+  <main class="seller-os-main">
+    <!-- Shared Top App Bar -->
+    <header class="seller-os-header">
+      <div class="header-left">
+        <span class="material-symbols-outlined header-icon">hub</span>
+        <span class="header-title">{{ pageTitle() }}</span>
+      </div>
+      <div class="header-right">
+        <div class="system-status">
+          <span class="pulse-indicator"></span>
+          <span class="status-text">System Online</span>
+        </div>
+        <span class="material-symbols-outlined wifi-icon">wifi</span>
+      </div>
+    </header>
+
+    <!-- Viewport locked canvas area -->
+    <div class="seller-os-content">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

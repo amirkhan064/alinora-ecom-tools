@@ -1,0 +1,211 @@
+/* Modern Minimalist Design System (Light Theme Contract) */
+:root {
+  --bg-workspace: #f9fafb; /* Slate-50 off-white background */
+  --bg-card: #ffffff;      /* Pure white cards/sidebar */
+  --accent-color: #4f46e5;  /* Crisp Indigo-600 */
+  --accent-hover: #4338ca;  /* Darker Indigo-700 */
+  --accent-light: rgba(79, 70, 229, 0.05); /* Soft 5% accent backdrop tint */
+  --border-light: 1px solid #e5e7eb; /* Subtle gray-200 border */
+  
+  /* Grayscale Boundary Colors */
+  --text-primary: #111827;   /* Charcoal / Gray-900 */
+  --text-secondary: #4b5563; /* Medium / Gray-600 */
+  --text-muted: #9ca3af;     /* Light Muted / Gray-400 */
+  --border-gray: #e5e7eb;    /* Gray-200 boundary lines */
+  --shadow-soft: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03); /* Soft elevation blur */
+  
+  /* Modern High-Fidelity Gradients */
+  --accent-gradient: linear-gradient(135deg, #6366f1, #4f46e5);
+  --emerald-gradient: linear-gradient(135deg, #10b981, #059669);
+  --amber-gradient: linear-gradient(135deg, #f59e0b, #d97706);
+  --primary-gradient: linear-gradient(135deg, #4f46e5, #3b82f6);
+}
+
+/* Global Reset */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: var(--bg-workspace);
+  color: var(--text-primary);
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-workspace);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db; /* Gray-300 Scrollbar thumb */
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af; /* Gray-400 Scrollbar thumb hover */
+}
+
+/* Perfect Global Centering & Alignment for Icons and Text in Buttons/Interactive Elements */
+button, .btn, .tab-btn, .btn-action-refresh, .btn-bullet-copy-tiny, .btn-copy-card, .btn-delete-preview, .platform-card, .keyword-tag-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  text-align: center !important;
+}
+
+/* Material Symbols Flex Alignment Normalization */
+.material-symbols-outlined {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  line-height: 1 !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ensure inline children inside buttons align gracefully */
+.btn-content, .btn-loader-flex, .header-title-flex, .platform-indicator, .snippet-label-group {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  vertical-align: middle !important;
+  gap: inherit;
+}
+
+/* ==========================================================================
+   FROSTED GLASS LEAD CAPTURE GATING MODAL
+   ========================================================================== */
+.lead-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px) saturate(180%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.lead-modal-card {
+  background-color: #ffffff;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  border-radius: 20px;
+  padding: 36px 32px;
+  width: 440px;
+  max-width: 90%;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+  text-align: center;
+  box-sizing: border-box;
+  animation: modalScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalScaleUp {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.lead-modal-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.lead-logo-icon {
+  font-size: 36px;
+  color: #4f46e5;
+  background-color: rgba(79, 70, 229, 0.06);
+  padding: 12px;
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.1);
+}
+
+.lead-modal-card h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.lead-modal-copy {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+}
+
+.lead-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.lead-form-input {
+  width: 100%;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #111827;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lead-form-input::placeholder {
+  color: #9ca3af;
+}
+
+.lead-form-input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+.lead-error-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: #ef4444;
+  margin: 0;
+  padding-left: 2px;
+}
+
+.lead-actions-group {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.lead-btn-cancel {
+  flex: 1;
+  padding: 11px 16px;
+  font-size: 13px;
+}
+
+.lead-btn-submit {
+  flex: 1.5;
+  padding: 11px 16px;
+  font-size: 13px;
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.2);
+}
+
+.lead-btn-submit:not(:disabled):hover {
+  box-shadow: 0 6px 18px rgba(79, 70, 229, 0.3);
+  transform: translateY(-1.5px);
+}

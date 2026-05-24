@@ -1,0 +1,394 @@
+<div class="cropper-console">
+  <!-- Error Alert -->
+  <div class="alert-box error-alert animate-fade-in" *ngIf="errorMessage">
+    <div class="alert-icon">
+      <span class="material-symbols-outlined">error</span>
+    </div>
+    <div class="alert-content">
+      <div class="alert-title">Processing Interrupted</div>
+      <div class="alert-message">{{ errorMessage }}</div>
+    </div>
+    <button class="alert-close" (click)="errorMessage = null">&times;</button>
+  </div>
+
+  <div class="cropper-workspace-split">
+    
+    <!-- LEFT PANEL: Marketplace, Dropzone, File Queue & Diagnostics -->
+    <div class="cropper-left-pane">
+      <!-- Target Marketplace -->
+      <section class="console-section">
+        <h3 class="section-label">1. Marketplace</h3>
+        <div class="platform-cards-grid">
+          <!-- Flipkart -->
+          <div class="platform-card flipkart-card" 
+               [class.active]="selectedPlatform === 'flipkart'"
+               (click)="selectedPlatform = 'flipkart'; logDebug('Platform switched to Flipkart')">
+            <div class="platform-logo-box fk-logo-box">F</div>
+            <div class="platform-details">
+              <h3>Flipkart</h3>
+              <p>Official 3" × 5" labels.</p>
+            </div>
+            <div class="radio-indicator">
+              <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatform === 'flipkart'">check_circle</span>
+            </div>
+          </div>
+
+          <!-- Amazon -->
+          <div class="platform-card amazon-card" 
+               [class.active]="selectedPlatform === 'amazon'"
+               (click)="selectedPlatform = 'amazon'; logDebug('Platform switched to Amazon')">
+            <div class="platform-logo-box amz-logo-box">A</div>
+            <div class="platform-details">
+              <h3>Amazon</h3>
+              <p>Standard 4" × 6" labels.</p>
+            </div>
+            <div class="radio-indicator">
+              <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatform === 'amazon'">check_circle</span>
+            </div>
+          </div>
+
+          <!-- Meesho -->
+          <div class="platform-card meesho-card" 
+               [class.active]="selectedPlatform === 'meesho'"
+               (click)="selectedPlatform = 'meesho'; logDebug('Platform switched to Meesho')">
+            <div class="platform-logo-box ms-logo-box">M</div>
+            <div class="platform-details">
+              <h3>Meesho</h3>
+              <p>A4 multi-barcode layouts.</p>
+            </div>
+            <div class="radio-indicator">
+              <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatform === 'meesho'">check_circle</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Batch Dropzone -->
+      <section class="console-section dropzone-section">
+        <h3 class="section-label">2. Upload Labels</h3>
+        <div class="dropzone-box"
+             [class.drag-active]="isDragActive"
+             (dragover)="onDragOver($event)"
+             (dragleave)="onDragLeave($event)"
+             (drop)="onDrop($event)"
+             (click)="fileInput.click()">
+          <input type="file" #fileInput multiple accept="application/pdf" (change)="onFilePicked($event)" style="display: none;">
+          
+          <div class="dropzone-content">
+            <span class="material-symbols-outlined upload-icon">upload_file</span>
+            <div class="upload-headline">Drag & drop your PDF here</div>
+            <p class="upload-subtext">or click to browse <span class="upload-subtext-detail">(Max 500 pages, 100MB)</span></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Upload Queue Table -->
+      <section class="console-section queue-section" [class.hidden]="uploadedFiles.length === 0">
+        <div class="queue-card">
+          <div class="queue-header">
+            <div class="header-left-group">
+              <span class="material-symbols-outlined list-icon">view_list</span>
+              <span class="queue-title">Uploaded Files</span>
+              <span class="queue-badge">{{ uploadedFiles.length }} {{ uploadedFiles.length === 1 ? 'File' : 'Files' }}</span>
+            </div>
+            <button class="clear-btn" (click)="clearAll()">Remove All</button>
+          </div>
+          
+          <div class="files-table-container custom-scrollbar">
+            <table class="files-table">
+              <thead>
+                <tr>
+                  <th>File Name</th>
+                  <th>Size</th>
+                  <th>Format</th>
+                  <th style="width: 40px; text-align: center;">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let file of uploadedFiles; let i = index" class="file-row">
+                  <td class="file-name-cell" title="{{ file.name }}">
+                    <span class="material-symbols-outlined pdf-icon">picture_as_pdf</span>
+                    <span class="file-name-text">{{ file.name }}</span>
+                  </td>
+                  <td>{{ (file.size / 1024).toFixed(1) }} KB</td>
+                  <td><span class="pdf-tag">PDF</span></td>
+                  <td style="text-align: center;">
+                    <button class="row-delete-btn" (click)="removeFile(i)">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Live Self-Diagnostics Terminal (Always Pinned bottom-left) -->
+      <section class="console-section diagnostics-section">
+        <details class="diagnostics-details" open>
+          <summary class="diagnostics-summary">
+            <span class="summary-title">
+              <span class="material-symbols-outlined console-icon">terminal</span>
+              Live Processing Log
+            </span>
+            <span class="diagnostics-count">{{ debugLogs.length }} events</span>
+          </summary>
+          <div class="diagnostics-logs-box custom-scrollbar">
+            <div class="log-entry" *ngFor="let log of debugLogs">{{ log }}</div>
+            <div class="log-entry empty-log" *ngIf="debugLogs.length === 0">All systems ready. Waiting for files...</div>
+          </div>
+        </details>
+      </section>
+    </div>
+
+    <!-- RIGHT PANEL: Pipeline & Output Configurations (340px Sidebar) -->
+    <aside class="cropper-right-pane custom-scrollbar">
+      <div class="config-pane-header">
+        <span class="material-symbols-outlined config-icon">tune</span>
+        <div>
+          <h3>3. Adjust Settings</h3>
+          <p>Customize cropping & sorting</p>
+        </div>
+      </div>
+
+      <div class="config-groups-container">
+        <!-- Sorting Criteria -->
+        <div class="config-group">
+          <label class="group-title">Sort Orders By</label>
+          
+          <div class="form-field">
+            <label class="field-label">Sort By</label>
+            <div class="pill-radio-group">
+              <label class="pill-radio" [class.checked]="sortBy === 'sku'">
+                <input type="radio" name="sortBy" value="sku" [(ngModel)]="sortBy">
+                <span>SKU Code (Product)</span>
+              </label>
+              <label class="pill-radio" [class.checked]="sortBy === 'orderId'">
+                <input type="radio" name="sortBy" value="orderId" [(ngModel)]="sortBy">
+                <span>Order ID (Customer)</span>
+              </label>
+              <label class="pill-radio" [class.checked]="sortBy === 'date'">
+                <input type="radio" name="sortBy" value="date" [(ngModel)]="sortBy">
+                <span>Order Date</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="field-label">Sort Direction</label>
+            <div class="direction-select-flex">
+              <label class="pill-radio" [class.checked]="sortOrder === 'asc'">
+                <input type="radio" name="sortOrder" value="asc" [(ngModel)]="sortOrder">
+                <span>A to Z (Ascending)</span>
+              </label>
+              <label class="pill-radio" [class.checked]="sortOrder === 'desc'">
+                <input type="radio" name="sortOrder" value="desc" [(ngModel)]="sortOrder">
+                <span>Z to A (Descending)</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Output Format Cells -->
+        <div class="config-group border-top">
+          <label class="group-title">Output Format</label>
+          <div class="output-matrix">
+            <div class="matrix-cell labels-cell" 
+                 [class.selected]="outputType === 'labels'"
+                 (click)="outputType = 'labels'">
+              <div class="cell-header">
+                <span class="cell-badge label-badge">PDF</span>
+                <h4>Shipping Labels Only</h4>
+              </div>
+              <p>Cropped labels in a single PDF.</p>
+            </div>
+
+            <div class="matrix-cell invoices-cell" 
+                 [class.selected]="outputType === 'invoices'"
+                 (click)="outputType = 'invoices'">
+              <div class="cell-header">
+                <span class="cell-badge inv-badge">PDF</span>
+                <h4>Invoices Only</h4>
+              </div>
+              <p>Customer invoices in a single PDF.</p>
+            </div>
+
+            <div class="matrix-cell zip-cell" 
+                 [class.selected]="outputType === 'zip'"
+                 (click)="outputType = 'zip'">
+              <div class="cell-header">
+                <span class="cell-badge zip-badge">ZIP</span>
+                <h4>Both (ZIP Package)</h4>
+              </div>
+              <p>Labels + invoices as separate files in a ZIP.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Advanced Processing Options -->
+        <div class="config-group border-top" *ngIf="outputType === 'labels' || outputType === 'zip'">
+          <label class="group-title">Page Settings</label>
+          
+          <!-- A4 Merge Switch -->
+          <div class="switch-control-field">
+            <div class="control-text">
+              <span class="control-title">Combine 4 labels per A4 page</span>
+              <span class="control-desc">Arrange 4 labels on one A4 sheet.</span>
+            </div>
+            <label class="switch-toggle">
+              <input type="checkbox" [(ngModel)]="mergeLabels">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- Branding overlay -->
+          <div class="text-input-field">
+            <div class="control-text">
+              <span class="control-title">Add Custom Label Text</span>
+              <span class="control-desc">Add text like 'Thank you!' on labels.</span>
+            </div>
+            <div class="input-input-wrapper">
+              <input type="text" 
+                     [(ngModel)]="customText" 
+                     maxlength="50" 
+                     placeholder="e.g. Thank you for your purchase!" 
+                     class="premium-input">
+              <span class="char-count">{{ customText.length }}/50</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Engine status widget -->
+        <div class="ai-widget-box">
+          <div class="ai-pulse-header">
+            <span class="animate-pulse-indicator"></span>
+            <span>Auto-Detect Engine V2.4 Active</span>
+          </div>
+          <p class="ai-widget-desc">
+            Auto-detects barcodes to split labels and invoices.
+          </p>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- FIXED BOTTOM PANEL: Stepper Progress & Compilation launch bar -->
+  <footer class="stepper-footer-bar">
+    <!-- Stepper nodes -->
+    <div class="stepper-track-wrapper">
+      <div class="stepper-line-track">
+        <div class="stepper-line-fill" [style.width.%]="(currentStep - 1) * 33.33"></div>
+      </div>
+      <div class="stepper-nodes">
+        <div class="step-node" [class.active]="currentStep === 1" [class.completed]="currentStep > 1" (click)="setStep(1)">
+          <div class="step-circle">
+            <span *ngIf="currentStep <= 1">1</span>
+            <span class="material-symbols-outlined done-icon" *ngIf="currentStep > 1">done</span>
+          </div>
+          <span class="step-label">1. Marketplace</span>
+        </div>
+
+        <div class="step-node" 
+             [class.active]="currentStep === 2" 
+             [class.completed]="currentStep > 2"
+             [class.disabled]="uploadedFiles.length === 0"
+             (click)="uploadedFiles.length > 0 ? setStep(2) : null">
+          <div class="step-circle">
+            <span *ngIf="currentStep <= 2">2</span>
+            <span class="material-symbols-outlined done-icon" *ngIf="currentStep > 2">done</span>
+          </div>
+          <span class="step-label">2. Upload</span>
+        </div>
+
+        <div class="step-node" 
+             [class.active]="currentStep === 3" 
+             [class.completed]="currentStep > 3"
+             [class.disabled]="uploadedFiles.length === 0"
+             (click)="uploadedFiles.length > 0 ? setStep(3) : null">
+          <div class="step-circle">
+            <span *ngIf="currentStep <= 3">3</span>
+            <span class="material-symbols-outlined done-icon" *ngIf="currentStep > 3">done</span>
+          </div>
+          <span class="step-label">3. Settings</span>
+        </div>
+
+        <div class="step-node" 
+             [class.active]="currentStep === 4" 
+             [class.completed]="processingStage === 'completed'"
+             [class.disabled]="uploadedFiles.length === 0"
+             (click)="uploadedFiles.length > 0 ? setStep(4) : null">
+          <div class="step-circle">
+            <span>4</span>
+          </div>
+          <span class="step-label">4. Process</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stepper actions panel -->
+    <div class="stepper-actions-bar">
+      <!-- Status description label -->
+      <div class="stage-info-label" [ngSwitch]="processingStage">
+        <div *ngSwitchCase="'idle'" class="stage-label-flex">
+          <span class="material-symbols-outlined info-icon">info</span>
+          <div>
+            <h4>Ready to Process!</h4>
+            <p>Select marketplace, upload PDFs, and configure settings.</p>
+          </div>
+        </div>
+        <div *ngSwitchCase="'processing'" class="stage-label-flex animate-pulse">
+          <span class="btn-spinner active-spinner"></span>
+          <div>
+            <h4>Processing labels & invoices...</h4>
+            <p>Cropping and sorting files...</p>
+          </div>
+        </div>
+        <div *ngSwitchCase="'completed'" class="stage-label-flex">
+          <span class="material-symbols-outlined success-icon">check_circle</span>
+          <div>
+            <h4>Completed! File downloaded.</h4>
+            <p>File saved automatically.</p>
+          </div>
+        </div>
+        <div *ngSwitchCase="'error'" class="stage-label-flex">
+          <span class="material-symbols-outlined error-icon">error</span>
+          <div>
+            <h4>Processing Error</h4>
+            <p>Check the diagnostic log for details.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compilation triggers -->
+      <div class="action-buttons-flex">
+        <button class="btn btn-secondary reset-btn" 
+                [disabled]="processingStage === 'processing' || uploadedFiles.length === 0" 
+                (click)="clearAll()">
+          Reset Workspace
+        </button>
+
+        <button class="btn btn-primary compile-trigger-btn" 
+                [disabled]="uploadedFiles.length === 0 || processingStage === 'processing'" 
+                (click)="processLabels()">
+          <span *ngIf="processingStage !== 'processing'" class="compile-btn-content">
+            Crop & Compile
+            <span class="material-symbols-outlined bolt-icon">bolt</span>
+          </span>
+          <span *ngIf="processingStage === 'processing'" class="loader-flex">
+            <span class="btn-spinner"></span>
+            Processing...
+          </span>
+        </button>
+
+        <button class="btn btn-success redownload-btn"
+                *ngIf="processingStage === 'completed' && downloadUrl"
+                (click)="triggerDownload()">
+          <span class="material-symbols-outlined">download</span>
+          Download Again
+        </button>
+      </div>
+    </div>
+  </footer>
+</div>

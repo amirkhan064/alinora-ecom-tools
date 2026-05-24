@@ -1,0 +1,269 @@
+<div class="seo-optimizer-console">
+
+  <!-- LEFT COLUMN: Image Ingestion and Options -->
+  <aside class="control-panel scroll-y custom-scrollbar">
+    
+    <div class="panel-intro">
+      <h2 class="panel-main-title">AI Listing Optimizer</h2>
+      <p class="panel-sub-title">Generate SEO-optimized listings for Indian marketplaces.</p>
+    </div>
+
+    <!-- Multi-format Image Dropzone Ingestion Frame -->
+    <div class="card dropzone-card">
+      <div class="card-header">
+        <span class="material-symbols-outlined header-icon">image</span>
+        <span class="card-title">1. Product Photo</span>
+      </div>
+
+      <div class="card-body">
+        <!-- Dashed Dropzone empty-state -->
+        <div 
+          *ngIf="!previewUrl" 
+          (dragover)="onDragOver($event)" 
+          (drop)="onFileDrop($event)"
+          class="dashed-upload-box">
+          
+          <span class="material-symbols-outlined upload-icon">cloud_upload</span>
+          <h4>Drag product image here</h4>
+          <p class="upload-subtext">Supports JPG, PNG, WebP (Max 10MB)</p>
+          
+          <label class="btn btn-secondary browse-trigger">
+            Browse File
+            <input type="file" (change)="onFilesSelected($event)" accept="image/*" class="hidden-input" />
+          </label>
+        </div>
+
+        <!-- Preview loaded active image -->
+        <div *ngIf="previewUrl" class="active-image-preview animate-fade-in">
+          <div class="preview-wrapper">
+            <img [src]="previewUrl" alt="Product Listing Asset Preview" />
+            <button (click)="removeSelectedImage()" class="btn-remove-preview" title="Remove image">
+              <span class="material-symbols-outlined">delete</span>
+            </button>
+          </div>
+          <div class="file-details" *ngIf="selectedFile">
+            <span class="file-name" title="{{ selectedFile.name }}">{{ selectedFile.name }}</span>
+            <span class="file-size">{{ (selectedFile.size / 1024 / 1024).toFixed(2) }} MB</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optimization target marketplaces -->
+    <div class="card settings-card">
+      <div class="card-header">
+        <span class="material-symbols-outlined header-icon">tune</span>
+        <span class="card-title">2. Platform & Context</span>
+      </div>
+
+      <div class="card-body">
+        <!-- Target Platform Dropdown -->
+        <div class="form-group">
+          <label class="form-label" for="platformSelect">Target Marketplace</label>
+          <div class="select-wrapper">
+            <select 
+              id="platformSelect" 
+              [ngModel]="platform()"
+              (ngModelChange)="platform.set($event)"
+              class="form-select">
+              <option value="Amazon India">Amazon India</option>
+              <option value="Flipkart">Flipkart</option>
+              <option value="Meesho">Meesho</option>
+            </select>
+            <span class="material-symbols-outlined dropdown-arrow">expand_more</span>
+          </div>
+        </div>
+
+        <!-- Additional Context Text Area -->
+        <div class="form-group">
+          <label class="form-label" for="contextInput">Extra Details (Optional)</label>
+          <textarea 
+            id="contextInput" 
+            [ngModel]="context()"
+            (ngModelChange)="context.set($event)"
+            placeholder="E.g., material: copper, color: gold, target: women..."
+            class="form-textarea"></textarea>
+        </div>
+
+        <!-- Warning block if errors arise -->
+        <div *ngIf="errorMsg()" class="error-alert animate-fade-in">
+          <span class="material-symbols-outlined alert-icon">error</span>
+          <div class="alert-content">
+            <h5>Generation Failed</h5>
+            <p>{{ errorMsg() }}</p>
+          </div>
+        </div>
+
+        <!-- Primary Action Trigger -->
+        <button 
+          (click)="generateSeo()" 
+          [disabled]="!selectedFile || isGenerating()" 
+          class="btn btn-primary btn-generate-seo">
+          
+          <span *ngIf="!isGenerating()" class="btn-content">
+            <span class="material-symbols-outlined">magic_button</span>
+            Generate SEO Listing
+          </span>
+
+          <span *ngIf="isGenerating()" class="btn-loader-flex">
+            <span class="spinner"></span>
+            AI analyzing photo...
+          </span>
+        </button>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- RIGHT COLUMN: Output Listing Results Pane -->
+  <section class="results-panel">
+    
+    <!-- Empty State / Welcome Screen -->
+    <div *ngIf="!seoResult() && !isGenerating()" class="empty-results-state">
+      <div class="artwork-container">
+        <div class="sparkle-circle">
+          <span class="material-symbols-outlined empty-icon">auto_awesome</span>
+        </div>
+        <h3>Ready to Optimize</h3>
+        <p>Upload a photo, pick a platform, and hit Generate.</p>
+      </div>
+    </div>
+
+    <!-- Shimmering Skeletal Loader while generating -->
+    <div *ngIf="isGenerating()" class="skeleton-loader-container">
+      <div class="skeleton-header"></div>
+      <div class="skeleton-block title-block"></div>
+      <div class="skeleton-block features-block">
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line"></div>
+      </div>
+      <div class="skeleton-block desc-block"></div>
+      <div class="skeleton-block keywords-block"></div>
+    </div>
+
+    <!-- AI Output details dashboard -->
+    <div *ngIf="seoResult() && !isGenerating()" class="seo-results-dashboard scroll-y custom-scrollbar animate-fade-in">
+      
+      <div class="results-header">
+        <div class="platform-badge" [ngClass]="{
+          'amazon': platform().includes('Amazon'),
+          'flipkart': platform().includes('Flipkart'),
+          'meesho': platform().includes('Meesho')
+        }">
+          {{ platform() }} Optimized
+        </div>
+        <h3 class="results-main-title">Listing Copy</h3>
+      </div>
+
+      <!-- TITLE CARD -->
+      <div class="card result-item-card">
+        <div class="result-card-header">
+          <div class="header-left">
+            <span class="material-symbols-outlined header-card-icon">title</span>
+            <h4>Optimized Title</h4>
+          </div>
+          <button 
+            (click)="copyText(seoResult()!.title, 'title')" 
+            class="btn btn-copy" 
+            [class.success]="copiedStates['title']">
+            <span class="material-symbols-outlined">{{ copiedStates['title'] ? 'check_circle' : 'content_copy' }}</span>
+            {{ copiedStates['title'] ? 'Copied!' : 'Copy' }}
+          </button>
+        </div>
+        <div class="result-card-body">
+          <p class="title-text-value">{{ seoResult()!.title }}</p>
+        </div>
+      </div>
+
+      <!-- FEATURES / BULLET POINTS CARD -->
+      <div class="card result-item-card">
+        <div class="result-card-header">
+          <div class="header-left">
+            <span class="material-symbols-outlined header-card-icon">checklist</span>
+            <h4>Key Benefits</h4>
+          </div>
+          <button 
+            (click)="copyText(seoResult()!.features.join('\n'), 'features_all')" 
+            class="btn btn-copy" 
+            [class.success]="copiedStates['features_all']">
+            <span class="material-symbols-outlined">{{ copiedStates['features_all'] ? 'check_circle' : 'content_copy' }}</span>
+            {{ copiedStates['features_all'] ? 'Copied All' : 'Copy All' }}
+          </button>
+        </div>
+        <div class="result-card-body">
+          <ul class="features-list">
+            <li *ngFor="let item of seoResult()!.features; let i = index">
+              <span class="bullet-circle">{{ i + 1 }}</span>
+              <div class="feature-item-content">
+                <p class="feature-text">{{ item }}</p>
+                <button 
+                  (click)="copyText(item, 'feat_' + i)" 
+                  class="btn-tiny-copy" 
+                  [title]="copiedStates['feat_' + i] ? 'Copied!' : 'Copy Point'">
+                  <span class="material-symbols-outlined tiny-icon">{{ copiedStates['feat_' + i] ? 'check' : 'content_copy' }}</span>
+                </button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- PRODUCT DESCRIPTION CARD -->
+      <div class="card result-item-card">
+        <div class="result-card-header">
+          <div class="header-left">
+            <span class="material-symbols-outlined header-card-icon">description</span>
+            <h4>Description</h4>
+          </div>
+          <button 
+            (click)="copyText(seoResult()!.description, 'desc')" 
+            class="btn btn-copy" 
+            [class.success]="copiedStates['desc']">
+            <span class="material-symbols-outlined">{{ copiedStates['desc'] ? 'check_circle' : 'content_copy' }}</span>
+            {{ copiedStates['desc'] ? 'Copied!' : 'Copy' }}
+          </button>
+        </div>
+        <div class="result-card-body">
+          <p class="description-text-value">{{ seoResult()!.description }}</p>
+        </div>
+      </div>
+
+      <!-- SEARCH KEYWORDS BADGES MATRIX -->
+      <div class="card result-item-card">
+        <div class="result-card-header">
+          <div class="header-left">
+            <span class="material-symbols-outlined header-card-icon">tag</span>
+            <h4>Search Keywords</h4>
+          </div>
+          <button 
+            (click)="copyAllKeywords()" 
+            class="btn btn-copy" 
+            [class.success]="copiedStates['all_keywords']">
+            <span class="material-symbols-outlined">{{ copiedStates['all_keywords'] ? 'check_circle' : 'content_copy' }}</span>
+            {{ copiedStates['all_keywords'] ? 'Copied List' : 'Copy All Tags' }}
+          </button>
+        </div>
+        <div class="result-card-body">
+          <p class="keywords-helper-text">Click any tag to copy.</p>
+          <div class="keywords-badges-matrix">
+            <span 
+              *ngFor="let kw of seoResult()!.keywords; let i = index" 
+              (click)="copyText(kw, 'kw_' + i)"
+              class="keyword-badge"
+              [class.copied]="copiedStates['kw_' + i]"
+              [title]="copiedStates['kw_' + i] ? 'Copied!' : 'Click to copy'">
+              <span class="material-symbols-outlined badge-tag-icon">sell</span>
+              <span class="badge-label">{{ kw }}</span>
+              <span class="copied-indicator-pill" *ngIf="copiedStates['kw_' + i]">Copied</span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+</div>

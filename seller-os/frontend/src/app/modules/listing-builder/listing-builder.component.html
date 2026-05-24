@@ -1,0 +1,565 @@
+<div class="listing-builder-console">
+
+  <!-- LEFT CONTROL COLUMN: Ingestion and Inputs -->
+  <aside class="control-panel scroll-y custom-scrollbar">
+    
+    <div class="intro-section">
+      <h2 class="panel-main-title">AI Catalog Builder</h2>
+      <p class="panel-sub-title">Create optimized listings for top marketplaces.</p>
+    </div>
+
+    <!-- Platform Selection Cards -->
+    <div class="input-section">
+      <h4 class="section-label">1. Target Marketplaces</h4>
+      <div class="platform-selection-grid">
+        <!-- Amazon Choice Card -->
+        <div 
+          [class.active]="selectedPlatforms['Amazon India']"
+          (click)="togglePlatform('Amazon India')"
+          class="platform-card">
+          <div class="platform-indicator">
+            <span class="platform-dot amazon">A</span>
+            <span class="platform-label">Amazon</span>
+          </div>
+          <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatforms['Amazon India']">check_circle</span>
+        </div>
+
+        <!-- Flipkart Choice Card -->
+        <div 
+          [class.active]="selectedPlatforms['Flipkart']"
+          (click)="togglePlatform('Flipkart')"
+          class="platform-card">
+          <div class="platform-indicator">
+            <span class="platform-dot flipkart">F</span>
+            <span class="platform-label">Flipkart</span>
+          </div>
+          <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatforms['Flipkart']">check_circle</span>
+        </div>
+
+        <!-- Meesho Choice Card -->
+        <div 
+          [class.active]="selectedPlatforms['Meesho']"
+          (click)="togglePlatform('Meesho')"
+          class="platform-card">
+          <div class="platform-indicator">
+            <span class="platform-dot meesho">M</span>
+            <span class="platform-label">Meesho</span>
+          </div>
+          <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatforms['Meesho']">check_circle</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Methods Accordion -->
+    <div class="input-section">
+      <h4 class="section-label">2. Product Input</h4>
+      
+      <div class="accordion-group">
+        <!-- ACCORDION ROW 1: Product Photo -->
+        <div class="accordion-row" [class.open]="inputMethod === 'image'">
+          <div class="accordion-header" (click)="setInputMethod('image')">
+            <div class="header-title-flex">
+              <span class="material-symbols-outlined header-icon">photo_camera</span>
+              <h5>Product Image</h5>
+            </div>
+            <span class="material-symbols-outlined expand-chevron">
+              {{ inputMethod === 'image' ? 'expand_less' : 'expand_more' }}
+            </span>
+          </div>
+
+          <div class="accordion-body animate-accordion" *ngIf="inputMethod === 'image'">
+            <div 
+              *ngIf="!previewUrl"
+              (dragover)="onDragOver($event)"
+              (drop)="onFileDrop($event)"
+              class="dashed-upload-box">
+              <span class="material-symbols-outlined upload-icon">cloud_upload</span>
+              <h4>Drag product photo here</h4>
+              <p class="upload-subtext">Supports PNG, JPG, WebP (Max 10MB)</p>
+              <label class="btn btn-secondary browse-btn">
+                Browse Files
+                <input type="file" (change)="onFilesSelected($event)" accept="image/*" class="hidden-input" />
+              </label>
+            </div>
+
+            <!-- Preview loaded image -->
+            <div *ngIf="previewUrl" class="image-preview-frame">
+              <img [src]="previewUrl" alt="Product asset preview" />
+              <button (click)="removeSelectedImage()" class="btn-delete-preview" title="Remove photo">
+                <span class="material-symbols-outlined">delete</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACCORDION ROW 2: Title & Description Paste -->
+        <div class="accordion-row" [class.open]="inputMethod === 'text'">
+          <div class="accordion-header" (click)="setInputMethod('text')">
+            <div class="header-title-flex">
+              <span class="material-symbols-outlined header-icon">edit_document</span>
+              <h5>Paste Text</h5>
+            </div>
+            <span class="material-symbols-outlined expand-chevron">
+              {{ inputMethod === 'text' ? 'expand_less' : 'expand_more' }}
+            </span>
+          </div>
+
+          <div class="accordion-body animate-accordion" *ngIf="inputMethod === 'text'">
+            <div class="form-group">
+              <label class="form-label" for="titlePaste">Product Title</label>
+              <input 
+                id="titlePaste" 
+                type="text" 
+                [(ngModel)]="rawTitle" 
+                placeholder="E.g., Rose Gold Sterling Silver Bracelet..."
+                class="form-input" />
+            </div>
+
+            <div class="form-group margin-top-12">
+              <label class="form-label" for="descPaste">Description</label>
+              <textarea 
+                id="descPaste" 
+                [(ngModel)]="rawDescription" 
+                placeholder="E.g., premium quality, waterproof, ideal for partywear..."
+                class="form-textarea short-textarea"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- ACCORDION ROW 3: Competitor URL Scraper -->
+        <div class="accordion-row" [class.open]="inputMethod === 'url'">
+          <div class="accordion-header" (click)="setInputMethod('url')">
+            <div class="header-title-flex">
+              <span class="material-symbols-outlined header-icon">link</span>
+              <h5>Competitor Link</h5>
+            </div>
+            <span class="material-symbols-outlined expand-chevron">
+              {{ inputMethod === 'url' ? 'expand_less' : 'expand_more' }}
+            </span>
+          </div>
+
+          <div class="accordion-body animate-accordion" *ngIf="inputMethod === 'url'">
+            <div class="form-group">
+              <label class="form-label" for="urlInput">Product URL</label>
+              <div class="url-input-wrapper">
+                <span class="material-symbols-outlined url-icon">search</span>
+                <input 
+                  id="urlInput" 
+                  type="text" 
+                  [(ngModel)]="competitorUrl" 
+                  placeholder="Paste Amazon, Flipkart, or Meesho link..."
+                  class="form-input url-input" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional context metadata details -->
+    <div class="input-section">
+      <div class="form-group">
+        <label class="form-label" for="contextArea">Extra Details (Optional)</label>
+        <textarea 
+          id="contextArea" 
+          [(ngModel)]="additionalContext" 
+          placeholder="E.g., brand: Zera, stone: cubic zirconia, target: unisex..."
+          class="form-textarea context-textarea"></textarea>
+      </div>
+    </div>
+
+    <!-- Server generation failure alerts -->
+    <div *ngIf="errorMsg()" class="error-alert-box animate-fade-in">
+      <span class="material-symbols-outlined alert-icon">error</span>
+      <div class="alert-content">
+        <h5>Generation Failed</h5>
+        <p>{{ errorMsg() }}</p>
+      </div>
+    </div>
+
+    <!-- Primary Generation Button trigger -->
+    <button 
+      (click)="generateListing()" 
+      [disabled]="isGenerating() || (inputMethod === 'image' && !selectedFile) || (inputMethod === 'text' && !rawTitle && !rawDescription) || (inputMethod === 'url' && !competitorUrl)"
+      class="btn btn-primary btn-generate">
+      <span *ngIf="!isGenerating()" class="btn-content">
+        <span class="material-symbols-outlined">auto_awesome</span>
+        Generate Listings
+      </span>
+      <span *ngIf="isGenerating()" class="btn-loader-flex">
+        <span class="spinner"></span>
+        Analyzing...
+      </span>
+    </button>
+
+  </aside>
+
+  <!-- RIGHT OUTPUT COLUMN: Deep Results Viewport -->
+  <section class="results-panel">
+    
+    <!-- WELCOME EMPTY STATE DEFAULT PANEL -->
+    <div *ngIf="!catalogResults() && !isGenerating()" class="empty-results-state">
+      <div class="welcome-box">
+        <div class="sparkle-capsule">
+          <span class="material-symbols-outlined welcome-icon">hub</span>
+        </div>
+        <h3>Optimized Listings</h3>
+        <p>Your listings will appear here. Select platforms and add product info to begin.</p>
+      </div>
+    </div>
+
+    <!-- COMPILING SKELETON SHIMMER OVERLAY -->
+    <div *ngIf="isGenerating()" class="skeleton-shimmer-container">
+      <div class="skeleton-tabs">
+        <div class="skeleton-tab"></div>
+        <div class="skeleton-tab"></div>
+      </div>
+      <div class="skeleton-block score-dashboard-skeleton"></div>
+      <div class="skeleton-block text-card-skeleton"></div>
+      <div class="skeleton-block bullets-skeleton"></div>
+      <div class="skeleton-block matrix-skeleton"></div>
+    </div>
+
+    <!-- LIVE COMPILED LISTINGS INTERACTIVE PANEL -->
+    <div *ngIf="catalogResults() && !isGenerating()" class="active-results-view scroll-y custom-scrollbar animate-fade-in">
+      
+      <!-- Top Horizontal Tab Bar representing chosen platforms -->
+      <nav class="results-tab-bar">
+        <div class="tabs-scroll-flex">
+          <button 
+            *ngFor="let platform of Object.keys(catalogResults()!)" 
+            (click)="activeTab = platform"
+            [class.active]="activeTab === platform"
+            class="tab-btn">
+            <span class="tab-dot" [ngClass]="{
+              'amazon': platform.includes('Amazon'),
+              'flipkart': platform.includes('Flipkart'),
+              'meesho': platform.includes('Meesho')
+            }"></span>
+            {{ platform }}
+          </button>
+        </div>
+      </nav>
+
+      <!-- Active Tab Catalog Result Content -->
+      <div *ngIf="activeTab && catalogResults()![activeTab]" class="tab-content-flex">
+        
+        <div class="catalog-listing-node" 
+             [ngClass]="{
+               'brand-amazon': activeTab.includes('Amazon'),
+               'brand-flipkart': activeTab.includes('Flipkart'),
+               'brand-meesho': activeTab.includes('Meesho')
+             }" 
+             *ngIf="catalogResults()![activeTab] as listing">
+
+          <!-- 1. SEO PERFORMANCE TRACKER DASHBOARD -->
+          <div class="result-segment-card seo-dashboard-card">
+            <div class="seo-score-circle">
+              <span class="score-number">{{ listing.seoScore.overall }}</span>
+              <span class="score-label">SEO Score</span>
+            </div>
+
+            <div class="seo-metrics-sliders">
+              <!-- Title index -->
+              <div class="metric-row">
+                <div class="metric-labels">
+                  <span class="metric-name">Title Index</span>
+                  <span class="metric-percentage">{{ listing.seoScore.title }}%</span>
+                </div>
+                <div class="metric-slider-track">
+                  <div class="metric-slider-fill bg-indigo" [style.width.%]="listing.seoScore.title"></div>
+                </div>
+              </div>
+
+              <!-- Description index -->
+              <div class="metric-row">
+                <div class="metric-labels">
+                  <span class="metric-name">Description</span>
+                  <span class="metric-percentage">{{ listing.seoScore.description }}%</span>
+                </div>
+                <div class="metric-slider-track">
+                  <div class="metric-slider-fill bg-emerald" [style.width.%]="listing.seoScore.description"></div>
+                </div>
+              </div>
+
+              <!-- Keywords index -->
+              <div class="metric-row">
+                <div class="metric-labels">
+                  <span class="metric-name">Keywords</span>
+                  <span class="metric-percentage">{{ listing.seoScore.keywords }}%</span>
+                </div>
+                <div class="metric-slider-track">
+                  <div class="metric-slider-fill bg-amber" [style.width.%]="listing.seoScore.keywords"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. CHARACTER TRACKING TEXT CARD: Title -->
+          <div class="result-segment-card" [class.node-shimmer]="isRefreshingNode['title']">
+            <div class="card-title-bar">
+              <div class="header-left-group">
+                <span class="material-symbols-outlined segment-icon">subtitles</span>
+                <h4>Optimized Title</h4>
+                
+                <!-- Title limits character warning -->
+                <span class="char-count-badge" [ngClass]="{
+                  'warning': activeTab.includes('Amazon') ? listing.title.length > 125 : listing.title.length > 100
+                }">
+                  {{ listing.title.length }} / {{ activeTab.includes('Amazon') ? '125' : '100' }} chars
+                </span>
+              </div>
+
+              <button 
+                (click)="copyText(listing.title, 'title_copy')" 
+                [class.copied]="copiedStates['title_copy']"
+                class="btn-copy-card" 
+                title="Copy Title">
+                <span class="material-symbols-outlined copy-icon-node">
+                  {{ copiedStates['title_copy'] ? 'check' : 'content_copy' }}
+                </span>
+              </button>
+            </div>
+            <div class="card-body-segment">
+              <p class="title-value-node">{{ listing.title }}</p>
+            </div>
+          </div>
+
+          <!-- 3. HIGHLIGHTS & BULLET POINTS -->
+          <div class="result-segment-card">
+            <div class="card-title-bar">
+              <div class="header-left-group">
+                <span class="material-symbols-outlined segment-icon">toc</span>
+                <h4>Highlights</h4>
+                <span class="bullets-badge">{{ listing.bullets.length }} Points</span>
+              </div>
+
+              <button 
+                (click)="copyText(listing.bullets.join('\n'), 'bullets_all_copy')" 
+                [class.copied]="copiedStates['bullets_all_copy']"
+                class="btn-copy-card" 
+                title="Copy All Highlights">
+                <span class="material-symbols-outlined copy-icon-node">
+                  {{ copiedStates['bullets_all_copy'] ? 'check' : 'content_copy' }}
+                </span>
+              </button>
+            </div>
+            <div class="card-body-segment">
+              <ul class="bullets-values-list">
+                <li *ngFor="let bullet of listing.bullets; let idx = index">
+                  <span class="bullet-index-circle">{{ idx + 1 }}</span>
+                  <div class="bullet-text-wrapper">
+                    <p class="bullet-text">{{ bullet }}</p>
+                    <button 
+                      (click)="copyText(bullet, 'bullet_' + idx)" 
+                      class="btn-bullet-copy-tiny" 
+                      [title]="copiedStates['bullet_' + idx] ? 'Copied!' : 'Copy Point'">
+                      <span class="material-symbols-outlined tiny-icon">
+                        {{ copiedStates['bullet_' + idx] ? 'check' : 'content_copy' }}
+                      </span>
+                    </button>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- 4. PRODUCT DESCRIPTION -->
+          <div class="result-segment-card">
+            <div class="card-title-bar">
+              <div class="header-left-group">
+                <span class="material-symbols-outlined segment-icon">description</span>
+                <h4>Description</h4>
+              </div>
+
+              <button 
+                (click)="copyText(listing.description, 'description_copy')" 
+                [class.copied]="copiedStates['description_copy']"
+                class="btn-copy-card" 
+                title="Copy Description">
+                <span class="material-symbols-outlined copy-icon-node">
+                  {{ copiedStates['description_copy'] ? 'check' : 'content_copy' }}
+                </span>
+              </button>
+            </div>
+            <div class="card-body-segment">
+              <p class="description-value-node">{{ listing.description }}</p>
+            </div>
+          </div>
+
+          <!-- 5. TECHNICAL SPECIFICATION ATTRIBUTES MATRIX -->
+          <div class="result-segment-card">
+            <div class="card-title-bar">
+              <div class="header-left-group">
+                <span class="material-symbols-outlined segment-icon">grid_on</span>
+                <h4>Specifications</h4>
+              </div>
+            </div>
+            <div class="card-body-segment scroll-x custom-scrollbar">
+              <div class="spec-attributes-grid">
+                <div class="spec-cell" *ngFor="let attr of Object.keys(listing.attributes)">
+                  <span class="spec-header-cell">{{ attr }}</span>
+                  <span class="spec-value-cell">{{ listing.attributes[attr] || 'N/A' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. BACKEND KEYWORDS BADGES -->
+          <div class="result-segment-card" [class.node-shimmer]="isRefreshingNode['keywords']">
+            <div class="card-title-bar">
+              <div class="header-left-group">
+                <span class="material-symbols-outlined segment-icon">tag</span>
+                <h4>Search Keywords</h4>
+                <span class="keywords-count-badge" *ngIf="activeTab.includes('Amazon')">
+                  {{ listing.keywords.join(' ').length }} / 200 bytes
+                </span>
+              </div>
+
+              <button 
+                (click)="copyText(listing.keywords.join(', '), 'keywords_copy')" 
+                [class.copied]="copiedStates['keywords_copy']"
+                class="btn-copy-card" 
+                title="Copy All Search Keywords">
+                <span class="material-symbols-outlined copy-icon-node">
+                  {{ copiedStates['keywords_copy'] ? 'check' : 'content_copy' }}
+                </span>
+              </button>
+            </div>
+            <div class="card-body-segment">
+              <p class="keywords-subtext-helper">Click any tag to copy.</p>
+              <div class="keywords-capsules-grid">
+                <span 
+                  *ngFor="let kw of listing.keywords; let kwIdx = index"
+                  (click)="copyText(kw, 'kw_' + kwIdx)"
+                  [class.copied]="copiedStates['kw_' + kwIdx]"
+                  class="keyword-tag-badge">
+                  <span class="material-symbols-outlined tag-icon">sell</span>
+                  <span class="tag-label">{{ kw }}</span>
+                  <span class="tag-copied-chip" *ngIf="copiedStates['kw_' + kwIdx]">Copied</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. TAX, PRICE & COMPETITIVE MARGIN INSIGHTS -->
+          <div class="result-segment-card tax-insights-card" [class.node-shimmer]="isRefreshingNode['taxAndPricing']">
+            <div class="card-title-bar">
+              <div class="header-left-group">
+                <span class="material-symbols-outlined segment-icon">payments</span>
+                <h4>Pricing & HSN</h4>
+              </div>
+              <span class="hsn-badge">HSN: {{ listing.taxAndPricing.hsnCode || 'N/A' }}</span>
+            </div>
+            
+            <div class="card-body-segment">
+              <div class="tax-margin-snippets">
+                <!-- Suggested Retail Range -->
+                <div class="snippet-tile suggested">
+                  <div class="snippet-label-group">
+                    <span class="material-symbols-outlined tile-icon text-indigo">sell</span>
+                    <span class="tile-label">Suggested Price</span>
+                  </div>
+                  <h3 class="tile-value text-indigo">{{ listing.taxAndPricing.suggestedPrice }}</h3>
+                  <p class="tile-helper">Ideal retail target</p>
+                </div>
+
+                <!-- Competitive Listings range -->
+                <div class="snippet-tile competitive">
+                  <div class="snippet-label-group">
+                    <span class="material-symbols-outlined tile-icon text-emerald">monitoring</span>
+                    <span class="tile-label">Market Match</span>
+                  </div>
+                  <h3 class="tile-value text-emerald">{{ listing.taxAndPricing.competitivePrice || 'N/A' }}</h3>
+                  <p class="tile-helper">Competitor benchmarks</p>
+                </div>
+
+                <!-- Calculated margin notes -->
+                <div class="snippet-tile margin">
+                  <div class="snippet-label-group">
+                    <span class="material-symbols-outlined tile-icon text-amber">pie_chart</span>
+                    <span class="tile-label">Margin Guide</span>
+                  </div>
+                  <p class="margin-narrative">{{ listing.taxAndPricing.marginNote }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 8. GRANULAR BOTTOM ACTION ROW (Sticky utility updates) -->
+      <footer class="granular-action-bar">
+        <button 
+          (click)="refreshNode('title')" 
+          [disabled]="isRefreshingNode['title']" 
+          class="btn-action-refresh">
+          <span class="material-symbols-outlined animate-spin-hover">sync</span>
+          Refresh Title
+        </button>
+
+        <button 
+          (click)="refreshNode('keywords')" 
+          [disabled]="isRefreshingNode['keywords']" 
+          class="btn-action-refresh">
+          <span class="material-symbols-outlined animate-spin-hover">sync</span>
+          Refresh Keywords
+        </button>
+
+        <button 
+          (click)="refreshNode('taxAndPricing')" 
+          [disabled]="isRefreshingNode['taxAndPricing']" 
+          class="btn-action-refresh">
+          <span class="material-symbols-outlined animate-spin-hover">sync</span>
+          Refresh Pricing
+        </button>
+
+        <button 
+          (click)="exportListing()" 
+          class="btn-action-refresh btn-export-highlight">
+          <span class="material-symbols-outlined">download</span>
+          Export Listing
+        </button>
+      </footer>
+
+    </div>
+
+  </section>
+
+  <!-- Frosted Glass Lead Capture Gating Overlay Modal -->
+  <div *ngIf="showLeadModal" class="lead-modal-overlay animate-fade-in">
+    <div class="lead-modal-card">
+      <div class="lead-modal-header">
+        <span class="material-symbols-outlined lead-logo-icon">mail_lock</span>
+        <h3>Unlock Listings</h3>
+      </div>
+      <p class="lead-modal-copy">Enter your email to unlock free bulk downloads.</p>
+      
+      <div class="lead-form-group">
+        <input 
+          type="email" 
+          [(ngModel)]="leadEmail" 
+          placeholder="E.g., amir@zeraki.com" 
+          class="lead-form-input" 
+          (keyup.enter)="submitLead()" />
+        <p class="lead-error-text" *ngIf="leadError">{{ leadError }}</p>
+      </div>
+
+      <div class="lead-actions-group">
+        <button (click)="closeLeadModal()" class="btn btn-secondary lead-btn-cancel">Cancel</button>
+        <button (click)="submitLead()" [disabled]="!leadEmail" class="btn btn-primary lead-btn-submit">
+          <span *ngIf="!isSavingLead" class="btn-content">
+            <span class="material-symbols-outlined">verified</span>
+            Unlock Now
+          </span>
+          <span *ngIf="isSavingLead" class="btn-loader-flex">
+            <span class="spinner"></span>
+            Verifying...
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

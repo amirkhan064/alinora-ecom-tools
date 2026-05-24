@@ -1,0 +1,233 @@
+<div class="image-downloader-console">
+  <div class="console-grid">
+    
+    <!-- LEFT COLUMN: Control Panel & Validation Logs -->
+    <div class="console-left-pane">
+      <div class="console-section-header">
+        <h2 class="console-title">Image Downloader</h2>
+        <p class="console-subtitle">Download product images from Amazon, Flipkart, Meesho, or Myntra links.</p>
+      </div>
+
+      <!-- URL Input Card -->
+      <div class="card input-card">
+        <div class="card-header">
+          <span class="material-symbols-outlined header-icon">link</span>
+          <span class="card-title">Product Links</span>
+        </div>
+        <div class="card-body">
+          <!-- Platform Selection Pills -->
+          <div class="platform-select-container">
+            <span class="platform-select-label">Platform</span>
+            <div class="platform-pills">
+              <button 
+                type="button" 
+                class="platform-pill-btn" 
+                [class.active]="selectedPlatform === 'all'" 
+                (click)="selectedPlatform = 'all'">
+                <span class="material-symbols-outlined pill-icon">grid_view</span>
+                All Sites
+              </button>
+              <button 
+                type="button" 
+                class="platform-pill-btn flipkart-pill" 
+                [class.active]="selectedPlatform === 'flipkart'" 
+                (click)="selectedPlatform = 'flipkart'">
+                <span class="pill-badge fk-badge">F</span>
+                Flipkart
+              </button>
+              <button 
+                type="button" 
+                class="platform-pill-btn amazon-pill" 
+                [class.active]="selectedPlatform === 'amazon'" 
+                (click)="selectedPlatform = 'amazon'">
+                <span class="pill-badge amz-badge">A</span>
+                Amazon
+              </button>
+              <button 
+                type="button" 
+                class="platform-pill-btn meesho-pill" 
+                [class.active]="selectedPlatform === 'meesho'" 
+                (click)="selectedPlatform = 'meesho'">
+                <span class="pill-badge ms-badge">M</span>
+                Meesho
+              </button>
+              <button 
+                type="button" 
+                class="platform-pill-btn myntra-pill" 
+                [class.active]="selectedPlatform === 'myntra'" 
+                (click)="selectedPlatform = 'myntra'">
+                <span class="pill-badge my-badge">Y</span>
+                Myntra
+              </button>
+            </div>
+          </div>
+
+          <textarea 
+            [(ngModel)]="urlsInput"
+            [placeholder]="getPlaceholder()"
+            [disabled]="isFetching"
+            class="url-textarea">
+          </textarea>
+          
+          <!-- Scraper Settings & Trigger -->
+          <div class="scraper-controls">
+            <div class="settings-options">
+              <!-- Toggle: High Res -->
+              <label class="checkbox-toggle">
+                <input type="checkbox" [(ngModel)]="highResOnly" />
+                <span class="toggle-slider"></span>
+                <span class="toggle-label">High Quality Only</span>
+              </label>
+              <!-- Toggle: Auto-Zip -->
+              <label class="checkbox-toggle">
+                <input type="checkbox" [(ngModel)]="autoZip" />
+                <span class="toggle-slider"></span>
+                <span class="toggle-label">Auto ZIP download</span>
+              </label>
+            </div>
+            
+            <div class="action-row">
+              <button (click)="clearInput()" [disabled]="isFetching || !urlsInput" class="btn btn-secondary">
+                Clear
+              </button>
+              <button (click)="fetchImages()" [disabled]="isFetching || !urlsInput.trim()" class="btn btn-primary">
+                <span *ngIf="!isFetching" class="btn-content">
+                  <span class="material-symbols-outlined">cloud_download</span>
+                  Get Images
+                </span>
+                <span *ngIf="isFetching" class="loader-flex">
+                  <span class="btn-spinner"></span>
+                  Fetching...
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Validation Failures Panel -->
+      <div *ngIf="failures.length > 0" class="card error-card animate-fade-in">
+        <div class="card-header error-header">
+          <span class="material-symbols-outlined error-icon">warning</span>
+          <span class="card-title">Skipped Links ({{ failures.length }})</span>
+        </div>
+        <div class="error-scroll-box">
+          <ul class="error-list">
+            <li *ngFor="let failure of failures" class="error-item">
+              <span class="failed-url" title="{{ failure.url }}">{{ failure.url }}</span>
+              <span class="error-msg">{{ failure.error }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Real-Time Results & Features Overview -->
+    <div class="console-right-pane">
+      <!-- Active Results Display -->
+      <div *ngIf="fetchedImages.length > 0" class="results-container animate-fade-in">
+        <!-- Pinned Selection Toolbar -->
+        <div class="results-toolbar">
+          <div class="selection-metrics">
+            <h3>Found Photos <span class="badge">{{ fetchedImages.length }}</span></h3>
+            <p>{{ selectedImageIds.size }} of {{ fetchedImages.length }} selected</p>
+          </div>
+          <div class="toolbar-actions">
+            <label class="checkbox-container">
+              <input type="checkbox" [checked]="isAllSelected()" (change)="toggleSelectAll()" />
+              <span class="checkbox-checkmark"></span>
+              Select All
+            </label>
+            <button 
+              (click)="downloadSelected()" 
+              [disabled]="selectedImageIds.size === 0" 
+              class="btn btn-primary btn-download">
+              <span class="material-symbols-outlined">download</span>
+              Download Selected ({{ selectedImageIds.size }})
+            </button>
+          </div>
+        </div>
+
+        <!-- Scrollable Grid Frame -->
+        <div class="scraped-images-scroll-box custom-scrollbar">
+          <div class="image-grid">
+            <div 
+              *ngFor="let img of fetchedImages" 
+              (click)="toggleSelection(img.id)"
+              [class.selected]="isImageSelected(img.id)"
+              class="image-card">
+              
+              <div class="image-wrapper">
+                <img [src]="img.url" alt="{{ img.description }}" loading="lazy" />
+                <div class="card-overlay">
+                  <div class="select-indicator">
+                    <span class="material-symbols-outlined">check_circle</span>
+                  </div>
+                </div>
+                <!-- Platform Pill -->
+                <span [class]="'platform-pill ' + img.platform.toLowerCase()">
+                  {{ img.platform }}
+                </span>
+              </div>
+
+              <div class="image-details">
+                <p class="image-desc" title="{{ img.description }}">{{ img.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State / Product Feature Showcase -->
+      <div *ngIf="fetchedImages.length === 0 && !isFetching" class="empty-results-box animate-fade-in">
+        <div class="empty-artwork-box">
+          <div class="empty-icon-circle">
+            <span class="material-symbols-outlined empty-icon">image_search</span>
+          </div>
+          <h4 class="empty-headline">No Images Yet</h4>
+          <p class="empty-subtext">
+            Paste product links on the left and click "Get Images" to start.
+          </p>
+        </div>
+
+        <!-- Stitch's 3-column features illustration grid -->
+        <div class="features-overview-grid">
+          <div class="feature-card paste-links-card">
+            <span class="material-symbols-outlined feature-icon">link</span>
+            <p class="feature-title">1. Paste Links</p>
+            <p class="feature-desc">Supports Flipkart, Amazon, Meesho & Myntra.</p>
+          </div>
+          <div class="feature-card high-quality-card">
+            <span class="material-symbols-outlined feature-icon">high_quality</span>
+            <p class="feature-title">2. High Quality</p>
+            <p class="feature-desc">Gets the original high-res images.</p>
+          </div>
+          <div class="feature-card batch-zip-card">
+            <span class="material-symbols-outlined feature-icon">folder_zip</span>
+            <p class="feature-title">3. One-Click Zip</p>
+            <p class="feature-desc">Download all selected in one ZIP.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic System Statistics Footer -->
+      <footer class="console-footer">
+        <div class="footer-stats-row">
+          <div class="stat-item storage-item">
+            <span class="stat-label">Storage Usage</span>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" style="width: 35%;"></div>
+            </div>
+            <span class="stat-value">4.2GB / 12GB</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Active Tasks</span>
+            <span class="stat-value font-mono">0 Active</span>
+          </div>
+        </div>
+        <div class="footer-version">SellerOS v2.4.0</div>
+      </footer>
+    </div>
+
+  </div>
+</div>
