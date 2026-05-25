@@ -775,3 +775,24 @@
     transform: scale(1);
   }
 }
+
+/* Mobile responsiveness collapse */
+@media (max-width: 900px) {
+  :host {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .bulk-cropper-console {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .filmstrip-panel {
+    height: 320px !important;
+    border-right: none !important;
+    border-bottom: 1px solid #e5e7eb !important;
+  }
+  .workspace-panel {
+    height: 600px !important;
+  }
+}

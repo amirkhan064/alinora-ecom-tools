@@ -52,7 +52,7 @@ html, body {
 }
 
 /* Perfect Global Centering & Alignment for Icons and Text in Buttons/Interactive Elements */
-button, .btn, .tab-btn, .btn-action-refresh, .btn-bullet-copy-tiny, .btn-copy-card, .btn-delete-preview, .platform-card, .keyword-tag-badge {
+button, .btn, .tab-btn, .btn-action-refresh, .btn-bullet-copy-tiny, .btn-copy-card, .btn-delete-preview, .platform-card, .keyword-tag-badge, .btn-hero-primary, .btn-hero-secondary, .btn-primary-large, .nav-cta-btn {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;

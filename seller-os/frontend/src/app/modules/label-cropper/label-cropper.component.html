@@ -18,11 +18,16 @@
       <!-- Target Marketplace -->
       <section class="console-section">
         <h3 class="section-label">1. Marketplace</h3>
-        <div class="platform-cards-grid">
+        <div class="platform-cards-grid" role="radiogroup" aria-label="Target Marketplace">
           <!-- Flipkart -->
           <div class="platform-card flipkart-card" 
+               tabindex="0"
+               role="radio"
+               [attr.aria-checked]="selectedPlatform === 'flipkart'"
                [class.active]="selectedPlatform === 'flipkart'"
-               (click)="selectedPlatform = 'flipkart'; logDebug('Platform switched to Flipkart')">
+               (click)="selectedPlatform = 'flipkart'; logDebug('Platform switched to Flipkart')"
+               (keydown.enter)="selectedPlatform = 'flipkart'; logDebug('Platform switched to Flipkart')"
+               (keydown.space)="$event.preventDefault(); selectedPlatform = 'flipkart'; logDebug('Platform switched to Flipkart')">
             <div class="platform-logo-box fk-logo-box">F</div>
             <div class="platform-details">
               <h3>Flipkart</h3>
@@ -35,8 +40,13 @@
 
           <!-- Amazon -->
           <div class="platform-card amazon-card" 
+               tabindex="0"
+               role="radio"
+               [attr.aria-checked]="selectedPlatform === 'amazon'"
                [class.active]="selectedPlatform === 'amazon'"
-               (click)="selectedPlatform = 'amazon'; logDebug('Platform switched to Amazon')">
+               (click)="selectedPlatform = 'amazon'; logDebug('Platform switched to Amazon')"
+               (keydown.enter)="selectedPlatform = 'amazon'; logDebug('Platform switched to Amazon')"
+               (keydown.space)="$event.preventDefault(); selectedPlatform = 'amazon'; logDebug('Platform switched to Amazon')">
             <div class="platform-logo-box amz-logo-box">A</div>
             <div class="platform-details">
               <h3>Amazon</h3>
@@ -49,15 +59,39 @@
 
           <!-- Meesho -->
           <div class="platform-card meesho-card" 
+               tabindex="0"
+               role="radio"
+               [attr.aria-checked]="selectedPlatform === 'meesho'"
                [class.active]="selectedPlatform === 'meesho'"
-               (click)="selectedPlatform = 'meesho'; logDebug('Platform switched to Meesho')">
+               (click)="selectedPlatform = 'meesho'; logDebug('Platform switched to Meesho')"
+               (keydown.enter)="selectedPlatform = 'meesho'; logDebug('Platform switched to Meesho')"
+               (keydown.space)="$event.preventDefault(); selectedPlatform = 'meesho'; logDebug('Platform switched to Meesho')">
             <div class="platform-logo-box ms-logo-box">M</div>
             <div class="platform-details">
               <h3>Meesho</h3>
-              <p>A4 multi-barcode layouts.</p>
+              <p>Official 4" × 5" labels.</p>
             </div>
             <div class="radio-indicator">
               <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatform === 'meesho'">check_circle</span>
+            </div>
+          </div>
+
+          <!-- Myntra -->
+          <div class="platform-card myntra-card" 
+               tabindex="0"
+               role="radio"
+               [attr.aria-checked]="selectedPlatform === 'myntra'"
+               [class.active]="selectedPlatform === 'myntra'"
+               (click)="selectedPlatform = 'myntra'; logDebug('Platform switched to Myntra')"
+               (keydown.enter)="selectedPlatform = 'myntra'; logDebug('Platform switched to Myntra')"
+               (keydown.space)="$event.preventDefault(); selectedPlatform = 'myntra'; logDebug('Platform switched to Myntra')">
+            <div class="platform-logo-box myntra-logo-box">M</div>
+            <div class="platform-details">
+              <h3>Myntra</h3>
+              <p>Official 3" × 5" labels.</p>
+            </div>
+            <div class="radio-indicator">
+              <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatform === 'myntra'">check_circle</span>
             </div>
           </div>
         </div>
@@ -193,10 +227,15 @@
         <!-- Output Format Cells -->
         <div class="config-group border-top">
           <label class="group-title">Output Format</label>
-          <div class="output-matrix">
+          <div class="output-matrix" role="radiogroup" aria-label="Output Format">
             <div class="matrix-cell labels-cell" 
+                 tabindex="0"
+                 role="radio"
+                 [attr.aria-checked]="outputType === 'labels'"
                  [class.selected]="outputType === 'labels'"
-                 (click)="outputType = 'labels'">
+                 (click)="outputType = 'labels'"
+                 (keydown.enter)="outputType = 'labels'"
+                 (keydown.space)="$event.preventDefault(); outputType = 'labels'">
               <div class="cell-header">
                 <span class="cell-badge label-badge">PDF</span>
                 <h4>Shipping Labels Only</h4>
@@ -205,8 +244,13 @@
             </div>
 
             <div class="matrix-cell invoices-cell" 
+                 tabindex="0"
+                 role="radio"
+                 [attr.aria-checked]="outputType === 'invoices'"
                  [class.selected]="outputType === 'invoices'"
-                 (click)="outputType = 'invoices'">
+                 (click)="outputType = 'invoices'"
+                 (keydown.enter)="outputType = 'invoices'"
+                 (keydown.space)="$event.preventDefault(); outputType = 'invoices'">
               <div class="cell-header">
                 <span class="cell-badge inv-badge">PDF</span>
                 <h4>Invoices Only</h4>
@@ -215,8 +259,13 @@
             </div>
 
             <div class="matrix-cell zip-cell" 
+                 tabindex="0"
+                 role="radio"
+                 [attr.aria-checked]="outputType === 'zip'"
                  [class.selected]="outputType === 'zip'"
-                 (click)="outputType = 'zip'">
+                 (click)="outputType = 'zip'"
+                 (keydown.enter)="outputType = 'zip'"
+                 (keydown.space)="$event.preventDefault(); outputType = 'zip'">
               <div class="cell-header">
                 <span class="cell-badge zip-badge">ZIP</span>
                 <h4>Both (ZIP Package)</h4>
@@ -287,7 +336,7 @@
             <span *ngIf="currentStep <= 1">1</span>
             <span class="material-symbols-outlined done-icon" *ngIf="currentStep > 1">done</span>
           </div>
-          <span class="step-label">1. Marketplace</span>
+          <span class="step-label">Marketplace</span>
         </div>
 
         <div class="step-node" 
@@ -299,7 +348,7 @@
             <span *ngIf="currentStep <= 2">2</span>
             <span class="material-symbols-outlined done-icon" *ngIf="currentStep > 2">done</span>
           </div>
-          <span class="step-label">2. Upload</span>
+          <span class="step-label">Upload</span>
         </div>
 
         <div class="step-node" 
@@ -311,7 +360,7 @@
             <span *ngIf="currentStep <= 3">3</span>
             <span class="material-symbols-outlined done-icon" *ngIf="currentStep > 3">done</span>
           </div>
-          <span class="step-label">3. Settings</span>
+          <span class="step-label">Settings</span>
         </div>
 
         <div class="step-node" 
@@ -322,7 +371,7 @@
           <div class="step-circle">
             <span>4</span>
           </div>
-          <span class="step-label">4. Process</span>
+          <span class="step-label">Process</span>
         </div>
       </div>
     </div>

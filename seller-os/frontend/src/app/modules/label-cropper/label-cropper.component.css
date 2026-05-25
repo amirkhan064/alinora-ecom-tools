@@ -59,7 +59,7 @@
 /* Platform cards */
 .platform-cards-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
 
@@ -80,6 +80,11 @@
 .platform-card:hover {
   transform: translateY(-2px) scale(1.01);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.platform-card:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 .platform-card.flipkart-card.active {
@@ -112,6 +117,16 @@
   border-color: #f43397;
 }
 
+.platform-card.myntra-card.active {
+  border-color: #ff3f6c;
+  background-color: rgba(255, 63, 108, 0.03);
+  box-shadow: 0 0 0 1px #ff3f6c, 0 6px 16px rgba(255, 63, 108, 0.12);
+}
+
+.platform-card.myntra-card:hover {
+  border-color: #ff3f6c;
+}
+
 .platform-logo-box {
   width: 36px;
   height: 36px;
@@ -141,6 +156,11 @@
 
 .ms-logo-box {
   background: linear-gradient(135deg, #f43397, #d81b60);
+  color: #ffffff;
+}
+
+.myntra-logo-box {
+  background: linear-gradient(135deg, #ff3f6c, #d11243);
   color: #ffffff;
 }
 
@@ -180,6 +200,10 @@
 
 .meesho-card .check-icon {
   color: #f43397;
+}
+
+.myntra-card .check-icon {
+  color: #ff3f6c;
 }
 
 @keyframes scale-up {
@@ -540,7 +564,19 @@
 }
 
 .pill-radio input {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.pill-radio:focus-within {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 .pill-radio:hover {
@@ -574,6 +610,11 @@
 .matrix-cell:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+.matrix-cell:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
 }
 
 /* Individual cell selected glows */
@@ -689,7 +730,19 @@
 }
 
 .switch-toggle input {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.switch-toggle:focus-within {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 4px;
 }
 
 .switch-slider {
@@ -1130,43 +1183,74 @@
 
 /* Responsiveness */
 @media (max-width: 1000px) {
-  .cropper-workspace-split {
-    grid-template-columns: 1fr;
-    overflow: auto;
+  :host {
+    height: auto !important;
+    overflow: visible !important;
   }
   .cropper-console {
-    overflow: auto;
-    height: auto;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  .cropper-workspace-split {
+    grid-template-columns: 1fr !important;
+    overflow: visible !important;
+    padding-bottom: 220px !important; /* Space so content is not covered by the fixed stepper footer */
+  }
+  .platform-cards-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
   }
   .cropper-left-pane {
-    overflow: visible;
+    overflow: visible !important;
+    padding-bottom: 0 !important;
   }
   .cropper-right-pane {
-    border-left: none;
-    border-top: var(--border-light);
-    height: auto;
-    overflow: visible;
+    border-left: none !important;
+    border-top: var(--border-light) !important;
+    height: auto !important;
+    overflow: visible !important;
   }
   .stepper-footer-bar {
-    position: static;
-    height: auto;
-    padding: 16px;
-    gap: 16px;
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: auto !important;
+    padding: 16px 20px !important;
+    gap: 12px !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important;
+    z-index: 900 !important;
+  }
+  .stepper-line-track {
+    display: none !important; /* Hide track on mobile as steps wrap */
   }
   .stepper-nodes {
-    flex-wrap: wrap;
-    gap: 8px;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
   }
   .step-node {
-    flex: 1 1 40%;
+    flex: 1 1 40% !important;
+    padding: 4px 8px !important;
   }
   .stepper-actions-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+  .stage-info-label {
+    width: 100% !important;
   }
   .action-buttons-flex {
-    width: 100%;
-    justify-content: flex-end;
+    width: 100% !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+  .btn {
+    flex: 1 !important;
+    padding: 12px 8px !important;
+    font-size: 12px !important;
+    white-space: nowrap !important;
   }
 }

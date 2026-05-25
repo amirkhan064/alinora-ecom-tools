@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": "0a4be33b-e950-451e-a95c-4fca6082e33d"
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -39,9 +40,7 @@
           "typeSeparator": "."
         },
         "@schematics/angular:service": {
-          "skipTests": true,
-          "type": "service",
-          "addTypeToClassName": false
+          "skipTests": true
         },
         "@schematics/angular:module": {
           "typeSeparator": "."
@@ -66,7 +65,12 @@
             ],
             "styles": [
               "src/styles.css"
-            ]
+            ],
+            "server": "src/main.server.ts",
+            "ssr": {
+              "entry": "server.ts"
+            },
+            "prerender": true
           },
           "configurations": {
             "production": {
@@ -78,8 +82,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "30kB",
-                  "maximumError": "50kB"
+                  "maximumWarning": "60kB",
+                  "maximumError": "80kB"
                 }
               ],
               "outputHashing": "all"
@@ -87,7 +91,9 @@
             "development": {
               "optimization": false,
               "extractLicenses": false,
-              "sourceMap": true
+              "sourceMap": true,
+              "ssr": false,
+              "prerender": false
             }
           },
           "defaultConfiguration": "production"

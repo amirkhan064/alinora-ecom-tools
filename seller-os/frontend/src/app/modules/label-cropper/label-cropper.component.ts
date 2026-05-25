@@ -15,7 +15,7 @@ export class LabelCropperComponent {
   private apiEndpoint = 'http://localhost:3333/api/labels/process';
 
   // Config States
-  selectedPlatform: 'flipkart' | 'amazon' | 'meesho' = 'flipkart';
+  selectedPlatform: 'flipkart' | 'amazon' | 'meesho' | 'myntra' = 'flipkart';
   uploadedFiles: File[] = [];
   sortBy: 'sku' | 'orderId' | 'date' = 'sku';
   sortOrder: 'asc' | 'desc' = 'asc';

@@ -1,0 +1,38 @@
+<div class="public-shell">
+  <!-- Minimal Top Navigation Bar -->
+  <header class="public-navbar">
+    <div class="navbar-inner">
+      <a routerLink="/" class="navbar-brand">
+        <span class="material-symbols-outlined brand-icon">hub</span>
+        <span class="brand-name">Seller<span class="brand-highlight">OS</span></span>
+      </a>
+
+      <nav class="navbar-links">
+        <a routerLink="/tools/bulk-image-downloader" routerLinkActive="active-nav" class="nav-item">Image Downloader</a>
+        <a routerLink="/tools/shipping-label-cropper" routerLinkActive="active-nav" class="nav-item">Label Cropper</a>
+        <a routerLink="/tools/ai-listing-generator" routerLinkActive="active-nav" class="nav-item">AI Listing</a>
+        <a routerLink="/app" class="nav-cta-btn">
+          <span class="material-symbols-outlined">rocket_launch</span>
+          Open App
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Page Content Outlet -->
+  <main class="public-content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Minimal Footer -->
+  <footer class="public-footer">
+    <div class="footer-inner">
+      <p class="footer-brand">&copy; 2025 SellerOS &mdash; Free tools for Indian e-commerce sellers.</p>
+      <div class="footer-links">
+        <a routerLink="/tools/bulk-image-downloader">Image Downloader</a>
+        <a routerLink="/tools/shipping-label-cropper">Label Cropper</a>
+        <a routerLink="/tools/ai-listing-generator">AI Listing Generator</a>
+      </div>
+    </div>
+  </footer>
+</div>

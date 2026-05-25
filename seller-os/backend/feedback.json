@@ -1,0 +1,14 @@
+[
+  {
+    "category": "suggestion",
+    "message": "Hi This is a test email",
+    "email": "test@gmail,.com",
+    "timestamp": "2026-05-25T01:25:30.830Z"
+  },
+  {
+    "category": "suggestion",
+    "message": "This is a new test email",
+    "email": "test-new@gmail.com",
+    "timestamp": "2026-05-25T01:28:43.883Z"
+  }
+]

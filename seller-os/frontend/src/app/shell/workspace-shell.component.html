@@ -1,0 +1,182 @@
+<ng-container *ngIf="isBrowser">
+<div class="seller-os-container">
+  <!-- Translucent dimming backdrop mask for mobile drawer overlay -->
+  <div class="sidebar-backdrop" *ngIf="mobileSidebarOpen()" (click)="closeMobileSidebar()"></div>
+
+  <!-- Left Side Navigation Drawer -->
+  <aside class="seller-os-sidebar" [class.mobile-open]="mobileSidebarOpen()" role="complementary" aria-label="Main Navigation">
+    <div class="sidebar-header">
+      <div class="logo-area">
+        <span class="material-symbols-outlined logo-icon">hub</span>
+        <div class="brand-text">
+          <span class="system-name">Seller<span class="highlight">OS</span></span>
+        </div>
+      </div>
+      <div class="badge">V2.4</div>
+      <button class="mobile-close-sidebar-btn" (click)="closeMobileSidebar()" aria-label="Close menu" id="mobile-close-sidebar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="sidebar-nav" role="navigation" aria-label="Core Utilities">
+      <div class="nav-section-title">Core Utilities</div>
+      
+      <a routerLink="/app/image-downloader" routerLinkActive="active-link" class="nav-link" id="nav-img-dl" aria-label="Image Downloader Utility" role="menuitem">
+        <span class="material-symbols-outlined nav-icon">download_for_offline</span>
+        <span class="nav-label">Image Downloader</span>
+        <span class="nav-hover-pill"></span>
+      </a>
+
+      <a routerLink="/app/label-cropper" routerLinkActive="active-link" class="nav-link" id="nav-lbl-crop" aria-label="Shipping Label Cropper Utility" role="menuitem">
+        <span class="material-symbols-outlined nav-icon">crop_free</span>
+        <span class="nav-label">Label Cropper</span>
+        <span class="nav-hover-pill"></span>
+      </a>
+      
+      <a routerLink="/app/bulk-cropper" routerLinkActive="active-link" class="nav-link" id="nav-blk-crop" aria-label="Bulk Image Cropper Utility" role="menuitem">
+        <span class="material-symbols-outlined nav-icon">grid_view</span>
+        <span class="nav-label">Bulk Cropper</span>
+        <span class="nav-hover-pill"></span>
+      </a>
+
+      <a routerLink="/app/listing-builder" routerLinkActive="active-link" class="nav-link" id="nav-lst-bld" aria-label="AI SEO Listing Builder Utility" role="menuitem">
+        <span class="material-symbols-outlined nav-icon">auto_awesome</span>
+        <span class="nav-label">AI Listing Builder</span>
+        <span class="nav-hover-pill"></span>
+      </a>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <button class="nav-feedback-btn" (click)="openFeedbackModal()" id="nav-feedback-trigger" aria-label="Share Feedback and suggestion modal">
+        <span class="material-symbols-outlined feedback-btn-icon">rate_review</span>
+        <span class="feedback-label">Share Feedback</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Viewport Context -->
+  <main class="seller-os-main" role="main">
+    <!-- Shared Top App Bar -->
+    <header class="seller-os-header" role="banner">
+      <div class="header-left">
+        <button class="mobile-menu-hamburger" (click)="toggleMobileSidebar()" aria-label="Open menu" id="mobile-hamburger-trigger">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
+        <span class="material-symbols-outlined header-icon">hub</span>
+        <span class="header-title">{{ pageTitle() }}</span>
+      </div>
+      <div class="header-right">
+        <div class="system-status">
+          <span class="pulse-indicator"></span>
+          <span class="status-text">System Online</span>
+        </div>
+        <span class="material-symbols-outlined wifi-icon" aria-hidden="true">wifi</span>
+      </div>
+    </header>
+
+    <!-- Viewport locked canvas area -->
+    <div class="seller-os-content">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>
+
+<!-- Frosted Glass Feedback Modal Overlay -->
+<div class="feedback-modal-overlay" *ngIf="showFeedbackModal()" (click)="closeFeedbackModal($event)">
+  <div class="feedback-modal-card" (click)="$event.stopPropagation()">
+    <button class="close-modal-btn" (click)="showFeedbackModal.set(false)">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    
+    <div class="modal-header">
+      <span class="material-symbols-outlined modal-header-icon">rate_review</span>
+      <h3>Share Your Feedback</h3>
+      <p>Help us improve SellerOS. Suggest a feature or report a bug.</p>
+    </div>
+
+    <div class="modal-body" *ngIf="!feedbackSubmitted()">
+      <div class="form-group">
+        <label>Category</label>
+        <div class="category-selectors">
+          <button 
+            type="button" 
+            class="cat-selector" 
+            [class.active-cat]="feedbackCategory() === 'suggestion'"
+            (click)="feedbackCategory.set('suggestion')"
+          >
+            <span class="material-symbols-outlined">lightbulb</span> Feature
+          </button>
+          <button 
+            type="button" 
+            class="cat-selector" 
+            [class.active-cat]="feedbackCategory() === 'bug'"
+            (click)="feedbackCategory.set('bug')"
+          >
+            <span class="material-symbols-outlined">bug_report</span> Bug
+          </button>
+          <button 
+            type="button" 
+            class="cat-selector" 
+            [class.active-cat]="feedbackCategory() === 'other'"
+            (click)="feedbackCategory.set('other')"
+          >
+            <span class="material-symbols-outlined">emoji_emotions</span> Other
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Your Message</label>
+        <textarea 
+          rows="4" 
+          placeholder="What's on your mind? Describe the feature or the bug in detail..." 
+          class="modal-textarea"
+          [value]="feedbackMessage()"
+          (input)="onMessageInput($event)"
+        ></textarea>
+        <div class="textarea-footer">
+          <span class="char-counter" [class.char-warning]="feedbackMessage().length > 350">
+            {{ feedbackMessage().length }} / 400 Chars
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Your Business Email <span class="optional">(Optional)</span></label>
+        <input 
+          type="email" 
+          placeholder="seller@store.com" 
+          class="modal-input"
+          [value]="feedbackEmail()"
+          (input)="onEmailInput($event)"
+        />
+      </div>
+
+      <button 
+        class="submit-feedback-btn" 
+        [disabled]="feedbackMessage().length === 0 || feedbackMessage().length > 400"
+        (click)="submitFeedback()"
+      >
+        <span class="material-symbols-outlined">send</span> Send Feedback
+      </button>
+    </div>
+
+    <!-- Success State -->
+    <div class="modal-success-body" *ngIf="feedbackSubmitted()">
+      <span class="material-symbols-outlined success-icon">check_circle</span>
+      <h4>Thank you!</h4>
+      <p>Your feedback has been logged securely in our system. We read every response to improve SellerOS.</p>
+      <button class="done-btn" (click)="showFeedbackModal.set(false)">Done</button>
+    </div>
+  </div>
+</div>
+</ng-container>
+
+<!-- SSR fallback: empty shell, browser will hydrate -->
+<ng-container *ngIf="!isBrowser">
+  <div class="ssr-loading-shell">
+    <p>Loading SellerOS workspace...</p>
+  </div>
+</ng-container>

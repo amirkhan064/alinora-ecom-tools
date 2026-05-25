@@ -1,0 +1,160 @@
+<div class="tool-seo-container">
+  <!-- Hero Section -->
+  <section class="tool-hero">
+    <div class="hero-content">
+      <div class="category-badge">
+        <span class="material-symbols-outlined">auto_awesome</span>
+        AI CATALOGING UTILITY
+      </div>
+      <h1>
+        Gemini-Powered
+        <span class="gradient-text listing-gradient">AI Listing Generator</span>
+      </h1>
+      <p class="hero-desc">
+        Write high-converting, search-friendly product titles, bullet points, meta descriptions, and keywords for
+        Flipkart, Amazon, and Meesho in one click.
+      </p>
+
+      <div class="hero-cta-box">
+        <a routerLink="/app/listing-builder" class="btn-primary-large listing-btn">
+          <span class="material-symbols-outlined">bolt</span>
+          Generate Free Listing
+        </a>
+        <span class="cta-note">No credit card or registration needed &bull; Powered by Gemini AI</span>
+      </div>
+
+      <!-- Supported Platforms Bar -->
+      <div class="platforms-supported">
+        <span class="platform-label">Optimized For:</span>
+        <div class="platform-badges">
+          <span class="p-badge amazon">Amazon IN</span>
+          <span class="p-badge flipkart">Flipkart Catalog</span>
+          <span class="p-badge meesho">Meesho Supplier</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Interactive Mockup -->
+    <div class="hero-visual">
+      <div class="mockup-browser">
+        <div class="browser-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <div class="browser-address-bar">selleros.com/app/listing-builder</div>
+        </div>
+        <div class="browser-body">
+          <div class="mockup-listing-inputs">
+            <div class="mockup-form-group">
+              <span class="mock-input-label">Product Name</span>
+              <div class="mock-input-val">Women Cotton Kurti Set</div>
+            </div>
+            <div class="mockup-form-group">
+              <span class="mock-input-label">Key Features</span>
+              <div class="mock-input-val">breathable, floral print, yellow color, daily wear</div>
+            </div>
+            <button class="mockup-ai-btn">
+              <span class="material-symbols-outlined star-ic">auto_awesome</span>
+              Generate SEO Copy
+            </button>
+          </div>
+
+          <div class="mockup-ai-results">
+            <div class="result-box">
+              <div class="result-header">
+                <span class="result-tag">Optimized Title</span>
+                <span class="copy-badge">SEO Score: 98%</span>
+              </div>
+              <div class="result-content-text">
+                Rajnandini Women's Yellow Floral Printed Pure Cotton A-Line Kurta Set with Dupatta
+              </div>
+            </div>
+            <div class="result-box">
+              <div class="result-header">
+                <span class="result-tag">Bullet Points</span>
+              </div>
+              <div class="result-content-bullets">
+                <ul>
+                  <li>Premium breathable pure cotton fabric perfect for daily wear...</li>
+                  <li>Ethnic floral design with elegant A-line silhouette styling...</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="mockup-footer-action">
+            <span class="mockup-text-sm success-color">Copied to Clipboard!</span>
+            <div class="mockup-btn-group">
+              <span class="mockup-badge-download listing-dl">Copy All</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="features-section">
+    <h2 class="section-title">Turn Basic Keywords Into High-Converting Catalogs</h2>
+    <div class="features-grid">
+      <div class="feat-card">
+        <span class="material-symbols-outlined feat-icon listing-color">trending_up</span>
+        <h3>Increase Search Visibility</h3>
+        <p>Our algorithm weaves high-volume search keywords seamlessly into titles and descriptions to boost your
+          organic listing rankings.</p>
+      </div>
+
+      <div class="feat-card">
+        <span class="material-symbols-outlined feat-icon listing-color">insights</span>
+        <h3>Target Indian Audiences</h3>
+        <p>Generates content styled specifically for Indian shoppers, including sizing, care guides, and colloquial
+          terms that increase conversion.</p>
+      </div>
+
+      <div class="feat-card">
+        <span class="material-symbols-outlined feat-icon listing-color">flash_on</span>
+        <h3>Instant Catalog Sheet Export</h3>
+        <p>Export in standardized formats ready for bulk excel listing sheets, helping you launch hundreds of products
+          in minutes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it Works Roadmap -->
+  <section class="roadmap-section">
+    <h2 class="section-title">How To Generate Product Listings</h2>
+    <div class="roadmap-steps">
+      <div class="step-card">
+        <div class="step-num listing-bg-sub">1</div>
+        <h4>Enter Product Basics</h4>
+        <p>Type in your primary product category, fabric, color, and design keywords.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num listing-bg-sub">2</div>
+        <h4>AI Magic</h4>
+        <p>Gemini AI processes the data, analyzing top rankings and structural rules instantly.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num listing-bg-sub">3</div>
+        <h4>Copy & Upload</h4>
+        <p>Review the optimized titles, bullet points, and copy them directly into your listing spreadsheets.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQs Accordion -->
+  <section class="faq-section">
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item" *ngFor="let faq of faqs; let i = index" [class.faq-open]="faq.open" (click)="toggleFaq(i)">
+        <div class="faq-question">
+          <span>{{ faq.question }}</span>
+          <span class="material-symbols-outlined faq-arrow">expand_more</span>
+        </div>
+        <div class="faq-answer" *ngIf="faq.open">
+          <p>{{ faq.answer }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

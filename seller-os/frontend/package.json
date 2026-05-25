@@ -4,8 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:ssr": "ng serve --configuration production",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "serve:ssr": "node dist/frontend/server/server.mjs",
     "test": "ng test"
   },
   "private": true,
@@ -16,7 +18,10 @@
     "@angular/core": "^19.1.0",
     "@angular/forms": "^19.1.0",
     "@angular/platform-browser": "^19.1.0",
+    "@angular/platform-server": "^19.2.22",
     "@angular/router": "^19.1.0",
+    "@angular/ssr": "^19.2.26",
+    "express": "^4.22.2",
     "jszip": "^3.10.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -26,6 +31,8 @@
     "@angular/build": "^19.1.0",
     "@angular/cli": "^19.1.0",
     "@angular/compiler-cli": "^19.1.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.19.19",
     "prettier": "^3.8.1",
     "typescript": "~5.6.3"
   }

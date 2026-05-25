@@ -1606,3 +1606,28 @@
 .catalog-listing-node.brand-meesho .keyword-tag-badge:hover .tag-icon {
   color: #f43397;
 }
+
+/* Mobile responsiveness collapse */
+@media (max-width: 1000px) {
+  :host {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .listing-builder-console {
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .control-panel {
+    height: auto !important;
+    overflow: visible !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.7) !important;
+    padding: 20px 16px !important;
+    gap: 18px !important;
+  }
+  .platform-selection-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+  }
+}

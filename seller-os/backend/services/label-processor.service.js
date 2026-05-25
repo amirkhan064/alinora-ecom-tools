@@ -36,6 +36,10 @@ function parseMetadata(text, platform) {
     // Flipkart order format: e.g. OD123456789012345678
     const match = text.match(/\bOD\d{15,20}\b/i);
     if (match) orderId = match[0].toUpperCase();
+  } else if (platform === 'myntra') {
+    // Myntra order format: e.g. 10-15 digit numeric or standard alphanumeric
+    const match = text.match(/\b[A-Z0-9-]{10,16}\b/i) || text.match(/\b\d{10,16}\b/);
+    if (match) orderId = match[0];
   } else {
     // General order ID extraction fallback (alphanumeric, length 12-20)
     const match = text.match(/\b(Order[ -]?ID|Ord[ -]?No|ID)[:\s]+([A-Z0-9-]{12,20})\b/i) || 
@@ -125,6 +129,12 @@ function classifyPage(text) {
     'flipkart',
     'meesho',
     'amazon',
+    'myntra',
+    'ppmp',
+    'myntra logistics',
+    'm-direct',
+    'ndp',
+    'nmf',
     'easy ship',
     'ats logistics',
     'ekart logistics',
@@ -171,15 +181,22 @@ async function cropPage(page, platform) {
     return;
   }
 
-  if (platform === 'flipkart') {
-    // Target 3" x 5" = 216 x 360 points. Flipkart labels are often top-left.
+  if (platform === 'flipkart' || platform === 'myntra') {
+    // Target 3" x 5" = 216 x 360 points. Flipkart & Myntra labels are often top-left.
     const cropW = 230;
     const cropH = 380;
     // Set crop boundaries at the top left
     page.setCropBox(0, height - cropH, cropW, cropH);
     page.setMediaBox(0, height - cropH, cropW, cropH);
+  } else if (platform === 'meesho') {
+    // Target 4" x 5" = 288 x 360 points. Meesho labels are top-left.
+    const cropW = 300;
+    const cropH = 380;
+    // Set crop boundaries at the top left
+    page.setCropBox(0, height - cropH, cropW, cropH);
+    page.setMediaBox(0, height - cropH, cropW, cropH);
   } else {
-    // Target 4" x 6" = 288 x 432 points. Amazon & Meesho labels are often top-left.
+    // Target 4" x 6" = 288 x 432 points. Amazon labels are often top-left.
     const cropW = 300;
     const cropH = 450;
     // Set crop boundaries at the top left
@@ -315,6 +332,16 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
           cropHeight = 432;
           x = (originalWidth - cropWidth) / 2;
           y = originalHeight - cropHeight - 15;
+        } else if (platform === 'meesho') {
+          cropWidth = 288;
+          cropHeight = 360;
+          x = (originalWidth - cropWidth) / 2;
+          y = originalHeight - cropHeight - 15;
+        } else if (platform === 'myntra' || platform === 'flipkart') {
+          cropWidth = 216;
+          cropHeight = 360;
+          x = (originalWidth - cropWidth) / 2;
+          y = originalHeight - cropHeight - 25;
         } else {
           cropWidth = 216;
           cropHeight = 360;
@@ -376,7 +403,7 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
       let x = 0;
       let y = 0;
 
-      if (platform !== 'amazon') {
+      if (platform !== 'amazon' && platform !== 'meesho') {
         const labelH = 360;
         const invH = originalHeight - (labelH + 40);
         if (invH > 100) {
@@ -476,6 +503,16 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
             cropHeight = 432;
             x = (originalWidth - cropWidth) / 2;
             y = originalHeight - cropHeight - 15;
+          } else if (platform === 'meesho') {
+            cropWidth = 288;
+            cropHeight = 360;
+            x = (originalWidth - cropWidth) / 2;
+            y = originalHeight - cropHeight - 15;
+          } else if (platform === 'myntra' || platform === 'flipkart') {
+            cropWidth = 216;
+            cropHeight = 360;
+            x = (originalWidth - cropWidth) / 2;
+            y = originalHeight - cropHeight - 25;
           } else {
             cropWidth = 216;
             cropHeight = 360;
@@ -583,7 +620,7 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
         let x = 0;
         let y = 0;
 
-        if (platform !== 'amazon') {
+        if (platform !== 'amazon' && platform !== 'meesho') {
           const labelH = 360;
           const invH = originalHeight - (labelH + 40);
           if (invH > 100) {

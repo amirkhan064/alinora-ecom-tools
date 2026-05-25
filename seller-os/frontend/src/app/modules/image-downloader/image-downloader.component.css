@@ -253,7 +253,19 @@
 }
 
 .checkbox-toggle input {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.checkbox-toggle:focus-within {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 4px;
 }
 
 .toggle-slider {
@@ -520,7 +532,19 @@
 }
 
 .checkbox-container input {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.checkbox-container:focus-within {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 4px;
 }
 
 .checkbox-checkmark {
@@ -888,21 +912,27 @@
 
 /* Responsiveness collapse */
 @media (max-width: 1100px) {
-  .console-grid {
-    grid-template-columns: 1fr;
-    overflow: auto;
+  :host {
+    height: auto !important;
+    overflow: visible !important;
   }
   .image-downloader-console {
-    overflow: auto;
-    height: auto;
+    overflow: visible !important;
+    height: auto !important;
+    padding-bottom: 40px !important;
+  }
+  .console-grid {
+    grid-template-columns: 1fr !important;
+    overflow: visible !important;
   }
   .console-left-pane {
-    overflow: visible;
+    overflow: visible !important;
   }
   .console-right-pane {
-    height: 500px;
+    height: 550px !important;
+    overflow: hidden !important;
   }
   .scraped-images-scroll-box {
-    overflow-y: auto;
+    overflow-y: auto !important;
   }
 }

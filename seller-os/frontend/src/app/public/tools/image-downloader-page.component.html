@@ -1,0 +1,142 @@
+<div class="tool-seo-container">
+  <!-- Hero Section -->
+  <section class="tool-hero">
+    <div class="hero-content">
+      <div class="category-badge">
+        <span class="material-symbols-outlined">download_for_offline</span>
+        E-COMMERCE IMAGE UTILITY
+      </div>
+      <h1>
+        High-Resolution
+        <span class="gradient-text">Product Image Downloader</span>
+      </h1>
+      <p class="hero-desc">
+        Instantly download original, high-definition zoom images from Amazon, Flipkart, Meesho & Myntra. Bulk export as a neat ZIP archive in seconds.
+      </p>
+
+      <div class="hero-cta-box">
+        <a routerLink="/app/image-downloader" class="btn-primary-large">
+          <span class="material-symbols-outlined">bolt</span>
+          Launch Downloader App
+        </a>
+        <span class="cta-note">No account creation or card required &bull; 100% Free</span>
+      </div>
+
+      <!-- Supported Platforms Bar -->
+      <div class="platforms-supported">
+        <span class="platform-label">Supported Platforms:</span>
+        <div class="platform-badges">
+          <span class="p-badge flipkart">Flipkart</span>
+          <span class="p-badge amazon">Amazon</span>
+          <span class="p-badge meesho">Meesho</span>
+          <span class="p-badge myntra">Myntra</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Interactive Mockup -->
+    <div class="hero-visual">
+      <div class="mockup-browser">
+        <div class="browser-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <div class="browser-address-bar">selleros.com/app/image-downloader</div>
+        </div>
+        <div class="browser-body">
+          <div class="mockup-input-bar">
+            <span class="material-symbols-outlined search-ic">link</span>
+            <span class="placeholder-text">https://www.flipkart.com/product-title/p/itm...</span>
+            <button class="mockup-btn">Extract</button>
+          </div>
+          <div class="mockup-grid">
+            <div class="mockup-thumb-card active">
+              <div class="mockup-img placeholder-1"></div>
+              <div class="mockup-badge">Main Image</div>
+            </div>
+            <div class="mockup-thumb-card">
+              <div class="mockup-img placeholder-2"></div>
+              <div class="mockup-badge">Angle 2</div>
+            </div>
+            <div class="mockup-thumb-card">
+              <div class="mockup-img placeholder-3"></div>
+              <div class="mockup-badge">Angle 3</div>
+            </div>
+            <div class="mockup-thumb-card">
+              <div class="mockup-img placeholder-4"></div>
+              <div class="mockup-badge">Dimensions</div>
+            </div>
+          </div>
+          <div class="mockup-footer-action">
+            <span class="mockup-text-sm">4 HD Images Found</span>
+            <div class="mockup-btn-group">
+              <span class="mockup-badge-download">Download ZIP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="features-section">
+    <h2 class="section-title">Why E-commerce Sellers Choose SellerOS</h2>
+    <div class="features-grid">
+      <div class="feat-card">
+        <span class="material-symbols-outlined feat-icon">hd</span>
+        <h3>Original High-Resolution</h3>
+        <p>We bypass compressed preview thumbnails to fetch the raw, original zoom-level quality images uploaded by sellers.</p>
+      </div>
+
+      <div class="feat-card">
+        <span class="material-symbols-outlined feat-icon">folder_zip</span>
+        <h3>Single-Click ZIP Export</h3>
+        <p>Stop saving images one by one. Our tool bundles all extracted media into a single ZIP file containing well-named files.</p>
+      </div>
+
+      <div class="feat-card">
+        <span class="material-symbols-outlined feat-icon">speed</span>
+        <h3>Zero Server Latency</h3>
+        <p>Our intelligent cloud scraper fetches catalog endpoints directly, presenting listing images in less than 1.5 seconds.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it Works Roadmap -->
+  <section class="roadmap-section">
+    <h2 class="section-title">How To Download Product Images</h2>
+    <div class="roadmap-steps">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <h4>Copy Listing URL</h4>
+        <p>Go to Flipkart, Amazon, Myntra, or Meesho and copy the product URL from the address bar.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <h4>Paste & Extract</h4>
+        <p>Paste the link into the SellerOS input field and click the "Extract" button to search.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <h4>Save or ZIP Pack</h4>
+        <p>Review the thumbnails, select the photos you need, and download individual files or a packaged ZIP.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQs Accordion -->
+  <section class="faq-section">
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item" *ngFor="let faq of faqs; let i = index" [class.faq-open]="faq.open" (click)="toggleFaq(i)">
+        <div class="faq-question">
+          <span>{{ faq.question }}</span>
+          <span class="material-symbols-outlined faq-arrow">expand_more</span>
+        </div>
+        <div class="faq-answer" *ngIf="faq.open">
+          <p>{{ faq.answer }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
