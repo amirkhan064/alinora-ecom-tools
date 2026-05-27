@@ -788,11 +788,54 @@
     overflow: visible !important;
   }
   .filmstrip-panel {
-    height: 320px !important;
+    height: 300px !important;
     border-right: none !important;
     border-bottom: 1px solid #e5e7eb !important;
   }
   .workspace-panel {
-    height: 600px !important;
+    height: auto !important;
+    min-height: 500px !important;
+    overflow: visible !important;
+  }
+  .utility-top-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    padding: 16px !important;
+  }
+  .utility-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+  .aspect-presets-container {
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 6px !important;
+  }
+  .aspect-presets-label {
+    text-align: left !important;
+  }
+  .aspect-pills {
+    display: flex !important;
+    width: 100% !important;
+  }
+  .aspect-pill-btn {
+    flex: 1 !important;
+    padding: 6px 2px !important;
+    text-align: center !important;
+  }
+  .utility-actions .btn {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 10px !important;
+  }
+  .workspace-canvas {
+    padding: 16px !important;
+  }
+  .cropper-canvas-frame {
+    max-width: 100% !important;
   }
 }

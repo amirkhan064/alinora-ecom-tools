@@ -96,7 +96,7 @@ Generate high-converting optimized listings for the following requested platform
     });
   }
 
-  const systemInstruction = `You are an elite, data-driven e-commerce catalog optimizer engineered specifically for Indian marketplaces (Amazon India, Flipkart, Meesho). 
+  const systemInstruction = `You are an elite, data-driven e-commerce catalog optimizer engineered specifically for Indian marketplaces (Amazon India, Flipkart, Meesho, Myntra). 
 Analyze the input data provided (whether it is an analyzed image asset, raw pasted values, or scraped text fields from a competitor listing). 
 
 You must generate high-converting listings optimized for the following requested platform markets: ${platformsList.join(', ')}.
@@ -105,6 +105,7 @@ CRITICAL CONSTRAINTS TO ENFORCE PER MARKETPLACE:
 - AMAZON INDIA: Product Title must be strictly under 125 characters max for Fashion/Jewelry categories. Do not include promotional text or emoji parameters. Generate exactly 5 feature bullet points starting with distinct bold text headers. Backend keywords must be strictly under 200 BYTES total, using single spaces with zero repetition or punctuation.
 - FLIPKART: Title length should target 50 to 100 characters for high search-click visibility. Bullet data must translate directly into technical specification properties. Supply a real-world, valid 4-digit Indian HSN code mapping the visible asset category.
 - MEESHO: Maximize mobile optimization. Keep titles strictly under 100 characters. Target highly relevant, low-cost vernacular search phrases used by budget shoppers (e.g., 'anti-tarnish minimal jewelry').
+- MYNTRA: Highly descriptive and elegant fashion titles, strictly under 100 characters. Focus on brand identity, lifestyle value, premium material aesthetics, styling tips, and exact design attributes.
 
 Your total response output must be delivered in a single, clean, valid JSON format matching this structural schema exactly. Do not embed any markdown code formatting delimiters (\`\`\`json):
 {
@@ -119,7 +120,7 @@ Your total response output must be delivered in a single, clean, valid JSON form
   }
 }
 
-Use exact keys: "Amazon India", "Flipkart", "Meesho" depending on which ones are selected. Only return JSON.`;
+Use exact keys: "Amazon India", "Flipkart", "Meesho", "Myntra" depending on which ones are selected. Only return JSON.`;
 
   console.log(`[Gemini Catalog Service] Querying Gemini 2.5 Flash for platforms: ${platformsList.join(', ')}...`);
 
@@ -174,7 +175,7 @@ const refreshListingNode = async (platform, nodeType, currentDetails) => {
   if (nodeType === 'title') {
     promptText += `Regenerate a brand-new high-CTR indexable title.`;
     systemInstruction = `Regenerate ONLY a new high-converting listing title for "${platform}". 
-Constraints: Under 125 characters for Amazon India, 50-100 characters for Flipkart/Meesho. 
+Constraints: Under 125 characters for Amazon India, 50-100 characters for Flipkart/Meesho/Myntra. 
 Must return exactly this JSON format. Do not use markdown wrappers:
 { "title": "string" }`;
   } else if (nodeType === 'keywords') {

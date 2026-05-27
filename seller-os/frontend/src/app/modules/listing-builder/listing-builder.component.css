@@ -100,7 +100,7 @@
 /* Interactive Platform Choice Grid */
 .platform-selection-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
 }
 
@@ -197,6 +197,10 @@
   background: linear-gradient(135deg, #f43397, #f06292);
 }
 
+.platform-dot.myntra {
+  background: linear-gradient(135deg, #ff3f6c, #f06292);
+}
+
 .platform-label {
   font-family: 'Outfit', sans-serif;
   font-size: 12px;
@@ -215,6 +219,13 @@
 .platform-card:has(.amazon) .check-icon { color: #ff9900; }
 .platform-card:has(.flipkart) .check-icon { color: #2874f0; }
 .platform-card:has(.meesho) .check-icon { color: #f43397; }
+.platform-card:has(.myntra) .check-icon { color: #ff3f6c; }
+
+.platform-card.active:has(.myntra) {
+  border-color: #ff3f6c;
+  background-color: rgba(255, 63, 108, 0.03);
+  box-shadow: 0 8px 20px rgba(255, 63, 108, 0.08);
+}
 
 /* Input Ingestion Accordions */
 .accordion-group {
@@ -775,6 +786,7 @@
 .tab-btn.active:has(.amazon) { color: #d47a00; border-bottom: 2px solid #ff9900; border-radius: 10px 10px 4px 4px; }
 .tab-btn.active:has(.flipkart) { color: #0449b6; border-bottom: 2px solid #2874f0; border-radius: 10px 10px 4px 4px; }
 .tab-btn.active:has(.meesho) { color: #c1106e; border-bottom: 2px solid #f43397; border-radius: 10px 10px 4px 4px; }
+.tab-btn.active:has(.myntra) { color: #d11243; border-bottom: 2px solid #ff3f6c; border-radius: 10px 10px 4px 4px; }
 
 .tab-dot {
   width: 8px;
@@ -787,6 +799,7 @@
 .tab-dot.amazon { background-color: #ff9900; }
 .tab-dot.flipkart { background-color: #2874f0; }
 .tab-dot.meesho { background-color: #f43397; }
+.tab-dot.myntra { background-color: #ff3f6c; }
 
 /* Result items card sections styling */
 .result-segment-card {
@@ -1627,7 +1640,121 @@
     gap: 18px !important;
   }
   .platform-selection-grid {
-    grid-template-columns: repeat(3, 1fr) !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 8px !important;
   }
+  .results-panel {
+    overflow: visible !important;
+    height: auto !important;
+  }
+  .active-results-view {
+    overflow: visible !important;
+    height: auto !important;
+    padding: 16px 12px 260px 12px !important; /* Space so content is not covered by fixed bar and margin isn't wasted */
+  }
+  .results-tab-bar {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .card-title-bar {
+    padding: 12px 16px !important;
+  }
+  .card-body-segment {
+    padding: 16px !important;
+  }
+  .spec-attributes-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    min-width: auto !important;
+    gap: 8px !important;
+  }
+  .tax-margin-snippets {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .bullet-index-circle {
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 9px !important;
+  }
+  .bullet-text-wrapper {
+    gap: 8px !important;
+    padding-bottom: 10px !important;
+  }
+  .bullet-text {
+    font-size: 13px !important;
+  }
+  .keyword-tag-badge {
+    padding: 5px 10px !important;
+    font-size: 11px !important;
+  }
+  .granular-action-bar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: auto !important;
+    padding: 12px 16px !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important;
+    z-index: 900 !important;
+  }
+  .btn-action-refresh {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 10px 8px !important;
+    font-size: 12px !important;
+    box-sizing: border-box !important;
+  }
+  .seo-dashboard-card {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    text-align: center !important;
+  }
+}
+
+/* Myntra Brand Colors & Styles */
+.catalog-listing-node.brand-myntra .result-segment-card:hover {
+  border-color: rgba(255, 63, 108, 0.4);
+  box-shadow: 0 12px 30px rgba(255, 63, 108, 0.05);
+}
+
+.catalog-listing-node.brand-myntra .bullet-index-circle {
+  background-color: rgba(255, 63, 108, 0.08);
+  color: #d11243;
+}
+
+.catalog-listing-node.brand-myntra .segment-icon {
+  color: #ff3f6c;
+}
+
+.catalog-listing-node.brand-myntra .seo-score-circle {
+  border-color: rgba(255, 63, 108, 0.08);
+  box-shadow: 0 10px 24px rgba(255, 63, 108, 0.06);
+}
+
+.catalog-listing-node.brand-myntra .seo-score-circle::before {
+  border-color: rgba(255, 63, 108, 0.15);
+}
+
+.catalog-listing-node.brand-myntra .score-number {
+  color: #ff3f6c;
+}
+
+.catalog-listing-node.brand-myntra .spec-cell:hover {
+  border-color: #ff3f6c;
+  box-shadow: 0 4px 12px rgba(255, 63, 108, 0.06);
+}
+
+.catalog-listing-node.brand-myntra .keyword-tag-badge:hover {
+  border-color: #ff3f6c;
+  color: #d11243;
+  background-color: rgba(255, 63, 108, 0.01);
+  box-shadow: 0 4px 10px rgba(255, 63, 108, 0.05);
+}
+
+.catalog-listing-node.brand-myntra .keyword-tag-badge:hover .tag-icon {
+  color: #ff3f6c;
 }

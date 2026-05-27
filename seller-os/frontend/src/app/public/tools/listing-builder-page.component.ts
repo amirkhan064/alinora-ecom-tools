@@ -15,7 +15,7 @@ export class ListingBuilderPageComponent implements OnInit {
   faqs = [
     {
       question: 'How does the AI optimize listings for Indian marketplaces?',
-      answer: 'Our AI model is custom-tuned with Flipkart, Amazon, and Meesho algorithm guidelines. It targets search phrases specifically used by Indian buyers, handles localized search vocabulary, and optimizes descriptions to improve organic discovery.',
+      answer: 'Our AI model is custom-tuned with Flipkart, Amazon, Meesho, and Myntra algorithm guidelines. It targets search phrases specifically used by Indian buyers, handles fashion/lifestyle catalog styling, and optimizes descriptions to improve organic discovery.',
       open: false
     },
     {
@@ -40,10 +40,10 @@ export class ListingBuilderPageComponent implements OnInit {
     private meta: Meta,
     private title: Title
   ) {
-    this.title.setTitle('AI Product Listing Generator for Indian Marketplaces | SellerOS');
-    this.meta.updateTag({ name: 'description', content: 'Free AI-powered product listing generator for Flipkart, Meesho, and Amazon sellers. Generate SEO-optimized titles, descriptions, bullets, and keywords instantly.' });
-    this.meta.updateTag({ name: 'keywords', content: 'ai listing builder, amazon listing generator, flipkart product description writer, meesho catalog builder, e-commerce seo copywriter, free listing tool' });
-    this.meta.updateTag({ property: 'og:title', content: 'AI Product Listing Generator | Amazon, Flipkart & Meesho' });
+    this.title.setTitle('AI Product Listing Generator for Flipkart, Amazon, Meesho & Myntra | SellerOS');
+    this.meta.updateTag({ name: 'description', content: 'Free AI-powered product listing generator for Flipkart, Myntra, Meesho, and Amazon sellers. Generate SEO-optimized titles, descriptions, bullets, and keywords instantly.' });
+    this.meta.updateTag({ name: 'keywords', content: 'ai listing builder, amazon listing generator, flipkart product description writer, meesho catalog builder, myntra product listing generator, e-commerce seo copywriter, free listing tool' });
+    this.meta.updateTag({ property: 'og:title', content: 'AI Product Listing Generator | Amazon, Flipkart, Meesho & Myntra' });
     this.meta.updateTag({ property: 'og:description', content: 'Create high-converting e-commerce product catalogs using Gemini AI. Get search-optimized titles, bullets, descriptions, and backend search terms in seconds.' });
   }
 
@@ -71,7 +71,7 @@ export class ListingBuilderPageComponent implements OnInit {
           "operatingSystem": "All",
           "applicationCategory": "BusinessApplication",
           "browserRequirements": "Requires HTML5 compatible browser. Optimized for Chrome, Edge, Safari, and Firefox.",
-          "description": "Free AI-powered product listing generator for Flipkart, Meesho, and Amazon sellers. Generate SEO-optimized titles, descriptions, bullets, and keywords instantly.",
+          "description": "Free AI-powered product listing generator for Flipkart, Myntra, Meesho, and Amazon sellers. Generate SEO-optimized titles, descriptions, bullets, and keywords instantly.",
           "softwareVersion": "1.0.0",
           "offers": {
             "@type": "Offer",
@@ -85,7 +85,7 @@ export class ListingBuilderPageComponent implements OnInit {
             "ratingCount": "142"
           },
           "featureList": [
-            "SEO-optimized titles specifically for Indian marketplaces",
+            "SEO-optimized titles specifically for Indian marketplaces (Amazon, Flipkart, Meesho, Myntra)",
             "Automated catalog bullet points generation",
             "Targeted search keywords research",
             "Preloaded with Gemini AI capabilities"

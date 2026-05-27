@@ -11,11 +11,16 @@
     <!-- Platform Selection Cards -->
     <div class="input-section">
       <h4 class="section-label">1. Target Marketplaces</h4>
-      <div class="platform-selection-grid">
+      <div class="platform-selection-grid" role="group" aria-label="Target Marketplaces">
         <!-- Amazon Choice Card -->
         <div 
+          tabindex="0"
+          role="checkbox"
+          [attr.aria-checked]="selectedPlatforms['Amazon India']"
           [class.active]="selectedPlatforms['Amazon India']"
           (click)="togglePlatform('Amazon India')"
+          (keydown.enter)="togglePlatform('Amazon India')"
+          (keydown.space)="$event.preventDefault(); togglePlatform('Amazon India')"
           class="platform-card">
           <div class="platform-indicator">
             <span class="platform-dot amazon">A</span>
@@ -26,8 +31,13 @@
 
         <!-- Flipkart Choice Card -->
         <div 
+          tabindex="0"
+          role="checkbox"
+          [attr.aria-checked]="selectedPlatforms['Flipkart']"
           [class.active]="selectedPlatforms['Flipkart']"
           (click)="togglePlatform('Flipkart')"
+          (keydown.enter)="togglePlatform('Flipkart')"
+          (keydown.space)="$event.preventDefault(); togglePlatform('Flipkart')"
           class="platform-card">
           <div class="platform-indicator">
             <span class="platform-dot flipkart">F</span>
@@ -38,14 +48,36 @@
 
         <!-- Meesho Choice Card -->
         <div 
+          tabindex="0"
+          role="checkbox"
+          [attr.aria-checked]="selectedPlatforms['Meesho']"
           [class.active]="selectedPlatforms['Meesho']"
           (click)="togglePlatform('Meesho')"
+          (keydown.enter)="togglePlatform('Meesho')"
+          (keydown.space)="$event.preventDefault(); togglePlatform('Meesho')"
           class="platform-card">
           <div class="platform-indicator">
             <span class="platform-dot meesho">M</span>
             <span class="platform-label">Meesho</span>
           </div>
           <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatforms['Meesho']">check_circle</span>
+        </div>
+
+        <!-- Myntra Choice Card -->
+        <div 
+          tabindex="0"
+          role="checkbox"
+          [attr.aria-checked]="selectedPlatforms['Myntra']"
+          [class.active]="selectedPlatforms['Myntra']"
+          (click)="togglePlatform('Myntra')"
+          (keydown.enter)="togglePlatform('Myntra')"
+          (keydown.space)="$event.preventDefault(); togglePlatform('Myntra')"
+          class="platform-card">
+          <div class="platform-indicator">
+            <span class="platform-dot myntra">M</span>
+            <span class="platform-label">Myntra</span>
+          </div>
+          <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatforms['Myntra']">check_circle</span>
         </div>
       </div>
     </div>
@@ -234,7 +266,8 @@
             <span class="tab-dot" [ngClass]="{
               'amazon': platform.includes('Amazon'),
               'flipkart': platform.includes('Flipkart'),
-              'meesho': platform.includes('Meesho')
+              'meesho': platform.includes('Meesho'),
+              'myntra': platform.includes('Myntra')
             }"></span>
             {{ platform }}
           </button>
@@ -248,7 +281,8 @@
              [ngClass]="{
                'brand-amazon': activeTab.includes('Amazon'),
                'brand-flipkart': activeTab.includes('Flipkart'),
-               'brand-meesho': activeTab.includes('Meesho')
+               'brand-meesho': activeTab.includes('Meesho'),
+               'brand-myntra': activeTab.includes('Myntra')
              }" 
              *ngIf="catalogResults()![activeTab] as listing">
 

@@ -205,6 +205,64 @@ async function cropPage(page, platform) {
   }
 }
 
+// Simple concurrent batching mapper to parse multiple files in parallel
+async function pMap(items, mapper, concurrency) {
+  const results = [];
+  const batches = [];
+  for (let i = 0; i < items.length; i += concurrency) {
+    batches.push(items.slice(i, i + concurrency));
+  }
+  for (const batch of batches) {
+    await Promise.all(batch.map(item => mapper(item)));
+  }
+}
+
+// Keep a cache of embedded pages from source documents to target documents to prevent redundant resource compilation.
+// Map key: targetPdfInstance (WeakMap) -> Map(originalFilename -> Array of PDFEmbeddedPage)
+const globalEmbedCache = new WeakMap();
+
+async function getEmbeddedPages(targetPdf, srcDoc, originalFilename) {
+  if (!globalEmbedCache.has(targetPdf)) {
+    globalEmbedCache.set(targetPdf, new Map());
+  }
+  const fileMap = globalEmbedCache.get(targetPdf);
+  if (!fileMap.has(originalFilename)) {
+    console.log(`[LabelProcessor] Pre-compiling batch embedded pages for source doc: ${originalFilename}`);
+    const embedded = await targetPdf.embedPages(srcDoc.getPages());
+    fileMap.set(originalFilename, embedded);
+  }
+  return fileMap.get(originalFilename);
+}
+
+// Batch copies pages from source documents to a target PDF document at once.
+// Returns a Map of originalFilename -> Map(pageIndex -> copiedPageInstance)
+async function batchCopyPages(targetPdf, pageItems, loadedDocsMap) {
+  if (pageItems.length === 0) return new Map();
+
+  const pagesByFile = new Map();
+  for (const item of pageItems) {
+    if (!pagesByFile.has(item.originalFilename)) {
+      pagesByFile.set(item.originalFilename, []);
+    }
+    pagesByFile.get(item.originalFilename).push(item);
+  }
+
+  const copiedPagesMap = new Map();
+  for (const [filename, items] of pagesByFile.entries()) {
+    const srcDoc = loadedDocsMap.get(filename) || await PDFDocument.load(items[0].fileBuffer);
+    const indices = items.map(item => item.pageIndex);
+    const copied = await targetPdf.copyPages(srcDoc, indices);
+    
+    const fileCopiedMap = new Map();
+    items.forEach((item, i) => {
+      fileCopiedMap.set(item.pageIndex, copied[i]);
+    });
+    copiedPagesMap.set(filename, fileCopiedMap);
+  }
+
+  return copiedPagesMap;
+}
+
 /**
  * Core Processing Pipeline Service
  */
@@ -216,26 +274,60 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
   }
 
   const allPages = [];
+  const loadedDocsMap = new Map(); // file.originalname -> PDFDocument
 
-  for (const file of files) {
-    console.log(`[LabelProcessor] Parsing entire PDF file at once: ${file.originalname}`);
+  await pMap(files, async (file) => {
+    console.log(`[LabelProcessor] Parsing file concurrently: ${file.originalname}`);
     const parser = new pdfParseModule.PDFParse({ data: file.buffer });
     
+    // Cache the loaded pdf-lib PDFDocument to avoid extremely heavy redundant loads in loops
     try {
-      const parsedData = await parser.getText();
-      const pagesText = parsedData.pages || [];
+      const docInstance = await PDFDocument.load(file.buffer);
+      loadedDocsMap.set(file.originalname, docInstance);
+      console.log(`[LabelProcessor] Loaded and cached PDFDocument for ${file.originalname}`);
+    } catch (loadErr) {
+      console.error(`[LabelProcessor] Warning: failed to load PDFDocument for cache of ${file.originalname}:`, loadErr);
+    }
+    
+    try {
+      const doc = await parser.load();
+      const total = doc.numPages;
+      const results = new Array(total);
+      const pageIndices = Array.from({ length: total }, (_, i) => i + 1);
+      const concurrency = 30;
+      const parseParams = {
+        lineEnforce: false,
+        parseHyperlinks: false,
+        pageJoiner: ''
+      };
       
-      console.log(`[LabelProcessor] Successfully parsed text for all ${pagesText.length} pages in ${file.originalname}`);
+      for (let i = 0; i < pageIndices.length; i += concurrency) {
+        const chunk = pageIndices.slice(i, i + concurrency);
+        await Promise.all(chunk.map(async (pageNum) => {
+          const page = await doc.getPage(pageNum);
+          try {
+            const text = await parser.getPageText(page, parseParams, total);
+            results[pageNum - 1] = {
+              text: text || '',
+              num: pageNum
+            };
+          } finally {
+            page.cleanup();
+          }
+        }));
+      }
       
-      pagesText.forEach((pageObj) => {
+      console.log(`[LabelProcessor] Successfully parsed text for all ${results.length} pages in ${file.originalname}`);
+      
+      results.forEach((pageObj) => {
         const index = pageObj.num - 1; // 0-indexed page index in the document
         const text = pageObj.text || '';
         const metadata = parseMetadata(text, platform);
         const pageType = classifyPage(text);
 
         // Keep console logging reasonable for bulk processing
-        if (pagesText.length <= 10 || index % 50 === 0 || index === pagesText.length - 1) {
-          console.log(`[LabelProcessor] Sample page trace: page ${pageObj.num}/${pagesText.length} of ${file.originalname}: type=${pageType}, SKU=${metadata.sku}, OrderID=${metadata.orderId}`);
+        if (results.length <= 10 || index % 50 === 0 || index === results.length - 1) {
+          console.log(`[LabelProcessor] Sample page trace: page ${pageObj.num}/${results.length} of ${file.originalname}: type=${pageType}, SKU=${metadata.sku}, OrderID=${metadata.orderId}`);
         }
 
         allPages.push({
@@ -251,7 +343,7 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
       console.error(`[LabelProcessor] Error parsing file ${file.originalname}:`, error);
       
       // Fallback: If full parsing fails, fallback to standard handling
-      const doc = await PDFDocument.load(file.buffer);
+      const doc = loadedDocsMap.get(file.originalname) || await PDFDocument.load(file.buffer);
       const pageIndices = doc.getPageIndices();
       console.log(`[LabelProcessor] Executing fallback parsing for ${file.originalname} (${pageIndices.length} pages)`);
       for (const index of pageIndices) {
@@ -271,7 +363,7 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
     } finally {
       await parser.destroy();
     }
-  }
+  }, 15);
 
   console.log(`[LabelProcessor] Split completed: total of ${allPages.length} pages extracted.`);
 
@@ -311,126 +403,85 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
     const tempLabelsPdf = await PDFDocument.create();
     const invPdf = await PDFDocument.create();
 
+    // Group and batch copy all labels and invoices from their source documents in a single operation
+    const copiedLabelsMap = await batchCopyPages(tempLabelsPdf, labelPages, loadedDocsMap);
+    const copiedInvoicesMap = await batchCopyPages(invPdf, invoicePages, loadedDocsMap);
+
     // Compile Labels
     for (const pageItem of labelPages) {
-      const srcDoc = await PDFDocument.load(pageItem.fileBuffer);
-      const srcPage = srcDoc.getPage(pageItem.pageIndex);
-      const originalWidth = srcPage.getWidth();
-      const originalHeight = srcPage.getHeight();
+      const copiedPage = copiedLabelsMap.get(pageItem.originalFilename).get(pageItem.pageIndex);
+      const originalWidth = copiedPage.getWidth();
+      const originalHeight = copiedPage.getHeight();
 
-      if (originalWidth < 450 && originalHeight < 600) {
-        const [copiedPage] = await tempLabelsPdf.copyPages(srcDoc, [pageItem.pageIndex]);
-        tempLabelsPdf.addPage(copiedPage);
-      } else {
+      if (originalWidth >= 450 || originalHeight >= 600) {
         let cropWidth = originalWidth;
         let cropHeight = originalHeight;
         let x = 0;
-        let y = 0;
+        let y = originalHeight - cropHeight;
 
         if (platform === 'amazon') {
-          cropWidth = 288;
-          cropHeight = 432;
+          cropWidth = 296;
+          cropHeight = 436;
           x = (originalWidth - cropWidth) / 2;
-          y = originalHeight - cropHeight - 15;
+          y = originalHeight - cropHeight - 13;
         } else if (platform === 'meesho') {
-          cropWidth = 288;
-          cropHeight = 360;
+          cropWidth = 296;
+          cropHeight = 364;
           x = (originalWidth - cropWidth) / 2;
-          y = originalHeight - cropHeight - 15;
+          y = originalHeight - cropHeight - 13;
         } else if (platform === 'myntra' || platform === 'flipkart') {
-          cropWidth = 216;
-          cropHeight = 360;
+          cropWidth = 224;
+          cropHeight = 364;
           x = (originalWidth - cropWidth) / 2;
-          y = originalHeight - cropHeight - 25;
-        } else {
-          cropWidth = 216;
-          cropHeight = 360;
-          x = (originalWidth - cropWidth) / 2;
-          y = originalHeight - cropHeight - 25;
+          y = originalHeight - cropHeight - 23;
         }
 
-        const labelPage = tempLabelsPdf.addPage([cropWidth, cropHeight]);
-        const [embedded] = await tempLabelsPdf.embedPages([srcPage]);
-
-        let scale = 0.96;
-        let mX = (cropWidth * (1 - scale)) / 2;
-        let mY = (cropHeight * (1 - scale)) / 2;
+        copiedPage.setCropBox(x, y, cropWidth, cropHeight);
+        copiedPage.setMediaBox(x, y, cropWidth, cropHeight);
 
         if (customText) {
-          scale = 0.94;
-          mX = (cropWidth * (1 - scale)) / 2;
-          const topMargin = mX;
-          mY = (cropHeight * (1 - scale)) - topMargin;
-        }
-
-        labelPage.drawPage(embedded, {
-          x: (-x * scale) + mX,
-          y: (-y * scale) + mY,
-          width: originalWidth * scale,
-          height: originalHeight * scale
-        });
-
-        if (customText) {
-          labelPage.drawRectangle({
-            x: 0,
-            y: 0,
-            width: cropWidth,
-            height: mY,
-            color: rgb(1, 1, 1),
-          });
-
           const fontSize = 7;
           const textWidth = customText.length * 3.5;
-          labelPage.drawText(customText, {
-            x: (cropWidth - textWidth) / 2,
-            y: mY / 2,
+          copiedPage.drawRectangle({
+            x: x,
+            y: y,
+            width: cropWidth,
+            height: 12,
+            color: rgb(1, 1, 1),
+          });
+          copiedPage.drawText(customText, {
+            x: x + (cropWidth - textWidth) / 2,
+            y: y + 3,
             size: fontSize,
             color: rgb(0, 0, 0),
           });
         }
       }
+      tempLabelsPdf.addPage(copiedPage);
     }
 
     // Compile Invoices (with Flipkart bottom invoice cropping)
     for (const pageItem of invoicePages) {
-      const srcDoc = await PDFDocument.load(pageItem.fileBuffer);
-      const srcPage = srcDoc.getPage(pageItem.pageIndex);
-      const originalWidth = srcPage.getWidth();
-      const originalHeight = srcPage.getHeight();
-
-      let cropWidth = originalWidth;
-      let cropHeight = originalHeight;
-      let x = 0;
-      let y = 0;
+      const copiedPage = copiedInvoicesMap.get(pageItem.originalFilename).get(pageItem.pageIndex);
+      const originalWidth = copiedPage.getWidth();
+      const originalHeight = copiedPage.getHeight();
 
       if (platform !== 'amazon' && platform !== 'meesho') {
         const labelH = 360;
         const invH = originalHeight - (labelH + 40);
         if (invH > 100) {
-          cropWidth = originalWidth;
-          cropHeight = invH;
-          x = 0;
-          y = 0;
+          copiedPage.setCropBox(0, 0, originalWidth, invH);
+          copiedPage.setMediaBox(0, 0, originalWidth, invH);
         }
       }
-
-      const invPage = invPdf.addPage([cropWidth, cropHeight]);
-      const [embedded] = await invPdf.embedPages([srcPage]);
-      invPage.drawPage(embedded, {
-        x: -x,
-        y: -y,
-        width: originalWidth,
-        height: originalHeight
-      });
+      invPdf.addPage(copiedPage);
     }
 
     // Check Merging for ZIP Labels
     let labelsBuffer = null;
     if (isMerging && tempLabelsPdf.getPageCount() > 0) {
       const mergedPdf = await PDFDocument.create();
-      const tempLabelBytes = await tempLabelsPdf.save();
-      const loadedTemp = await PDFDocument.load(tempLabelBytes);
-      const embeddedLabels = await mergedPdf.embedPages(loadedTemp.getPages());
+      const embeddedLabels = await mergedPdf.embedPages(tempLabelsPdf.getPages());
       const A4_W = 595;
       const A4_H = 842;
       const pad = 20;
@@ -483,90 +534,63 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
     const tempLabelsPdf = await PDFDocument.create();
 
     if (outputType === 'labels') {
+      const copiedLabelsMap = await batchCopyPages(tempLabelsPdf, filteredPages, loadedDocsMap);
       for (const pageItem of filteredPages) {
-        const srcDoc = await PDFDocument.load(pageItem.fileBuffer);
-        const srcPage = srcDoc.getPage(pageItem.pageIndex);
-        const originalWidth = srcPage.getWidth();
-        const originalHeight = srcPage.getHeight();
+        const copiedPage = copiedLabelsMap.get(pageItem.originalFilename).get(pageItem.pageIndex);
+        const originalWidth = copiedPage.getWidth();
+        const originalHeight = copiedPage.getHeight();
 
-        if (originalWidth < 450 && originalHeight < 600) {
-          const [copiedPage] = await tempLabelsPdf.copyPages(srcDoc, [pageItem.pageIndex]);
-          tempLabelsPdf.addPage(copiedPage);
-        } else {
+        if (originalWidth >= 450 || originalHeight >= 600) {
           let cropWidth = originalWidth;
           let cropHeight = originalHeight;
           let x = 0;
-          let y = 0;
+          let y = originalHeight - cropHeight;
 
           if (platform === 'amazon') {
-            cropWidth = 288;
-            cropHeight = 432;
+            cropWidth = 296;
+            cropHeight = 436;
             x = (originalWidth - cropWidth) / 2;
-            y = originalHeight - cropHeight - 15;
+            y = originalHeight - cropHeight - 13;
           } else if (platform === 'meesho') {
-            cropWidth = 288;
-            cropHeight = 360;
+            cropWidth = 296;
+            cropHeight = 364;
             x = (originalWidth - cropWidth) / 2;
-            y = originalHeight - cropHeight - 15;
+            y = originalHeight - cropHeight - 13;
           } else if (platform === 'myntra' || platform === 'flipkart') {
-            cropWidth = 216;
-            cropHeight = 360;
+            cropWidth = 224;
+            cropHeight = 364;
             x = (originalWidth - cropWidth) / 2;
-            y = originalHeight - cropHeight - 25;
-          } else {
-            cropWidth = 216;
-            cropHeight = 360;
-            x = (originalWidth - cropWidth) / 2;
-            y = originalHeight - cropHeight - 25;
+            y = originalHeight - cropHeight - 23;
           }
 
-          const labelPage = tempLabelsPdf.addPage([cropWidth, cropHeight]);
-          const [embedded] = await tempLabelsPdf.embedPages([srcPage]);
-
-          let scale = 0.96;
-          let mX = (cropWidth * (1 - scale)) / 2;
-          let mY = (cropHeight * (1 - scale)) / 2;
+          copiedPage.setCropBox(x, y, cropWidth, cropHeight);
+          copiedPage.setMediaBox(x, y, cropWidth, cropHeight);
 
           if (customText) {
-            scale = 0.94;
-            mX = (cropWidth * (1 - scale)) / 2;
-            const topMargin = mX;
-            mY = (cropHeight * (1 - scale)) - topMargin;
-          }
-
-          labelPage.drawPage(embedded, {
-            x: (-x * scale) + mX,
-            y: (-y * scale) + mY,
-            width: originalWidth * scale,
-            height: originalHeight * scale
-          });
-
-          if (customText) {
-            labelPage.drawRectangle({
-              x: 0,
-              y: 0,
-              width: cropWidth,
-              height: mY,
-              color: rgb(1, 1, 1),
-            });
-
             const fontSize = 7;
             const textWidth = customText.length * 3.5;
-            labelPage.drawText(customText, {
-              x: (cropWidth - textWidth) / 2,
-              y: mY / 2,
+            copiedPage.drawRectangle({
+              x: x,
+              y: y,
+              width: cropWidth,
+              height: 12,
+              color: rgb(1, 1, 1),
+            });
+            copiedPage.drawText(customText, {
+              x: x + (cropWidth - textWidth) / 2,
+              y: y + 3,
               size: fontSize,
               color: rgb(0, 0, 0),
             });
           }
         }
+        tempLabelsPdf.addPage(copiedPage);
       }
 
       // Check Merging for Labels-Only
+      let labelsBuffer = null;
       if (isMerging && tempLabelsPdf.getPageCount() > 0) {
-        const tempLabelBytes = await tempLabelsPdf.save();
-        const loadedTemp = await PDFDocument.load(tempLabelBytes);
-        const embeddedLabels = await finalDoc.embedPages(loadedTemp.getPages());
+        const embeddedLabels = await finalDoc.embedPages(tempLabelsPdf.getPages());
         const A4_W = 595;
         const A4_H = 842;
         const pad = 20;
@@ -600,45 +624,33 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
           curX += emb.width + pad;
           maxRH = Math.max(maxRH, emb.height);
         }
+        labelsBuffer = Buffer.from(await finalDoc.save());
       } else {
-        // Just copy over the unmerged labels
-        const tempLabelBytes = await tempLabelsPdf.save();
-        const loadedTemp = await PDFDocument.load(tempLabelBytes);
-        const copied = await finalDoc.copyPages(loadedTemp, loadedTemp.getPageIndices());
-        copied.forEach(page => finalDoc.addPage(page));
+        // Just save and return the unmerged labels directly without saving, loading, copying and re-saving!
+        labelsBuffer = tempLabelsPdf.getPageCount() > 0 ? Buffer.from(await tempLabelsPdf.save()) : null;
       }
+
+      return {
+        type: 'pdf',
+        buffer: labelsBuffer
+      };
     } else {
       // Invoices-Only (with Flipkart bottom invoice cropping)
+      const copiedInvoicesMap = await batchCopyPages(finalDoc, filteredPages, loadedDocsMap);
       for (const pageItem of filteredPages) {
-        const srcDoc = await PDFDocument.load(pageItem.fileBuffer);
-        const srcPage = srcDoc.getPage(pageItem.pageIndex);
-        const originalWidth = srcPage.getWidth();
-        const originalHeight = srcPage.getHeight();
-
-        let cropWidth = originalWidth;
-        let cropHeight = originalHeight;
-        let x = 0;
-        let y = 0;
+        const copiedPage = copiedInvoicesMap.get(pageItem.originalFilename).get(pageItem.pageIndex);
+        const originalWidth = copiedPage.getWidth();
+        const originalHeight = copiedPage.getHeight();
 
         if (platform !== 'amazon' && platform !== 'meesho') {
           const labelH = 360;
           const invH = originalHeight - (labelH + 40);
           if (invH > 100) {
-            cropWidth = originalWidth;
-            cropHeight = invH;
-            x = 0;
-            y = 0;
+            copiedPage.setCropBox(0, 0, originalWidth, invH);
+            copiedPage.setMediaBox(0, 0, originalWidth, invH);
           }
         }
-
-        const invPage = finalDoc.addPage([cropWidth, cropHeight]);
-        const [embedded] = await finalDoc.embedPages([srcPage]);
-        invPage.drawPage(embedded, {
-          x: -x,
-          y: -y,
-          width: originalWidth,
-          height: originalHeight
-        });
+        finalDoc.addPage(copiedPage);
       }
     }
 

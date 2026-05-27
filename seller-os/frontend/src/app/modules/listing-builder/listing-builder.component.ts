@@ -48,7 +48,8 @@ export class ListingBuilderComponent {
   selectedPlatforms: { [key: string]: boolean } = {
     'Amazon India': true,
     'Flipkart': false,
-    'Meesho': false
+    'Meesho': false,
+    'Myntra': false
   };
 
   // Choose Input Method ('image', 'text', 'url')

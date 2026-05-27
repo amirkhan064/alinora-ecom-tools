@@ -96,10 +96,18 @@ export class LabelCropperComponent {
     const validFiles: File[] = [];
     this.errorMessage = null;
 
+    const existingKeys = new Set(this.uploadedFiles.map(f => `${f.name}_${f.size}`));
+
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
-        validFiles.push(file);
+        const key = `${file.name}_${file.size}`;
+        if (!existingKeys.has(key)) {
+          validFiles.push(file);
+          existingKeys.add(key);
+        } else {
+          this.logDebug(`Skipped duplicate file: ${file.name}`);
+        }
       } else {
         this.logDebug(`Skipped non-PDF file: ${file.name}`);
       }
@@ -114,7 +122,9 @@ export class LabelCropperComponent {
         this.setStep(3);
       }
     } else {
-      this.errorMessage = 'Only PDF shipping label sheets or invoices are accepted.';
+      if (this.uploadedFiles.length === 0) {
+        this.errorMessage = 'Only PDF shipping label sheets or invoices are accepted.';
+      }
     }
   }
 
@@ -168,7 +178,6 @@ export class LabelCropperComponent {
 
     this.uploadedFiles.forEach(file => {
       formData.append('files', file, file.name);
-      formData.append('pdf', file, file.name); // Compatibility with alternative upload field name
     });
 
     this.http.post(this.apiEndpoint, formData, { responseType: 'blob' })

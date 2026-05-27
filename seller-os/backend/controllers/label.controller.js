@@ -25,7 +25,20 @@ async function processLabels(req, res) {
       finalSortBy = 'sku'; // fallback for original to SKU sorting
     }
 
-    const files = req.files;
+    let files = req.files;
+    if (files && files.length > 0) {
+      // De-duplicate files based on originalname and size to prevent double-processing
+      // when the client sends files under multiple compatibility field names (e.g. 'files' and 'pdf').
+      const seen = new Set();
+      files = files.filter(file => {
+        const key = `${file.originalname}_${file.size}`;
+        if (seen.has(key)) {
+          return false;
+        }
+        seen.add(key);
+        return true;
+      });
+    }
 
     console.log(`[LabelController] Request received: filesCount=${files ? files.length : 0}, platform=${finalPlatform}, sortBy=${finalSortBy}, sortOrder=${sortOrder}, outputType=${finalOutputType}, mergeLabels=${mergeLabels}, customText="${customText}"`);
 

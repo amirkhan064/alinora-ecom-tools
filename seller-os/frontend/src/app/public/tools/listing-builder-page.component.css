@@ -163,6 +163,12 @@
   border: 1px solid rgba(255, 237, 213, 0.8);
 }
 
+.p-badge.myntra {
+  background-color: rgba(253, 244, 245, 0.9);
+  color: #d11243;
+  border: 1px solid rgba(255, 63, 108, 0.2);
+}
+
 /* ========== BROWSER MOCKUP ========== */
 .mockup-browser {
   background-color: #ffffff;
