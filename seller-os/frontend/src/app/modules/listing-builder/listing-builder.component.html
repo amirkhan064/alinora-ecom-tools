@@ -82,9 +82,26 @@
       </div>
     </div>
 
+    <!-- Product Category Selector -->
+    <div class="input-section">
+      <h4 class="section-label">2. Product Category <span class="optional-tag">(Optional)</span></h4>
+      <div class="category-selector-grid" role="radiogroup" aria-label="Product Category">
+        <button 
+          *ngFor="let cat of categoryOptions"
+          (click)="selectedCategory = cat.value"
+          [class.active]="selectedCategory === cat.value"
+          class="category-chip"
+          role="radio"
+          [attr.aria-checked]="selectedCategory === cat.value">
+          <span class="material-symbols-outlined cat-icon">{{ cat.icon }}</span>
+          <span class="cat-label">{{ cat.label }}</span>
+        </button>
+      </div>
+    </div>
+
     <!-- Input Methods Accordion -->
     <div class="input-section">
-      <h4 class="section-label">2. Product Input</h4>
+      <h4 class="section-label">3. Product Input</h4>
       
       <div class="accordion-group">
         <!-- ACCORDION ROW 1: Product Photo -->
@@ -253,7 +270,7 @@
     </div>
 
     <!-- LIVE COMPILED LISTINGS INTERACTIVE PANEL -->
-    <div *ngIf="catalogResults() && !isGenerating()" class="active-results-view scroll-y custom-scrollbar animate-fade-in">
+    <div *ngIf="catalogResults() && !isGenerating()" class="active-results-container animate-fade-in">
       
       <!-- Top Horizontal Tab Bar representing chosen platforms -->
       <nav class="results-tab-bar">
@@ -274,8 +291,60 @@
         </div>
       </nav>
 
-      <!-- Active Tab Catalog Result Content -->
-      <div *ngIf="activeTab && catalogResults()![activeTab]" class="tab-content-flex">
+      <!-- Granular Action Toolbar (Top Utility Actions) -->
+      <div class="granular-action-bar">
+        <button 
+          (click)="refreshNode('title')" 
+          [disabled]="isRefreshingNode['title']" 
+          class="btn-action-refresh">
+          <span class="material-symbols-outlined animate-spin-hover">sync</span>
+          Refresh Title
+        </button>
+
+        <button 
+          (click)="refreshNode('bullets')" 
+          [disabled]="isRefreshingNode['bullets']" 
+          class="btn-action-refresh">
+          <span class="material-symbols-outlined animate-spin-hover">sync</span>
+          Refresh Bullets
+        </button>
+
+        <button 
+          (click)="refreshNode('description')" 
+          [disabled]="isRefreshingNode['description']" 
+          class="btn-action-refresh">
+          <span class="material-symbols-outlined animate-spin-hover">sync</span>
+          Refresh Description
+        </button>
+
+        <button 
+          (click)="refreshNode('keywords')" 
+          [disabled]="isRefreshingNode['keywords']" 
+          class="btn-action-refresh">
+          <span class="material-symbols-outlined animate-spin-hover">sync</span>
+          Refresh Keywords
+        </button>
+
+        <button 
+          (click)="refreshNode('taxAndPricing')" 
+          [disabled]="isRefreshingNode['taxAndPricing']" 
+          class="btn-action-refresh">
+          <span class="material-symbols-outlined animate-spin-hover">sync</span>
+          Refresh Pricing
+        </button>
+
+        <button 
+          (click)="exportListing()" 
+          class="btn-action-refresh btn-export-highlight">
+          <span class="material-symbols-outlined">download</span>
+          Export Listing
+        </button>
+      </div>
+
+      <!-- Scrollable Catalog Result Content Viewport -->
+      <div class="scrollable-cards-viewport scroll-y custom-scrollbar">
+        <!-- Active Tab Catalog Result Content -->
+        <div *ngIf="activeTab && catalogResults()![activeTab]" class="tab-content-flex">
         
         <div class="catalog-listing-node" 
              [ngClass]="{
@@ -360,7 +429,7 @@
           </div>
 
           <!-- 3. HIGHLIGHTS & BULLET POINTS -->
-          <div class="result-segment-card">
+          <div class="result-segment-card" [class.node-shimmer]="isRefreshingNode['bullets']">
             <div class="card-title-bar">
               <div class="header-left-group">
                 <span class="material-symbols-outlined segment-icon">toc</span>
@@ -399,7 +468,7 @@
           </div>
 
           <!-- 4. PRODUCT DESCRIPTION -->
-          <div class="result-segment-card">
+          <div class="result-segment-card" [class.node-shimmer]="isRefreshingNode['description']">
             <div class="card-title-bar">
               <div class="header-left-group">
                 <span class="material-symbols-outlined segment-icon">description</span>
@@ -522,41 +591,7 @@
 
         </div>
       </div>
-
-      <!-- 8. GRANULAR BOTTOM ACTION ROW (Sticky utility updates) -->
-      <footer class="granular-action-bar">
-        <button 
-          (click)="refreshNode('title')" 
-          [disabled]="isRefreshingNode['title']" 
-          class="btn-action-refresh">
-          <span class="material-symbols-outlined animate-spin-hover">sync</span>
-          Refresh Title
-        </button>
-
-        <button 
-          (click)="refreshNode('keywords')" 
-          [disabled]="isRefreshingNode['keywords']" 
-          class="btn-action-refresh">
-          <span class="material-symbols-outlined animate-spin-hover">sync</span>
-          Refresh Keywords
-        </button>
-
-        <button 
-          (click)="refreshNode('taxAndPricing')" 
-          [disabled]="isRefreshingNode['taxAndPricing']" 
-          class="btn-action-refresh">
-          <span class="material-symbols-outlined animate-spin-hover">sync</span>
-          Refresh Pricing
-        </button>
-
-        <button 
-          (click)="exportListing()" 
-          class="btn-action-refresh btn-export-highlight">
-          <span class="material-symbols-outlined">download</span>
-          Export Listing
-        </button>
-      </footer>
-
+      </div>
     </div>
 
   </section>

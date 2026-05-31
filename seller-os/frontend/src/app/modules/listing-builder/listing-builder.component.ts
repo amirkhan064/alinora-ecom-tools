@@ -15,11 +15,6 @@ interface PlatformListing {
   keywords: string[];
   attributes: {
     [key: string]: string;
-    material: string;
-    plating: string;
-    stoneType: string;
-    occasion: string;
-    netQuantity: string;
   };
   taxAndPricing: {
     suggestedPrice: string;
@@ -55,6 +50,18 @@ export class ListingBuilderComponent {
   // Choose Input Method ('image', 'text', 'url')
   inputMethod: 'image' | 'text' | 'url' = 'image';
 
+  // Product category selector (category-aware generation)
+  selectedCategory = 'generic';
+  categoryOptions = [
+    { value: 'generic', label: 'Auto-Detect', icon: 'auto_awesome' },
+    { value: 'jewelry', label: 'Jewelry', icon: 'diamond' },
+    { value: 'clothing', label: 'Clothing', icon: 'checkroom' },
+    { value: 'footwear', label: 'Footwear', icon: 'steps' },
+    { value: 'electronics', label: 'Electronics', icon: 'devices' },
+    { value: 'home', label: 'Home & Kitchen', icon: 'home' },
+    { value: 'beauty', label: 'Beauty', icon: 'spa' }
+  ];
+
   // State holdings
   selectedFile: File | null = null;
   previewUrl: string | null = null;
@@ -82,10 +89,12 @@ export class ListingBuilderComponent {
   // clipboard success state trackers
   copiedStates: { [key: string]: boolean } = {};
 
-  // Partial node refresh loading trackers
+  // Partial node refresh loading trackers (expanded to include bullets and description)
   isRefreshingNode: { [key: string]: boolean } = {
     title: false,
     keywords: false,
+    bullets: false,
+    description: false,
     taxAndPricing: false
   };
 
@@ -129,44 +138,11 @@ export class ListingBuilderComponent {
     this.errorMsg.set(null);
     this.selectedFile = file;
 
-    // Intercept with HTML5 off-screen canvas downscaler
-    const tempUrl = URL.createObjectURL(file);
-    const img = new Image();
-    img.src = tempUrl;
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      
-      let width = img.naturalWidth;
-      let height = img.naturalHeight;
-      
-      const maxWidth = 400;
-      if (width > maxWidth) {
-        height = (maxWidth / width) * height;
-        width = maxWidth;
-      }
-      
-      canvas.width = width;
-      canvas.height = height;
-      
-      if (ctx) {
-        ctx.drawImage(img, 0, 0, width, height);
-      }
-      
-      const base64 = canvas.toDataURL('image/jpeg', 0.7);
-      
-      if (this.previewUrl && this.previewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(this.previewUrl);
-      }
-      
-      this.previewUrl = base64;
-      URL.revokeObjectURL(tempUrl);
-    };
-    
-    img.onerror = () => {
-      URL.revokeObjectURL(tempUrl);
-      this.previewUrl = tempUrl;
-    };
+    // Create preview URL directly from the file (no quality-destroying downscale)
+    if (this.previewUrl && this.previewUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(this.previewUrl);
+    }
+    this.previewUrl = URL.createObjectURL(file);
   }
 
   removeSelectedImage(): void {
@@ -194,6 +170,7 @@ export class ListingBuilderComponent {
     formData.append('platforms', JSON.stringify(chosenPlatforms));
     formData.append('inputMethod', this.inputMethod);
     formData.append('additionalContext', this.additionalContext);
+    formData.append('category', this.selectedCategory);
 
     if (this.inputMethod === 'image' && this.selectedFile) {
       formData.append('image', this.selectedFile);
@@ -229,8 +206,8 @@ export class ListingBuilderComponent {
     }
   }
 
-  // Granular partial refreshes for Title, Keywords, or Price node properties
-  async refreshNode(nodeType: 'title' | 'keywords' | 'taxAndPricing'): Promise<void> {
+  // Granular partial refreshes for Title, Keywords, Bullets, Description, or Price node properties
+  async refreshNode(nodeType: 'title' | 'keywords' | 'bullets' | 'description' | 'taxAndPricing'): Promise<void> {
     const platform = this.activeTab;
     const currentResults = this.catalogResults();
     if (!platform || !currentResults || !currentResults[platform]) return;

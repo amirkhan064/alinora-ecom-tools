@@ -267,11 +267,27 @@ async function cropPage(page, platform) {
     page.setMediaBox(0, height - cropH, cropW, cropH);
   }
 }
+// Helper to execute asynchronous tasks concurrently with a maximum limit
+async function mapConcurrent(items, limit, fn) {
+  const results = [];
+  const executing = new Set();
+  for (const item of items) {
+    const p = Promise.resolve().then(() => fn(item));
+    results.push(p);
+    executing.add(p);
+    const clean = () => executing.delete(p);
+    p.then(clean, clean);
+    if (executing.size >= limit) {
+      await Promise.race(executing);
+    }
+  }
+  return Promise.all(results);
+}
 
 // Batch copies pages from source documents to a target PDF document at once.
-// Loads unique source files sequentially inside its loop and lets them GC immediately after copying.
+// Uses cached PDFDocument instances from loadedDocs to eliminate redundant loads.
 // Returns a Map of originalFilename -> Map(pageIndex -> copiedPageInstance)
-async function batchCopyPages(targetPdf, pageItems) {
+async function batchCopyPages(targetPdf, pageItems, loadedDocs) {
   if (pageItems.length === 0) return new Map();
 
   const pagesByFile = new Map();
@@ -284,7 +300,11 @@ async function batchCopyPages(targetPdf, pageItems) {
 
   const copiedPagesMap = new Map();
   for (const [filename, items] of pagesByFile.entries()) {
-    const srcDoc = await PDFDocument.load(items[0].fileBuffer);
+    let srcDoc = loadedDocs.get(filename);
+    if (!srcDoc) {
+      srcDoc = await PDFDocument.load(items[0].fileBuffer, { ignoreEncryption: true });
+      loadedDocs.set(filename, srcDoc);
+    }
     const indices = items.map(item => item.pageIndex);
     const copied = await targetPdf.copyPages(srcDoc, indices);
     
@@ -298,9 +318,9 @@ async function batchCopyPages(targetPdf, pageItems) {
   return copiedPagesMap;
 }
 
-// Direct embedding helper: loads unique source files sequentially, crops in-place, overlays custom text,
+// Direct embedding helper: uses cached PDFDocument instances from loadedDocs, crops in-place, overlays custom text,
 // embeds pages into the target document, and returns a Map of originalFilename -> Map(pageIndex -> embeddedPageInstance)
-async function batchEmbedPages(targetPdf, pageItems, platform, customText) {
+async function batchEmbedPages(targetPdf, pageItems, platform, customText, loadedDocs) {
   if (pageItems.length === 0) return new Map();
 
   const pagesByFile = new Map();
@@ -313,7 +333,11 @@ async function batchEmbedPages(targetPdf, pageItems, platform, customText) {
 
   const embeddedPagesMap = new Map();
   for (const [filename, items] of pagesByFile.entries()) {
-    const srcDoc = await PDFDocument.load(items[0].fileBuffer);
+    let srcDoc = loadedDocs.get(filename);
+    if (!srcDoc) {
+      srcDoc = await PDFDocument.load(items[0].fileBuffer, { ignoreEncryption: true });
+      loadedDocs.set(filename, srcDoc);
+    }
     const pagesToEmbed = [];
     
     for (const item of items) {
@@ -380,6 +404,7 @@ async function batchEmbedPages(targetPdf, pageItems, platform, customText) {
   return embeddedPagesMap;
 }
 
+
 /**
  * Core Processing Pipeline Service
  */
@@ -392,32 +417,36 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
   }
 
   const allPages = [];
+  const loadedDocs = new Map();
 
   // Step 1: Ultra-fast text extraction using pdf-lib content stream parsing
   // This replaces the extremely heavy pdf-parse library which takes 45+ seconds on real shipping labels.
   // pdf-lib reads raw PDF text operators (Tj/TJ) directly from content streams — no rendering pipeline needed.
   const tIngestionStart = Date.now();
   
-  for (const file of files) {
+  // Parse all files concurrently with a limit of 20 concurrent tasks
+  const filesResults = await mapConcurrent(files, 20, async (file) => {
     console.log(`[LabelProcessor] Loading file: ${file.originalname}`);
     const fileBuffer = Buffer.from(file.buffer);
+    const filePages = [];
     
     try {
-      const pdfDoc = await PDFDocument.load(fileBuffer);
+      const pdfDoc = await PDFDocument.load(fileBuffer, { ignoreEncryption: true });
+      loadedDocs.set(file.originalname, pdfDoc);
       const pages = pdfDoc.getPages();
       
       for (let index = 0; index < pages.length; index++) {
         const page = pages[index];
-        const text = extractTextFast(page, pdfDoc);
+        let text = '';
+        try {
+          text = extractTextFast(page, pdfDoc);
+        } catch (err) {
+          console.error(`[LabelProcessor] Fast text extraction failed on page ${index} of ${file.originalname}:`, err.message);
+        }
         const metadata = parseMetadata(text, platform);
         const pageType = classifyPage(text);
 
-        // Keep console logging reasonable for bulk processing
-        if (pages.length <= 10 || index % 50 === 0 || index === pages.length - 1) {
-          console.log(`[LabelProcessor] Sample page trace: page ${index + 1}/${pages.length} of ${file.originalname}: type=${pageType}, SKU=${metadata.sku}, OrderID=${metadata.orderId}`);
-        }
-
-        allPages.push({
+        filePages.push({
           fileBuffer,
           pageIndex: index,
           text,
@@ -426,18 +455,20 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
           originalFilename: file.originalname
         });
       }
-      
-      console.log(`[LabelProcessor] Extracted text from all ${pages.length} pages in ${file.originalname}`);
     } catch (error) {
       console.error(`[LabelProcessor] Error parsing file ${file.originalname}:`, error);
       
-      // Fallback: If parsing fails, add pages without text
+      // Fallback: If parsing fails, try loading without text extraction
       try {
-        const pdfDoc = await PDFDocument.load(fileBuffer);
+        let pdfDoc = loadedDocs.get(file.originalname);
+        if (!pdfDoc) {
+          pdfDoc = await PDFDocument.load(fileBuffer, { ignoreEncryption: true });
+          loadedDocs.set(file.originalname, pdfDoc);
+        }
         const pageCount = pdfDoc.getPageCount();
         console.log(`[LabelProcessor] Executing fallback for ${file.originalname} (${pageCount} pages)`);
         for (let index = 0; index < pageCount; index++) {
-          allPages.push({
+          filePages.push({
             fileBuffer,
             pageIndex: index,
             text: '',
@@ -450,6 +481,11 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
         console.error(`[LabelProcessor] Failed to load ${file.originalname} even for fallback:`, fallbackErr);
       }
     }
+    return filePages;
+  });
+
+  for (const filePages of filesResults) {
+    allPages.push(...filePages);
   }
 
   console.log(`[LabelProcessor] Step 1: Text extraction completed: ${allPages.length} pages in ${Date.now() - tIngestionStart}ms.`);
@@ -494,7 +530,7 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
     if (isMerging) {
       if (labelPages.length > 0) {
         const mergedPdf = await PDFDocument.create();
-        const embeddedLabelsMap = await batchEmbedPages(mergedPdf, labelPages, platform, customText);
+        const embeddedLabelsMap = await batchEmbedPages(mergedPdf, labelPages, platform, customText, loadedDocs);
 
         const A4_W = 595;
         const A4_H = 842;
@@ -532,12 +568,12 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
           curX += emb.width + pad;
           maxRH = Math.max(maxRH, emb.height);
         }
-        labelsBuffer = Buffer.from(await mergedPdf.save());
+        labelsBuffer = Buffer.from(await mergedPdf.save({ useObjectStreams: false }));
       }
     } else {
       if (labelPages.length > 0) {
         const tempLabelsPdf = await PDFDocument.create();
-        const copiedLabelsMap = await batchCopyPages(tempLabelsPdf, labelPages);
+        const copiedLabelsMap = await batchCopyPages(tempLabelsPdf, labelPages, loadedDocs);
 
         for (const pageItem of labelPages) {
           const copiedPage = copiedLabelsMap.get(pageItem.originalFilename).get(pageItem.pageIndex);
@@ -590,7 +626,7 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
           }
           tempLabelsPdf.addPage(copiedPage);
         }
-        labelsBuffer = Buffer.from(await tempLabelsPdf.save());
+        labelsBuffer = Buffer.from(await tempLabelsPdf.save({ useObjectStreams: false }));
       }
     }
 
@@ -599,7 +635,7 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
     let invoicesBuffer = null;
 
     if (invoicePages.length > 0) {
-      const copiedInvoicesMap = await batchCopyPages(invPdf, invoicePages);
+      const copiedInvoicesMap = await batchCopyPages(invPdf, invoicePages, loadedDocs);
       for (const pageItem of invoicePages) {
         const copiedPage = copiedInvoicesMap.get(pageItem.originalFilename).get(pageItem.pageIndex);
         const originalWidth = copiedPage.getWidth();
@@ -615,7 +651,7 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
         }
         invPdf.addPage(copiedPage);
       }
-      invoicesBuffer = Buffer.from(await invPdf.save());
+      invoicesBuffer = Buffer.from(await invPdf.save({ useObjectStreams: false }));
     }
 
     console.log(`[LabelProcessor] Step 4 & 5: Compiling ZIP: ${Date.now() - tCompileStart}ms.`);
@@ -635,7 +671,7 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
       let labelsBuffer = null;
       if (isMerging) {
         if (filteredPages.length > 0) {
-          const embeddedLabelsMap = await batchEmbedPages(finalDoc, filteredPages, platform, customText);
+          const embeddedLabelsMap = await batchEmbedPages(finalDoc, filteredPages, platform, customText, loadedDocs);
           const A4_W = 595;
           const A4_H = 842;
           const pad = 20;
@@ -672,11 +708,11 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
             curX += emb.width + pad;
             maxRH = Math.max(maxRH, emb.height);
           }
-          labelsBuffer = Buffer.from(await finalDoc.save());
+          labelsBuffer = Buffer.from(await finalDoc.save({ useObjectStreams: false }));
         }
       } else {
         if (filteredPages.length > 0) {
-          const copiedLabelsMap = await batchCopyPages(finalDoc, filteredPages);
+          const copiedLabelsMap = await batchCopyPages(finalDoc, filteredPages, loadedDocs);
           for (const pageItem of filteredPages) {
             const copiedPage = copiedLabelsMap.get(pageItem.originalFilename).get(pageItem.pageIndex);
             const originalWidth = copiedPage.getWidth();
@@ -728,7 +764,7 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
             }
             finalDoc.addPage(copiedPage);
           }
-          labelsBuffer = Buffer.from(await finalDoc.save());
+          labelsBuffer = Buffer.from(await finalDoc.save({ useObjectStreams: false }));
         }
       }
 
@@ -742,7 +778,7 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
     } else {
       // Invoices-Only (with Flipkart bottom invoice cropping)
       if (filteredPages.length > 0) {
-        const copiedInvoicesMap = await batchCopyPages(finalDoc, filteredPages);
+        const copiedInvoicesMap = await batchCopyPages(finalDoc, filteredPages, loadedDocs);
         for (const pageItem of filteredPages) {
           const copiedPage = copiedInvoicesMap.get(pageItem.originalFilename).get(pageItem.pageIndex);
           const originalWidth = copiedPage.getWidth();
@@ -759,10 +795,11 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
           finalDoc.addPage(copiedPage);
         }
       }
-      const finalBuffer = Buffer.from(await finalDoc.save());
+      const finalBuffer = Buffer.from(await finalDoc.save({ useObjectStreams: false }));
 
       console.log(`[LabelProcessor] Step 4 & 5: Compiling Single PDF file: ${Date.now() - tCompileStart}ms.`);
       console.log(`[LabelProcessor] Total time: ${Date.now() - startTime}ms.`);
+
 
       return {
         type: 'pdf',

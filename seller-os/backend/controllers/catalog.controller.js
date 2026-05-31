@@ -9,7 +9,7 @@ const geminiSeoService = require('../services/gemini-seo.service');
 const buildCatalog = async (req, res) => {
   try {
     const file = req.files?.[0] || req.file;
-    let { platforms, inputMethod, rawTitle, rawDescription, competitorUrl, additionalContext } = req.body;
+    let { platforms, inputMethod, rawTitle, rawDescription, competitorUrl, additionalContext, category } = req.body;
 
     // Sanitize and parse platforms array
     if (typeof platforms === 'string') {
@@ -31,7 +31,8 @@ const buildCatalog = async (req, res) => {
     console.log(`[Catalog Controller] Generate catalog request received. Platforms: ${platforms.join(', ')}, Input Method: ${inputMethod}`);
 
     const inputDataPayload = {
-      additionalContext
+      additionalContext,
+      category: category || 'generic'
     };
 
     // Process different input methods

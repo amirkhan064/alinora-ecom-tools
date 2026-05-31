@@ -97,6 +97,65 @@
   margin: 0 0 2px 0;
 }
 
+.optional-tag {
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+  color: #c4b5fd;
+  font-size: 10px;
+}
+
+/* Category Selector Chip Grid */
+.category-selector-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.category-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1.5px solid #f3f4f6;
+  border-radius: 20px;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Outfit', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.category-chip:hover:not(.active) {
+  border-color: #d1d5db;
+  background-color: #fafbfc;
+  color: #374151;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.category-chip.active {
+  border-color: rgba(79, 70, 229, 0.5);
+  background-color: rgba(79, 70, 229, 0.04);
+  color: #4f46e5;
+  box-shadow: 0 2px 10px rgba(79, 70, 229, 0.08);
+}
+
+.category-chip .cat-icon {
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.category-chip.active .cat-icon {
+  transform: scale(1.1);
+}
+
+.category-chip .cat-label {
+  white-space: nowrap;
+}
+
 /* Interactive Platform Choice Grid */
 .platform-selection-grid {
   display: grid;
@@ -725,16 +784,105 @@
   margin: 0;
 }
 
-/* Active listings viewport */
-.active-results-view {
+/* Active listings viewport container */
+.active-results-container {
   flex: 1;
-  padding: 32px 32px 90px 32px;
+  padding: 32px 32px 0 32px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   position: relative;
+  overflow: hidden; /* Prevent this panel from scrolling */
 }
+
+/* Scrollable Catalog Result Content Viewport */
+.scrollable-cards-viewport {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0 32px 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Granular Action Toolbar (Top Utility Actions) */
+.granular-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap; /* Wraps on medium width layouts */
+  gap: 10px;
+  padding: 14px 20px;
+  background-color: #ffffff;
+  border: 1.5px solid rgba(229, 231, 235, 0.7);
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.015);
+  box-sizing: border-box;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+/* Modern Refresh Utility Buttons */
+.btn-action-refresh {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #f3f4f6;
+  background-color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.btn-action-refresh:hover:not(:disabled) {
+  border-color: rgba(79, 70, 229, 0.3);
+  background-color: rgba(79, 70, 229, 0.02);
+  color: #4f46e5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.06);
+}
+
+.btn-action-refresh:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-action-refresh .material-symbols-outlined {
+  font-size: 15px;
+}
+
+/* Export Highlight Button with Gradient styles */
+.btn-action-refresh.btn-export-highlight {
+  margin-left: auto; /* Push export to the far right side */
+  background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+}
+
+.btn-action-refresh.btn-export-highlight:hover:not(:disabled) {
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-action-refresh.btn-export-highlight:active {
+  transform: translateY(0);
+}
+
 
 /* Segmented Tab Bar */
 .results-tab-bar {
@@ -1647,10 +1795,18 @@
     overflow: visible !important;
     height: auto !important;
   }
-  .active-results-view {
+  .active-results-container {
     overflow: visible !important;
     height: auto !important;
-    padding: 16px 12px 260px 12px !important; /* Space so content is not covered by fixed bar and margin isn't wasted */
+    padding: 16px 12px 0 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+  .scrollable-cards-viewport {
+    overflow: visible !important;
+    height: auto !important;
+    padding: 8px 0 32px 0 !important;
   }
   .results-tab-bar {
     width: 100% !important;
@@ -1688,24 +1844,22 @@
     font-size: 11px !important;
   }
   .granular-action-bar {
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
+    position: static !important;
     height: auto !important;
-    padding: 12px 16px !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
+    padding: 12px !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
     gap: 8px !important;
     background-color: #ffffff !important;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important;
-    z-index: 900 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02) !important;
+    z-index: 1 !important;
   }
   .btn-action-refresh {
-    width: 100% !important;
+    flex-grow: 1 !important;
     justify-content: center !important;
-    padding: 10px 8px !important;
-    font-size: 12px !important;
+    padding: 10px 12px !important;
+    font-size: 11px !important;
     box-sizing: border-box !important;
   }
   .seo-dashboard-card {
