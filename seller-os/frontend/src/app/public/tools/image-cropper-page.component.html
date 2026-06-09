@@ -1,0 +1,155 @@
+<div class="tool-seo-container">
+  <!-- Hero Section -->
+  <section class="tool-hero">
+    <div class="hero-content">
+      <div class="category-badge">
+        <span class="material-symbols-outlined">crop</span>
+        PRODUCT STAGING UTILITY
+      </div>
+      <h1>
+        Batch-Processing
+        <span class="gradient-text">Product Image Cropper</span>
+      </h1>
+      <p class="hero-desc">
+        Instantly crop and resize multiple product photos into high-converting 1:1 square assets optimized for Amazon, Flipkart, and Meesho catalogs.
+      </p>
+
+      <div class="hero-cta-box">
+        <a routerLink="/app/bulk-cropper" class="btn-primary-large" id="hero-launch-bulk-cropper-btn">
+          <span class="material-symbols-outlined">crop_free</span>
+          Launch Bulk Cropper
+        </a>
+        <span class="cta-note">Browser-based processing &bull; 100% Secure &bull; No Uploading</span>
+      </div>
+
+      <!-- Supported Platforms Bar -->
+      <div class="platforms-supported">
+        <span class="platform-label">Optimized Ratios for:</span>
+        <div class="platform-badges">
+          <span class="p-badge flipkart">Flipkart (1:1)</span>
+          <span class="p-badge amazon">Amazon (1:1)</span>
+          <span class="p-badge meesho">Meesho (1:1)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Interactive Mockup -->
+    <div class="hero-visual">
+      <div class="mockup-browser">
+        <div class="browser-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <div class="browser-address-bar">selleros.com/app/bulk-cropper</div>
+        </div>
+        <div class="browser-body">
+          <div class="mockup-workspace-header">
+            <div class="preset-selectors">
+              <span class="ratio-pill active">1:1 Square</span>
+              <span class="ratio-pill">4:3 Card</span>
+              <span class="ratio-pill">Original</span>
+            </div>
+            <button class="mockup-action-btn">Apply to All</button>
+          </div>
+          
+          <div class="mockup-crop-canvas">
+            <!-- Mock cropped image grid -->
+            <div class="canvas-image-wrap">
+              <div class="mock-grid-lines">
+                <div class="line horizontal h-1"></div>
+                <div class="line horizontal h-2"></div>
+                <div class="line vertical v-1"></div>
+                <div class="line vertical v-2"></div>
+              </div>
+              <div class="mock-product-preview"></div>
+              <span class="crop-dimensions">1080 × 1080 px</span>
+              <span class="aspect-ratio-indicator">1:1 Locked</span>
+            </div>
+          </div>
+          
+          <div class="mockup-batch-thumbs">
+            <div class="batch-thumb active"></div>
+            <div class="batch-thumb"></div>
+            <div class="batch-thumb"></div>
+            <div class="batch-thumb add-new">
+              <span class="material-symbols-outlined">add</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="features-section">
+    <h2 class="section-title">Why E-commerce Sellers Choose Our Cropper</h2>
+    <div class="features-grid">
+      <div class="feat-card">
+        <span class="material-symbols-outlined feat-icon">grid_on</span>
+        <h3>Perfect 1:1 Square Ratio</h3>
+        <p>Locks standard canvas boundary shapes so that your photos conform perfectly to Flipkart, Amazon, and Meesho templates.</p>
+      </div>
+
+      <div class="feat-card">
+        <span class="material-symbols-outlined feat-icon">encrypted</span>
+        <h3>100% Client-Side Privacy</h3>
+        <p>All photo resizing is executed directly in your browser's RAM. Your catalog assets are never sent to external servers.</p>
+      </div>
+
+      <div class="feat-card">
+        <span class="material-symbols-outlined feat-icon">photo_size_select_large</span>
+        <h3>Bulk Size Compression</h3>
+        <p>Instantly downscale high-resolution digital files into lightweight, fast-loading formats ready for sheet uploads.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it Works Roadmap -->
+  <section class="roadmap-section">
+    <h2 class="section-title">How To Bulk Crop Product Images</h2>
+    <div class="roadmap-steps">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <h4>Upload Batch</h4>
+        <p>Drag and drop multiple product photos or select files directly from your computer/device.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <h4>Adjust Crop Box</h4>
+        <p>Use the visual cropper interface to position the square frame. Lock 1:1 aspect ratios if necessary.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <h4>Export & Download</h4>
+        <p>Review the batched thumbnails and save them all packaged as a single ZIP folder in one click.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQs Accordion -->
+  <section class="faq-section">
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item" *ngFor="let faq of faqs; let i = index" [class.faq-open]="faq.open">
+        <button 
+          type="button"
+          class="faq-question" 
+          [attr.aria-expanded]="faq.open"
+          [attr.aria-controls]="'faq-answer-cropper-' + i"
+          [id]="'faq-btn-cropper-' + i"
+          (click)="toggleFaq(i)">
+          <span>{{ faq.question }}</span>
+          <span class="material-symbols-outlined faq-arrow">expand_more</span>
+        </button>
+        <div 
+          class="faq-answer" 
+          [id]="'faq-answer-cropper-' + i" 
+          role="region" 
+          [attr.aria-labelledby]="'faq-btn-cropper-' + i" 
+          *ngIf="faq.open">
+          <p>{{ faq.answer }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

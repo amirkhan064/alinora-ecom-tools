@@ -68,6 +68,11 @@
         <span class="header-title">{{ pageTitle() }}</span>
       </div>
       <div class="header-right">
+        <!-- Theme Toggle Switcher -->
+        <button class="theme-toggle-btn" (click)="toggleTheme()" aria-label="Toggle dark/light theme" id="theme-toggle">
+          <span class="material-symbols-outlined">{{ currentTheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</span>
+        </button>
+
         <div class="system-status">
           <span class="pulse-indicator"></span>
           <span class="status-text">System Online</span>

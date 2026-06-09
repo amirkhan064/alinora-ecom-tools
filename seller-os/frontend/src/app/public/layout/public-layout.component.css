@@ -8,7 +8,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
+  background-color: var(--bg-workspace);
+  transition: background-color 0.3s ease;
 }
 
 /* ========== NAVBAR ========== */
@@ -16,9 +17,11 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(12px) saturate(180%);
-  border-bottom: 1px solid #f0f0f0;
+  background-color: var(--bg-card);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-bottom: var(--border-light);
+  transition: background-color 0.3s ease, border-bottom 0.3s ease;
 }
 
 .navbar-inner {
@@ -48,7 +51,7 @@
 .brand-name {
   font-size: 22px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   letter-spacing: -0.03em;
 }
 
@@ -67,7 +70,7 @@
 .nav-item {
   font-size: 13.5px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--text-secondary);
   text-decoration: none;
   padding: 8px 14px;
   border-radius: 8px;
@@ -75,14 +78,18 @@
 }
 
 .nav-item:hover {
-  color: #111827;
-  background-color: #f9fafb;
+  color: var(--text-primary);
+  background-color: var(--accent-light);
 }
 
 .active-nav {
-  color: #4f46e5 !important;
-  background-color: rgba(79, 70, 229, 0.06) !important;
+  color: var(--accent-color) !important;
+  background-color: var(--accent-light) !important;
   font-weight: 600;
+}
+
+.navbar-theme-btn {
+  margin-right: 8px;
 }
 
 .nav-cta-btn {
@@ -117,9 +124,10 @@
 
 /* ========== FOOTER ========== */
 .public-footer {
-  background-color: #f9fafb;
-  border-top: 1px solid #f0f0f0;
+  background-color: var(--bg-card);
+  border-top: var(--border-light);
   padding: 32px 0;
+  transition: background-color 0.3s ease, border-top 0.3s ease;
 }
 
 .footer-inner {
@@ -133,7 +141,7 @@
 
 .footer-brand {
   font-size: 13px;
-  color: #9ca3af;
+  color: var(--text-muted);
   margin: 0;
 }
 
@@ -144,13 +152,13 @@
 
 .footer-links a {
   font-size: 13px;
-  color: #6b7280;
+  color: var(--text-secondary);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .footer-links a:hover {
-  color: #4f46e5;
+  color: var(--accent-color);
 }
 
 /* ========== RESPONSIVE ========== */

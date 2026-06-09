@@ -9,8 +9,14 @@
 
       <nav class="navbar-links">
         <a routerLink="/tools/bulk-image-downloader" routerLinkActive="active-nav" class="nav-item">Image Downloader</a>
+        <a routerLink="/tools/bulk-image-cropper" routerLinkActive="active-nav" class="nav-item">Image Cropper</a>
         <a routerLink="/tools/shipping-label-cropper" routerLinkActive="active-nav" class="nav-item">Label Cropper</a>
         <a routerLink="/tools/ai-listing-generator" routerLinkActive="active-nav" class="nav-item">AI Listing</a>
+        
+        <button class="theme-toggle-btn navbar-theme-btn" (click)="toggleTheme()" aria-label="Toggle dark/light theme" id="theme-toggle">
+          <span class="material-symbols-outlined">{{ currentTheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</span>
+        </button>
+
         <a routerLink="/app" class="nav-cta-btn">
           <span class="material-symbols-outlined">rocket_launch</span>
           Open App
@@ -30,6 +36,7 @@
       <p class="footer-brand">&copy; 2025 SellerOS &mdash; Free tools for Indian e-commerce sellers.</p>
       <div class="footer-links">
         <a routerLink="/tools/bulk-image-downloader">Image Downloader</a>
+        <a routerLink="/tools/bulk-image-cropper">Image Cropper</a>
         <a routerLink="/tools/shipping-label-cropper">Label Cropper</a>
         <a routerLink="/tools/ai-listing-generator">AI Listing Generator</a>
       </div>

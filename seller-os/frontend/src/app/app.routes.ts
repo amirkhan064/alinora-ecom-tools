@@ -18,6 +18,11 @@ export const routes: Routes = [
           .then(m => m.ImageDownloaderPageComponent)
       },
       {
+        path: 'tools/bulk-image-cropper',
+        loadComponent: () => import('./public/tools/image-cropper-page.component')
+          .then(m => m.ImageCropperPageComponent)
+      },
+      {
         path: 'tools/shipping-label-cropper',
         loadComponent: () => import('./public/tools/label-cropper-page.component')
           .then(m => m.LabelCropperPageComponent)

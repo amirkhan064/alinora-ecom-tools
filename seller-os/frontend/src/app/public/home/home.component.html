@@ -1,92 +1,241 @@
-<section class="hero-section">
-  <div class="hero-inner">
-    <div class="hero-badge">
-      <span class="material-symbols-outlined badge-icon">verified</span>
-      100% Free &mdash; No Sign Up Required
-    </div>
-    <h1 class="hero-title">
-      The All-in-One Toolkit for
-      <span class="hero-gradient-text">Indian E-commerce Sellers</span>
-    </h1>
-    <p class="hero-subtitle">
-      Download product images, auto-crop shipping labels, and generate AI-optimized listings for Flipkart, Amazon, Meesho & Myntra.
-    </p>
-    <div class="hero-actions">
-      <a routerLink="/app" class="btn-hero-primary">
-        <span class="material-symbols-outlined">rocket_launch</span>
-        Launch SellerOS
-      </a>
-      <a href="#tools" class="btn-hero-secondary">
-        Explore Tools
-        <span class="material-symbols-outlined">arrow_downward</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- Tools Grid Section -->
-<section class="tools-section" id="tools">
-  <div class="tools-inner">
-    <h2 class="section-heading">Powerful Seller Tools</h2>
-    <p class="section-subheading">Everything you need to manage listings, images, and shipments — completely free.</p>
-
-    <div class="tools-grid">
-      <!-- Image Downloader Card -->
-      <a routerLink="/tools/bulk-image-downloader" class="tool-card">
-        <div class="tool-icon-box downloader-icon">
-          <span class="material-symbols-outlined">cloud_download</span>
+<div class="landing-premium-container">
+  <!-- Asymmetric Hero Section -->
+  <section class="hero-section">
+    <div class="hero-grid">
+      <!-- Hero Text Column -->
+      <div class="hero-text-col">
+        <div class="hero-badge-premium">
+          <span class="material-symbols-outlined badge-glow-icon">offline_bolt</span>
+          <span>Zero Configuration &bull; 100% Free Utility Suite</span>
         </div>
-        <h3>Product Image Downloader</h3>
-        <p>Download high-quality product images from Flipkart, Amazon, Meesho & Myntra in one click.</p>
-        <span class="tool-link">
-          Learn More
-          <span class="material-symbols-outlined arrow">arrow_forward</span>
-        </span>
-      </a>
-
-      <!-- Label Cropper Card -->
-      <a routerLink="/tools/shipping-label-cropper" class="tool-card">
-        <div class="tool-icon-box cropper-icon">
-          <span class="material-symbols-outlined">content_cut</span>
+        <h1 class="hero-title-premium">
+          The Elite Utility Engine for
+          <span class="gradient-text-premium">Indian E-Commerce Sellers</span>
+        </h1>
+        <p class="hero-subtitle-premium">
+          Supercharge your merchant workflow. Batch crop thermal shipping labels, scrape listing images, resize marketplace photos, and build high-CTR listings for Flipkart, Amazon, and Meesho.
+        </p>
+        <div class="hero-actions-premium">
+          <a routerLink="/app" class="btn-premium-primary" id="hero-launch-workspace-btn">
+            <span class="material-symbols-outlined">rocket_launch</span>
+            Launch Workspace
+          </a>
+          <a href="#utilities" class="btn-premium-secondary" id="hero-explore-utilities-btn">
+            Explore Utilities
+            <span class="material-symbols-outlined">arrow_downward</span>
+          </a>
         </div>
-        <h3>Shipping Label Cropper</h3>
-        <p>Auto-crop and sort Flipkart, Amazon, Meesho & Myntra shipping labels by SKU or Order ID.</p>
-        <span class="tool-link">
-          Learn More
-          <span class="material-symbols-outlined arrow">arrow_forward</span>
-        </span>
-      </a>
+      </div>
 
-      <!-- AI Listing Card -->
-      <a routerLink="/tools/ai-listing-generator" class="tool-card">
-        <div class="tool-icon-box listing-icon">
-          <span class="material-symbols-outlined">auto_awesome</span>
+      <!-- Hero Visual Column (Mock Dashboard Status) -->
+      <div class="hero-visual-col">
+        <div class="mock-workspace-dashboard">
+          <div class="dashboard-head">
+            <div class="dashboard-dots">
+              <span class="dot-dash red"></span>
+              <span class="dot-dash yellow"></span>
+              <span class="dot-dash green"></span>
+            </div>
+            <div class="dashboard-title-bar">selleros.workspace.v1</div>
+          </div>
+          <div class="dashboard-body-grid">
+            <div class="status-box">
+              <span class="status-num font-mono-premium">99.9%</span>
+              <span class="status-lbl">API Scrape Success</span>
+            </div>
+            <div class="status-box">
+              <span class="status-num font-mono-premium">0ms</span>
+              <span class="status-lbl">Local Process Delay</span>
+            </div>
+            <div class="status-box large-status">
+              <div class="platform-dots-group">
+                <span class="dot-badge flipkart-bg">Flipkart</span>
+                <span class="dot-badge amazon-bg">Amazon</span>
+                <span class="dot-badge meesho-bg">Meesho</span>
+              </div>
+              <span class="status-lbl">Active Marketplace Handlers</span>
+            </div>
+          </div>
         </div>
-        <h3>AI Listing Generator</h3>
-        <p>Generate SEO-optimized titles, descriptions, keywords & pricing using Gemini AI.</p>
-        <span class="tool-link">
-          Learn More
-          <span class="material-symbols-outlined arrow">arrow_forward</span>
-        </span>
-      </a>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Stats Bar -->
-<section class="stats-section">
-  <div class="stats-inner">
-    <div class="stat-item">
-      <span class="stat-number">4</span>
-      <span class="stat-label">Platforms Supported</span>
+  <!-- Bento Grid Section -->
+  <section class="bento-section" id="utilities">
+    <div class="bento-header">
+      <h2 class="bento-heading-title">Asymmetric Production Utilities</h2>
+      <p class="bento-heading-desc">Eliminate manual tasks. Our tools are optimized for high-volume marketplace workflows.</p>
     </div>
-    <div class="stat-item">
-      <span class="stat-number">100%</span>
-      <span class="stat-label">Free Forever</span>
+
+    <div class="bento-grid-container">
+      <!-- 1. Label Cropper & Sorter (Large Cell - Span 8) -->
+      <div class="bento-cell cell-large label-cropper-cell">
+        <div class="cell-content-split">
+          <div class="cell-text-area">
+            <div class="cell-badge">Thermal Sorter</div>
+            <h3>Shipping Label Cropper & Sorter</h3>
+            <p>Automatically crop multi-page PDF invoices and packing sheets into individual 4x6 labels. Intelligently sorts order slips by platform logs.</p>
+            <a routerLink="/tools/shipping-label-cropper" class="cell-explore-link" id="bento-deploy-label-cropper-link">
+              Deploy Tool
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </a>
+          </div>
+          <div class="cell-visual-area label-cropper-visual">
+            <div class="split-pane-mock">
+              <div class="left-pane-pdf">
+                <div class="pdf-logo-tag font-mono-premium">bulk_invoice.pdf</div>
+                <div class="mock-pdf-line l-1"></div>
+                <div class="mock-pdf-line l-2"></div>
+                <div class="mock-pdf-line l-3"></div>
+              </div>
+              <div class="crop-arrow-icon">
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </div>
+              <div class="right-pane-labels">
+                <div class="cropped-label-card f-blue">
+                  <span class="lbl-marketplace">Flipkart</span>
+                  <div class="barcode-mock"></div>
+                </div>
+                <div class="cropped-label-card a-orange">
+                  <span class="lbl-marketplace">Amazon</span>
+                  <div class="barcode-mock"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Image Cropper (Medium Cell - Span 4) -->
+      <div class="bento-cell cell-medium image-cropper-cell">
+        <div class="cell-content-stack">
+          <div class="cell-text-area">
+            <div class="cell-badge">1:1 Square</div>
+            <h3>Marketplace Image Cropper</h3>
+            <p>Resize, crop, and configure listing images to exact 1:1 squares with grid alignments.</p>
+            <a routerLink="/tools/bulk-image-cropper" class="cell-explore-link" id="bento-deploy-image-cropper-link">
+              Deploy Tool
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </a>
+          </div>
+          <div class="cell-visual-area center-flex">
+            <div class="canvas-resizer-mock">
+              <div class="canvas-border-guide">
+                <div class="guide-crosshair"></div>
+                <div class="product-shoe-outline"></div>
+                <span class="canvas-tag font-mono-premium">1:1 Locked</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Image Downloader (Compact Cell - Span 4) -->
+      <div class="bento-cell cell-compact image-downloader-cell">
+        <div class="cell-content-stack">
+          <div class="cell-text-area">
+            <div class="cell-badge">Asset Extractor</div>
+            <h3>Product Image Downloader</h3>
+            <p>Scrape high-res product photos from online URLs instantly.</p>
+            <a routerLink="/tools/bulk-image-downloader" class="cell-explore-link" id="bento-deploy-image-downloader-link">
+              Deploy Tool
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </a>
+          </div>
+          <div class="cell-visual-area">
+            <div class="scraper-console-mock font-mono-premium">
+              <div class="console-line success-text">> GET /api/extract... 200 OK</div>
+              <div class="console-line">> scraping main_zoom_hi.jpg</div>
+              <div class="progress-bar-line">[=========>  ] 90%</div>
+              <div class="console-line info-text">> ZIP compiled: 4.8MB</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. AI SEO Product Listing (Large Cell - Span 8) -->
+      <div class="bento-cell cell-large ai-listing-cell">
+        <div class="cell-content-split">
+          <div class="cell-text-area">
+            <div class="cell-badge">Advanced AI Engine</div>
+            <h3>AI SEO Product Listing Builder</h3>
+            <p>Input simple merchant notes and translate them into optimized, high-CTR product titles, bullet points, and search backend keywords.</p>
+            <a routerLink="/tools/ai-listing-generator" class="cell-explore-link" id="bento-deploy-ai-listing-link">
+              Deploy Tool
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </a>
+          </div>
+          <div class="cell-visual-area ai-listing-visual">
+            <div class="ai-translation-mock">
+              <div class="card-raw-notes">
+                <span class="card-label">Raw Notes</span>
+                <p>"cotton polo shirt blue colour size L"</p>
+              </div>
+              <div class="ai-arrow-connector">
+                <span class="material-symbols-outlined animate-glow">auto_awesome</span>
+              </div>
+              <div class="card-seo-output">
+                <span class="card-label success">Optimized Listing</span>
+                <p class="seo-title">Premium Slim-Fit Navy Blue Cotton Polo Shirt (Large)</p>
+                <div class="seo-tags-row">
+                  <span class="tag-ctr">CTR +34%</span>
+                  <span class="tag-keyword">Summer Wear</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="stat-item">
-      <span class="stat-number">AI</span>
-      <span class="stat-label">Powered by Gemini</span>
+  </section>
+
+  <!-- Global Stats Bar -->
+  <section class="stats-bar-section">
+    <div class="stats-bar-grid">
+      <div class="stat-card-premium">
+        <span class="stat-big-val">4</span>
+        <span class="stat-label-premium">Major Platforms Integrated</span>
+      </div>
+      <div class="stat-card-premium">
+        <span class="stat-big-val">100%</span>
+        <span class="stat-label-premium">Free, Client-Side Utilities</span>
+      </div>
+      <div class="stat-card-premium">
+        <span class="stat-big-val">Smart AI</span>
+        <span class="stat-label-premium">AI Powered Optimization</span>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+
+  <!-- FAQs Section -->
+  <section class="faq-section">
+    <div class="faq-container-inner">
+      <h2 class="bento-heading-title text-center">Common Merchant Queries</h2>
+      <p class="bento-heading-desc text-center">Have questions about processing limits, data privacy, or API keys? Find answers below.</p>
+      
+      <div class="faq-list-premium">
+        <div class="faq-item-premium" *ngFor="let faq of faqs; let i = index" [class.faq-open]="faq.open">
+          <button 
+            type="button"
+            class="faq-question-premium" 
+            [attr.aria-expanded]="faq.open"
+            [attr.aria-controls]="'faq-answer-home-' + i"
+            [id]="'faq-btn-home-' + i"
+            (click)="toggleFaq(i)">
+            <span>{{ faq.question }}</span>
+            <span class="material-symbols-outlined faq-arrow-premium">expand_more</span>
+          </button>
+          <div 
+            class="faq-answer-premium" 
+            [id]="'faq-answer-home-' + i" 
+            role="region" 
+            [attr.aria-labelledby]="'faq-btn-home-' + i" 
+            *ngIf="faq.open">
+            <p>{{ faq.answer }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

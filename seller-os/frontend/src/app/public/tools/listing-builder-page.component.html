@@ -7,7 +7,7 @@
         AI CATALOGING UTILITY
       </div>
       <h1>
-        Gemini-Powered
+        AI-Powered
         <span class="gradient-text listing-gradient">AI Listing Generator</span>
       </h1>
       <p class="hero-desc">
@@ -20,7 +20,7 @@
           <span class="material-symbols-outlined">bolt</span>
           Generate Free Listing
         </a>
-        <span class="cta-note">No credit card or registration needed &bull; Powered by Gemini AI</span>
+        <span class="cta-note">No credit card or registration needed &bull; Powered by Advanced AI</span>
       </div>
 
       <!-- Supported Platforms Bar -->
@@ -133,7 +133,7 @@
       <div class="step-card">
         <div class="step-num listing-bg-sub">2</div>
         <h4>AI Magic</h4>
-        <p>Gemini AI processes the data, analyzing top rankings and structural rules instantly.</p>
+        <p>Advanced AI processes the data, analyzing top rankings and structural rules instantly.</p>
       </div>
       <div class="step-card">
         <div class="step-num listing-bg-sub">3</div>
@@ -147,12 +147,23 @@
   <section class="faq-section">
     <h2 class="section-title">Frequently Asked Questions</h2>
     <div class="faq-list">
-      <div class="faq-item" *ngFor="let faq of faqs; let i = index" [class.faq-open]="faq.open" (click)="toggleFaq(i)">
-        <div class="faq-question">
+      <div class="faq-item" *ngFor="let faq of faqs; let i = index" [class.faq-open]="faq.open">
+        <button 
+          type="button"
+          class="faq-question" 
+          [attr.aria-expanded]="faq.open"
+          [attr.aria-controls]="'faq-answer-listing-' + i"
+          [id]="'faq-btn-listing-' + i"
+          (click)="toggleFaq(i)">
           <span>{{ faq.question }}</span>
           <span class="material-symbols-outlined faq-arrow">expand_more</span>
-        </div>
-        <div class="faq-answer" *ngIf="faq.open">
+        </button>
+        <div 
+          class="faq-answer" 
+          [id]="'faq-answer-listing-' + i" 
+          role="region" 
+          [attr.aria-labelledby]="'faq-btn-listing-' + i" 
+          *ngIf="faq.open">
           <p>{{ faq.answer }}</p>
         </div>
       </div>

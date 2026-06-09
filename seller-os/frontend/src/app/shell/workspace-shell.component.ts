@@ -3,6 +3,7 @@ import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { filter } from 'rxjs/operators';
+import { ThemeService } from '../services/theme.service';
 
 @Component({
   selector: 'app-workspace-shell',
@@ -16,14 +17,20 @@ export class WorkspaceShellComponent {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private http = inject(HttpClient);
+  private themeService = inject(ThemeService);
   protected readonly pageTitle = signal('Image Downloader');
 
+  currentTheme = this.themeService.currentTheme;
   showFeedbackModal = signal(false);
   feedbackCategory = signal<'suggestion' | 'bug' | 'other'>('suggestion');
   feedbackMessage = signal('');
   feedbackEmail = signal('');
   feedbackSubmitted = signal(false);
   mobileSidebarOpen = signal(false);
+
+  toggleTheme(): void {
+    this.themeService.toggleTheme();
+  }
 
   openFeedbackModal(): void {
     this.feedbackCategory.set('suggestion');

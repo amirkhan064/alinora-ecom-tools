@@ -19,8 +19,8 @@ export class ListingBuilderPageComponent implements OnInit {
       open: false
     },
     {
-      question: 'Is my Gemini API key required to use this tool?',
-      answer: 'No, SellerOS includes pre-configured standard AI generations. However, you can add your own Gemini API key inside the settings panel to get higher rate limits and unlock custom brand voice styling features.',
+      question: 'Is my own API key required to use this tool?',
+      answer: 'No, SellerOS includes pre-configured standard AI generations. However, you can add your own custom API key inside the settings panel to get higher rate limits and unlock custom brand voice styling features.',
       open: false
     },
     {
@@ -44,7 +44,7 @@ export class ListingBuilderPageComponent implements OnInit {
     this.meta.updateTag({ name: 'description', content: 'Free AI-powered product listing generator for Flipkart, Myntra, Meesho, and Amazon sellers. Generate SEO-optimized titles, descriptions, bullets, and keywords instantly.' });
     this.meta.updateTag({ name: 'keywords', content: 'ai listing builder, amazon listing generator, flipkart product description writer, meesho catalog builder, myntra product listing generator, e-commerce seo copywriter, free listing tool' });
     this.meta.updateTag({ property: 'og:title', content: 'AI Product Listing Generator | Amazon, Flipkart, Meesho & Myntra' });
-    this.meta.updateTag({ property: 'og:description', content: 'Create high-converting e-commerce product catalogs using Gemini AI. Get search-optimized titles, bullets, descriptions, and backend search terms in seconds.' });
+    this.meta.updateTag({ property: 'og:description', content: 'Create high-converting e-commerce product catalogs using Advanced AI. Get search-optimized titles, bullets, descriptions, and backend search terms in seconds.' });
   }
 
   ngOnInit(): void {
@@ -88,7 +88,7 @@ export class ListingBuilderPageComponent implements OnInit {
             "SEO-optimized titles specifically for Indian marketplaces (Amazon, Flipkart, Meesho, Myntra)",
             "Automated catalog bullet points generation",
             "Targeted search keywords research",
-            "Preloaded with Gemini AI capabilities"
+            "Preloaded with advanced AI capabilities"
           ]
         },
         {

@@ -20,8 +20,8 @@ export class HomeComponent implements OnInit {
       open: false
     },
     {
-      question: 'Is my Gemini API key required to use this tool?',
-      answer: 'No, SellerOS includes pre-configured standard AI generations. However, you can add your own Gemini API key inside the settings panel to get higher rate limits and unlock custom brand voice styling features.',
+      question: 'Is my own API key required to use this tool?',
+      answer: 'No, SellerOS includes pre-configured standard AI generations. However, you can add your own custom API key inside the settings panel to get higher rate limits and unlock custom brand voice styling features.',
       open: false
     },
     {
@@ -87,7 +87,7 @@ export class HomeComponent implements OnInit {
             "SEO-optimized titles specifically for Indian marketplaces",
             "Automated catalog bullet points generation",
             "Targeted search keywords research",
-            "Preloaded with Gemini AI capabilities"
+            "Preloaded with advanced AI capabilities"
           ]
         },
         {
@@ -99,5 +99,9 @@ export class HomeComponent implements OnInit {
     };
 
     this.seoService.setJsonLd(schemaGraph);
+  }
+
+  toggleFaq(index: number): void {
+    this.faqs[index].open = !this.faqs[index].open;
   }
 }
