@@ -14,23 +14,23 @@ import { SeoService } from '../../services/seo.service';
 export class ListingBuilderPageComponent implements OnInit {
   faqs = [
     {
-      question: 'How does the AI optimize listings for Indian marketplaces?',
-      answer: 'Our AI model is custom-tuned with Flipkart, Amazon, Meesho, and Myntra algorithm guidelines. It targets search phrases specifically used by Indian buyers, handles fashion/lifestyle catalog styling, and optimizes descriptions to improve organic discovery.',
+      question: 'How does the AI write listings for Indian buyers?',
+      answer: 'Our AI is designed for Indian marketplaces like Flipkart, Amazon, Meesho, and Myntra. It uses popular search words that Indian buyers type, helping your products rank higher and get more orders.',
       open: false
     },
     {
-      question: 'Is my own API key required to use this tool?',
-      answer: 'No, SellerOS includes pre-configured standard AI generations. However, you can add your own custom API key inside the settings panel to get higher rate limits and unlock custom brand voice styling features.',
+      question: 'Do I need to pay or buy any API key?',
+      answer: 'No, you can use our AI writer for free without any API key. But if you want to write hundreds of listings daily, you can add your own free Gemini API key in the settings panel.',
       open: false
     },
     {
-      question: 'Does it write bullets and back-end keywords?',
-      answer: 'Yes! It generates high-converting bullet points, descriptive search-friendly product stories, and structures backend keywords formatted perfectly for upload sheets.',
+      question: 'Does it generate bullet points and backend keywords?',
+      answer: 'Yes. It creates professional bullet points, detailed product descriptions, and backend search keywords that you can copy directly into your bulk listing excel sheets.',
       open: false
     },
     {
-      question: 'Can I generate listings in multiple languages?',
-      answer: 'Currently, the tool generates descriptions in optimized English (as preferred by Indian marketplace catalogs) but incorporates high-volume Hinglish search queries commonly used by shoppers.',
+      question: 'Can I generate listings in Hinglish?',
+      answer: 'Yes. While the main description is in English (which Flipkart and Amazon require), our AI automatically adds popular Hinglish search keywords (like "cotton printed suit" or "daily wear kurti") to attract more buyers.',
       open: false
     }
   ];

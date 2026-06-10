@@ -1,59 +1,113 @@
 <div class="landing-premium-container">
+  <!-- Backdrop Glow Blurs -->
+  <div class="glow-bg-radial glow-1"></div>
+  <div class="glow-bg-radial glow-2"></div>
+  <div class="glow-bg-radial glow-3"></div>
+
   <!-- Asymmetric Hero Section -->
   <section class="hero-section">
     <div class="hero-grid">
       <!-- Hero Text Column -->
-      <div class="hero-text-col">
+      <div class="hero-text-col reveal-on-scroll">
         <div class="hero-badge-premium">
           <span class="material-symbols-outlined badge-glow-icon">offline_bolt</span>
-          <span>Zero Configuration &bull; 100% Free Utility Suite</span>
+          <span>No Installation Required &bull; 100% Private (No Uploads)</span>
         </div>
         <h1 class="hero-title-premium">
-          The Elite Utility Engine for
-          <span class="gradient-text-premium">Indian E-Commerce Sellers</span>
+          Easy E-Commerce Tools for
+          <span class="gradient-text-premium">Indian Sellers</span>
         </h1>
         <p class="hero-subtitle-premium">
-          Supercharge your merchant workflow. Batch crop thermal shipping labels, scrape listing images, resize marketplace photos, and build high-CTR listings for Flipkart, Amazon, and Meesho.
+          Make your daily packing, listing, and cataloging work 10x faster. Automatically crop bulk A4 shipping labels, download competitor product images, crop photos to 1:1 square, and write high-ranking SEO listings for Flipkart, Amazon, Meesho, and Myntra.
         </p>
         <div class="hero-actions-premium">
           <a routerLink="/app" class="btn-premium-primary" id="hero-launch-workspace-btn">
             <span class="material-symbols-outlined">rocket_launch</span>
-            Launch Workspace
+            Start Now
           </a>
           <a href="#utilities" class="btn-premium-secondary" id="hero-explore-utilities-btn">
-            Explore Utilities
+            See All Tools
             <span class="material-symbols-outlined">arrow_downward</span>
           </a>
         </div>
+        
+        <!-- Compat Ribbon Inside Text Col -->
+        <div class="hero-compat-ribbon">
+          <span class="compat-title">Marketplace Formats:</span>
+          <span class="compat-badge amz">Amazon</span>
+          <span class="compat-badge fk">Flipkart</span>
+          <span class="compat-badge ms">Meesho</span>
+          <span class="compat-badge my">Myntra</span>
+        </div>
       </div>
 
-      <!-- Hero Visual Column (Mock Dashboard Status) -->
-      <div class="hero-visual-col">
-        <div class="mock-workspace-dashboard">
+      <!-- Hero Visual Column (Automated Pipeline Previewer) -->
+      <div class="hero-visual-col reveal-on-scroll delay-1">
+        <div class="mock-workspace-dashboard pipeline-previewer">
           <div class="dashboard-head">
             <div class="dashboard-dots">
               <span class="dot-dash red"></span>
               <span class="dot-dash yellow"></span>
               <span class="dot-dash green"></span>
             </div>
-            <div class="dashboard-title-bar">selleros.workspace.v1</div>
+            <div class="dashboard-title-bar">selleros.pipeline.v1</div>
           </div>
-          <div class="dashboard-body-grid">
-            <div class="status-box">
-              <span class="status-num font-mono-premium">99.9%</span>
-              <span class="status-lbl">API Scrape Success</span>
-            </div>
-            <div class="status-box">
-              <span class="status-num font-mono-premium">0ms</span>
-              <span class="status-lbl">Local Process Delay</span>
-            </div>
-            <div class="status-box large-status">
-              <div class="platform-dots-group">
-                <span class="dot-badge flipkart-bg">Flipkart</span>
-                <span class="dot-badge amazon-bg">Amazon</span>
-                <span class="dot-badge meesho-bg">Meesho</span>
+          <div class="pipeline-flow-body">
+            <!-- Step 1: Input Assets -->
+            <div class="pipeline-step step-input">
+              <span class="step-label">1. Upload Files</span>
+              <div class="input-card-group">
+                <div class="asset-card label-pdf-card animate-slide-in-left-1">
+                  <span class="material-symbols-outlined file-icon">picture_as_pdf</span>
+                  <span class="file-name font-mono-premium">labels_A4.pdf</span>
+                </div>
+                <div class="asset-card image-png-card animate-slide-in-left-2">
+                  <span class="material-symbols-outlined file-icon">image</span>
+                  <span class="file-name font-mono-premium">photo_raw.png</span>
+                </div>
               </div>
-              <span class="status-lbl">Active Marketplace Handlers</span>
+            </div>
+
+            <!-- Flow Connector Arrow -->
+            <div class="pipeline-connector">
+              <span class="material-symbols-outlined flow-arrow animate-arrow-pulse">arrow_forward</span>
+            </div>
+
+            <!-- Step 2: Processing Core -->
+            <div class="pipeline-step step-engine">
+              <span class="step-label">2. Auto Processing</span>
+              <div class="processing-hub-core">
+                <div class="pulse-ring-outer"></div>
+                <div class="pulse-ring-inner"></div>
+                <span class="material-symbols-outlined engine-gear animate-spin-gear">settings</span>
+                <div class="engine-sweep-line"></div>
+              </div>
+            </div>
+
+            <!-- Flow Connector Arrow -->
+            <div class="pipeline-connector">
+              <span class="material-symbols-outlined flow-arrow animate-arrow-pulse">arrow_forward</span>
+            </div>
+
+            <!-- Step 3: Structured Outputs -->
+            <div class="pipeline-step step-output">
+              <span class="step-label">3. Ready Downloads</span>
+              <div class="output-list-cards">
+                <div class="output-file-card animate-fade-in-right-1">
+                  <span class="material-symbols-outlined check-icon">check_circle</span>
+                  <div class="file-details">
+                    <span class="out-name font-mono-premium">labels_4x6.pdf</span>
+                    <span class="out-meta font-mono-premium">Sorted by SKU Code</span>
+                  </div>
+                </div>
+                <div class="output-file-card animate-fade-in-right-2">
+                  <span class="material-symbols-outlined check-icon">check_circle</span>
+                  <div class="file-details">
+                    <span class="out-name font-mono-premium">squared_1-1.zip</span>
+                    <span class="out-meta font-mono-premium">1:1 Square Crop</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -63,43 +117,46 @@
 
   <!-- Bento Grid Section -->
   <section class="bento-section" id="utilities">
-    <div class="bento-header">
-      <h2 class="bento-heading-title">Asymmetric Production Utilities</h2>
-      <p class="bento-heading-desc">Eliminate manual tasks. Our tools are optimized for high-volume marketplace workflows.</p>
+    <div class="bento-header reveal-on-scroll">
+      <h2 class="bento-heading-title">Free Tools for Online Sellers</h2>
+      <p class="bento-heading-desc">No more manual work. Crop labels, resize photos, download images, and write listing descriptions in one click.</p>
     </div>
 
     <div class="bento-grid-container">
       <!-- 1. Label Cropper & Sorter (Large Cell - Span 8) -->
-      <div class="bento-cell cell-large label-cropper-cell">
+      <div class="bento-cell cell-large label-cropper-cell reveal-on-scroll">
         <div class="cell-content-split">
           <div class="cell-text-area">
-            <div class="cell-badge">Thermal Sorter</div>
+            <div class="cell-badge">Fast Label Cropper</div>
             <h3>Shipping Label Cropper & Sorter</h3>
-            <p>Automatically crop multi-page PDF invoices and packing sheets into individual 4x6 labels. Intelligently sorts order slips by platform logs.</p>
+            <p>Crop large A4 PDF shipping labels from Flipkart, Meesho, or Amazon into small thermal printer sizes (3x5 or 4x6 inches). It automatically reads barcode data and groups labels by SKU so you pack identical products in batches without errors.</p>
             <a routerLink="/tools/shipping-label-cropper" class="cell-explore-link" id="bento-deploy-label-cropper-link">
-              Deploy Tool
+              Open Label Cropper
               <span class="material-symbols-outlined">arrow_forward</span>
             </a>
           </div>
           <div class="cell-visual-area label-cropper-visual">
-            <div class="split-pane-mock">
-              <div class="left-pane-pdf">
-                <div class="pdf-logo-tag font-mono-premium">bulk_invoice.pdf</div>
-                <div class="mock-pdf-line l-1"></div>
-                <div class="mock-pdf-line l-2"></div>
-                <div class="mock-pdf-line l-3"></div>
-              </div>
-              <div class="crop-arrow-icon">
-                <span class="material-symbols-outlined">arrow_forward</span>
-              </div>
-              <div class="right-pane-labels">
-                <div class="cropped-label-card f-blue">
-                  <span class="lbl-marketplace">Flipkart</span>
-                  <div class="barcode-mock"></div>
+            <div class="laser-scanner-container">
+              <div class="mock-a4-sheet">
+                <div class="mock-a4-header">
+                  <span class="mock-a4-title">A4 PDF Labels</span>
+                  <span class="mock-a4-pages">Page 1 of 5</span>
                 </div>
-                <div class="cropped-label-card a-orange">
-                  <span class="lbl-marketplace">Amazon</span>
-                  <div class="barcode-mock"></div>
+                <div class="mock-a4-content">
+                  <div class="mock-label-region top-left">Label</div>
+                  <div class="mock-label-region top-right">Address</div>
+                  <div class="mock-label-region bottom-left">Invoice</div>
+                  <div class="mock-label-region bottom-right">Barcode</div>
+                </div>
+                <!-- Sweeping neon laser line -->
+                <div class="laser-sweep-line"></div>
+              </div>
+              <div class="mock-sorted-output">
+                <div class="sorted-envelope f-blue animate-envelope-1">
+                  <span class="envelope-tag">Flipkart SKU Group 1</span>
+                </div>
+                <div class="sorted-envelope a-orange animate-envelope-2">
+                  <span class="envelope-tag">Amazon SKU Group 2</span>
                 </div>
               </div>
             </div>
@@ -108,114 +165,208 @@
       </div>
 
       <!-- 2. Image Cropper (Medium Cell - Span 4) -->
-      <div class="bento-cell cell-medium image-cropper-cell">
+      <div class="bento-cell cell-medium image-cropper-cell reveal-on-scroll delay-1">
         <div class="cell-content-stack">
           <div class="cell-text-area">
-            <div class="cell-badge">1:1 Square</div>
-            <h3>Marketplace Image Cropper</h3>
-            <p>Resize, crop, and configure listing images to exact 1:1 squares with grid alignments.</p>
+            <div class="cell-badge">1:1 Square Resizer</div>
+            <h3>Product Photo Resizer (1:1)</h3>
+            <p>Crop and resize product photos to a perfect 1:1 square ratio for Amazon, Flipkart, and Meesho listings. Keep the product details in center without stretching or blurring the image.</p>
             <a routerLink="/tools/bulk-image-cropper" class="cell-explore-link" id="bento-deploy-image-cropper-link">
-              Deploy Tool
+              Open Photo Resizer
               <span class="material-symbols-outlined">arrow_forward</span>
             </a>
           </div>
           <div class="cell-visual-area center-flex">
-            <div class="canvas-resizer-mock">
-              <div class="canvas-border-guide">
-                <div class="guide-crosshair"></div>
-                <div class="product-shoe-outline"></div>
-                <span class="canvas-tag font-mono-premium">1:1 Locked</span>
+            <div class="mock-cropping-canvas-animated">
+              <div class="crop-grid-overlay animate-grid-pulse">
+                <div class="grid-line horizontal-1"></div>
+                <div class="grid-line horizontal-2"></div>
+                <div class="grid-line vertical-1"></div>
+                <div class="grid-line vertical-2"></div>
+                <span class="crop-badge font-mono-premium">1:1 AUTO</span>
               </div>
+              <!-- Outline SVG of generic product (shoe outline) -->
+              <svg class="product-silhouette" viewBox="0 0 100 100">
+                <path d="M15,65 Q25,50 45,52 T75,40 T90,30 Q90,75 50,75 Z" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1.5" stroke-dasharray="3,3"/>
+              </svg>
+              <div class="crop-corner top-left"></div>
+              <div class="crop-corner top-right"></div>
+              <div class="crop-corner bottom-left"></div>
+              <div class="crop-corner bottom-right"></div>
             </div>
           </div>
         </div>
       </div>
 
       <!-- 3. Image Downloader (Compact Cell - Span 4) -->
-      <div class="bento-cell cell-compact image-downloader-cell">
+      <div class="bento-cell cell-compact image-downloader-cell reveal-on-scroll delay-2">
         <div class="cell-content-stack">
           <div class="cell-text-area">
-            <div class="cell-badge">Asset Extractor</div>
-            <h3>Product Image Downloader</h3>
-            <p>Scrape high-res product photos from online URLs instantly.</p>
+            <div class="cell-badge">Product Image Downloader</div>
+            <h3>Download Product Photos</h3>
+            <p>Download original high-quality photos from any Amazon, Flipkart, Myntra, or Meesho product link. Get all angles and images together in a single ZIP folder in seconds.</p>
             <a routerLink="/tools/bulk-image-downloader" class="cell-explore-link" id="bento-deploy-image-downloader-link">
-              Deploy Tool
+              Open Image Downloader
               <span class="material-symbols-outlined">arrow_forward</span>
             </a>
           </div>
           <div class="cell-visual-area">
-            <div class="scraper-console-mock font-mono-premium">
-              <div class="console-line success-text">> GET /api/extract... 200 OK</div>
-              <div class="console-line">> scraping main_zoom_hi.jpg</div>
-              <div class="progress-bar-line">[=========>  ] 90%</div>
-              <div class="console-line info-text">> ZIP compiled: 4.8MB</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4. AI SEO Product Listing (Large Cell - Span 8) -->
-      <div class="bento-cell cell-large ai-listing-cell">
-        <div class="cell-content-split">
-          <div class="cell-text-area">
-            <div class="cell-badge">Advanced AI Engine</div>
-            <h3>AI SEO Product Listing Builder</h3>
-            <p>Input simple merchant notes and translate them into optimized, high-CTR product titles, bullet points, and search backend keywords.</p>
-            <a routerLink="/tools/ai-listing-generator" class="cell-explore-link" id="bento-deploy-ai-listing-link">
-              Deploy Tool
-              <span class="material-symbols-outlined">arrow_forward</span>
-            </a>
-          </div>
-          <div class="cell-visual-area ai-listing-visual">
-            <div class="ai-translation-mock">
-              <div class="card-raw-notes">
-                <span class="card-label">Raw Notes</span>
-                <p>"cotton polo shirt blue colour size L"</p>
+            <div class="scraper-console-mock font-mono-premium animate-console-glow">
+              <div class="console-hdr">
+                <span class="console-dot-btn red"></span>
+                <span class="console-dot-btn yellow"></span>
+                <span class="console-dot-btn green"></span>
+                <span class="console-title">download_worker.sh</span>
               </div>
-              <div class="ai-arrow-connector">
-                <span class="material-symbols-outlined animate-glow">auto_awesome</span>
-              </div>
-              <div class="card-seo-output">
-                <span class="card-label success">Optimized Listing</span>
-                <p class="seo-title">Premium Slim-Fit Navy Blue Cotton Polo Shirt (Large)</p>
-                <div class="seo-tags-row">
-                  <span class="tag-ctr">CTR +34%</span>
-                  <span class="tag-keyword">Summer Wear</span>
+              <div class="console-log-body">
+                <div class="log-line green-text">> GET /listing/amz-3098...</div>
+                <div class="log-line">> Found 4 high-quality photos.</div>
+                <div class="log-line yellow-text">> Downloading: main_hi.jpg [OK]</div>
+                <div class="log-line yellow-text">> Downloading: zoom_det.jpg [OK]</div>
+                <div class="log-line blue-text">> Creating ZIP folder...</div>
+                <div class="log-progress-bar">
+                  <span class="progress-fill animate-progress-tick"></span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- 4. AI SEO Product Listing (Large Cell - Span 8) -->
+      <div class="bento-cell cell-large ai-listing-cell reveal-on-scroll delay-3">
+        <div class="cell-content-split">
+          <div class="cell-text-area">
+            <div class="cell-badge">AI Listing Description Writer</div>
+            <h3>AI Listing & Keyword Writer</h3>
+            <p>Just enter simple details or copy supplier spec sheets, and our AI will write SEO-friendly product titles, clear descriptions, bullet points, and keywords for your listings.</p>
+            <a routerLink="/tools/ai-listing-generator" class="cell-explore-link" id="bento-deploy-ai-listing-link">
+              Open AI Writer
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </a>
+          </div>
+          <div class="cell-visual-area ai-listing-visual">
+            <div class="ai-flow-container-animated">
+              <div class="ai-flow-node node-input animate-pulse-slow">
+                <span class="node-title">Simple Specs</span>
+                <span class="node-text">"blue cotton polo tshirt large size fit"</span>
+              </div>
+              <div class="ai-glow-pulse-connector">
+                <span class="material-symbols-outlined glowing-spark">auto_awesome</span>
+              </div>
+              <div class="ai-flow-node node-output animate-pulse-slow">
+                <span class="node-title success">SEO Listing Result</span>
+                <div class="seo-tag-pill">High Search Rank</div>
+                <div class="seo-tag-pill">Hinglish Keywords Added</div>
+                <div class="seo-tag-pill">Ready for Excel Upload</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Logistics Marquee Banner -->
+  <section class="marquee-section reveal-on-scroll">
+    <div class="marquee-header">
+      <span class="marquee-hdr-label">Supported Shipping & Courier Partners</span>
+    </div>
+    <div class="marquee-wrapper">
+      <div class="marquee-track">
+        <div class="marquee-item">Delhivery</div>
+        <div class="marquee-item">E-Kart Logistics</div>
+        <div class="marquee-item">Amazon Transportation (ATS)</div>
+        <div class="marquee-item">Meesho Supplier Hub</div>
+        <div class="marquee-item">Shadowfax</div>
+        <div class="marquee-item">BlueDart</div>
+        <div class="marquee-item">Xpressbees</div>
+        <div class="marquee-item">Myntra Logistics</div>
+        <!-- Duplicated for seamless infinite loop -->
+        <div class="marquee-item">Delhivery</div>
+        <div class="marquee-item">E-Kart Logistics</div>
+        <div class="marquee-item">Amazon Transportation (ATS)</div>
+        <div class="marquee-item">Meesho Supplier Hub</div>
+        <div class="marquee-item">Shadowfax</div>
+        <div class="marquee-item">BlueDart</div>
+        <div class="marquee-item">Xpressbees</div>
+        <div class="marquee-item">Myntra Logistics</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Expanded SEO Content Grid -->
+  <section class="seo-content-rich-section">
+    <div class="seo-content-container">
+      <h2 class="section-title-premium reveal-on-scroll">Pack Faster & Sell More on Indian Marketplaces</h2>
+      <p class="section-subtitle-premium reveal-on-scroll">How SellerOS helps online sellers save hours of daily work and grow their business on Amazon, Flipkart, Meesho, and Myntra.</p>
+      
+      <div class="seo-grids">
+        <div class="seo-card border-glow-premium reveal-on-scroll">
+          <span class="material-symbols-outlined seo-card-icon">trending_up</span>
+          <h4>Rank Higher & Get More Clicks</h4>
+          <p>
+            Flipkart, Meesho, and Amazon search algorithms love clear, square (1:1) images. If your product photos are not square or look blurry, your sales can go down. SellerOS sizes your images perfectly so customers click on your products first.
+          </p>
+        </div>
+        
+        <div class="seo-card border-glow-premium reveal-on-scroll delay-1">
+          <span class="material-symbols-outlined seo-card-icon">inventory_2</span>
+          <h4>Sort Labels by SKU & Pack 2x Faster</h4>
+          <p>
+            Manually printing and separating shipping labels is slow. SellerOS reads barcode data and groups all shipping labels by their SKU code. Your packing team can wrap similar items together, avoiding wrong items being sent.
+          </p>
+        </div>
+
+        <div class="seo-card border-glow-premium reveal-on-scroll delay-2">
+          <span class="material-symbols-outlined seo-card-icon">security</span>
+          <h4>100% Secure (No Uploads, Complete Privacy)</h4>
+          <p>
+            We respect your privacy. All processing runs locally inside your browser. Your customer names, shipping addresses, and prices are never uploaded to any server. Your business data stays completely safe on your own PC or laptop.
+          </p>
+        </div>
+
+        <div class="seo-card border-glow-premium reveal-on-scroll delay-3">
+          <span class="material-symbols-outlined seo-card-icon">translate</span>
+          <h4>Target Hinglish Keywords for More Sales</h4>
+          <p>
+            Many Indian buyers search using words like 'casual shoes black color' or 'cotton suit material'. Our AI listing writer automatically adds these popular Hinglish terms so more buyers find your listings when they search.
+          </p>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Global Stats Bar -->
-  <section class="stats-bar-section">
+  <section class="stats-bar-section reveal-on-scroll">
     <div class="stats-bar-grid">
       <div class="stat-card-premium">
-        <span class="stat-big-val">4</span>
-        <span class="stat-label-premium">Major Platforms Integrated</span>
-      </div>
-      <div class="stat-card-premium">
-        <span class="stat-big-val">100%</span>
-        <span class="stat-label-premium">Free, Client-Side Utilities</span>
+        <span class="stat-big-val">4+</span>
+        <span class="stat-label-premium">Marketplace Formats</span>
       </div>
       <div class="stat-card-premium">
         <span class="stat-big-val">Smart AI</span>
-        <span class="stat-label-premium">AI Powered Optimization</span>
+        <span class="stat-label-premium">AI Listing Writer</span>
+      </div>
+      <div class="stat-card-premium">
+        <span class="stat-big-val">100%</span>
+        <span class="stat-label-premium">100% Private (No Uploads)</span>
+      </div>
+      <div class="stat-card-premium">
+        <span class="stat-big-val">Free</span>
+        <span class="stat-label-premium">100% Free to Use</span>
       </div>
     </div>
   </section>
 
   <!-- FAQs Section -->
-  <section class="faq-section">
+  <section class="faq-section reveal-on-scroll">
     <div class="faq-container-inner">
-      <h2 class="bento-heading-title text-center">Common Merchant Queries</h2>
-      <p class="bento-heading-desc text-center">Have questions about processing limits, data privacy, or API keys? Find answers below.</p>
+      <h2 class="bento-heading-title text-center">Frequently Asked Questions</h2>
+      <p class="bento-heading-desc text-center">Simple answers to common questions about processing limits, label formats, and catalog security.</p>
       
       <div class="faq-list-premium">
-        <div class="faq-item-premium" *ngFor="let faq of faqs; let i = index" [class.faq-open]="faq.open">
+        <div class="faq-item-premium" *ngFor="let faq of faqs; let i = index" [class.faq-open]="faq.open" [class.faq-open]="faq.open">
           <button 
             type="button"
             class="faq-question-premium" 

@@ -83,6 +83,193 @@ function extractTextFast(page, pdfDoc) {
 }
 
 /**
+ * Checks if a candidate string is a common non-SKU code found on shipping labels.
+ * Used to filter false positives from the product-code pattern matching.
+ */
+function isCommonCode(s) {
+  const upper = s.toUpperCase();
+  // Indian state/region codes (XX-YY format like IN-GA, IN-HR, IN-KL)
+  if (/^[A-Z]{2}-[A-Z]{2,3}$/.test(upper)) return true;
+  // Common label terms that happen to contain separators
+  const commonPhrases = new Set([
+    'E-KART', 'E-CART', 'SKU-ID', 'SKU-CODE', 'ITEM-CODE', 'STYLE-CODE',
+    'NOT-FOR', 'FOR-RESALE', 'NON-REFUNDABLE', 'SELF-SHIP', 'EASY-SHIP',
+    'PRE-PAID', 'PRE_PAID', 'CASH-ON', 'NO-RETURN', 'NON-RETURNABLE',
+    'SEMI-PRECIOUS', 'GOLD-PLATED', 'SILVER-PLATED', 'ROSE-GOLD',
+    'ANTI-TARNISH', 'STAINLESS-STEEL', 'CUBIC-ZIRCONIA', 'GSTIN', 'flipkart',
+    'meesho', 'amazon', 'myntra', 'qty', 'description', 'serial', 'number',
+    'order', 'prepaid', 'cod', 'invoice', 'retail', 'tax', 'hsn', 'cgst',
+    'sgst', 'igst', 'billing', 'shipping', 'address', 'routing', 'tracking',
+    'logistics', 'delivery', 'partner', 'courier'
+  ]);
+  if (commonPhrases.has(upper)) return true;
+  return false;
+}
+
+// Generic list of noise words that are not SKUs
+const NOISE_WORDS = new Set([
+  'SKU', 'ID', 'CODE', 'DESCRIPTION', 'QTY', 'QUANTITY', 'TOTAL', 'PRICE',
+  'GSTIN', 'ORDER', 'ORDERED', 'THROUGH', 'FLIPKART', 'AMAZON', 'MEESHO', 'MYNTRA',
+  'INVOICE', 'TAX', 'RETAIL', 'LOGISTICS', 'SURFACE', 'COD', 'PREPAID', 'SHIP',
+  'SHIPPING', 'BILLING', 'DELIVERY', 'ADDRESS', 'CUSTOMER', 'SELLER', 'NAME',
+  'FMPC', 'AWB', 'TRACKING', 'COURIER', 'PARTNER', 'EKART', 'DELHIVERY', 'E-KART',
+  'E-CART', 'LOGISTICS', 'PRODUCT', 'DETAILS', 'ITEM', 'ITEMS', 'SERIAL', 'NO',
+  'GST', 'HSN', 'TAXABLE', 'VALUE', 'RATE', 'AMOUNT', 'CGST', 'SGST', 'IGST',
+  'ROUND', 'OFF', 'TOTALS', 'AUTHORIZED', 'SIGNATORY', 'DATE', 'PACKED', 'BY',
+  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
+]);
+
+function cleanToken(token) {
+  return token.replace(/^[:,\-\.\|\(\)\[\]]+|[:,\-\.\|\(\)\[\]]+$/g, '').trim();
+}
+
+function getSkuScore(token, isGlobalScan = false) {
+  const cleaned = cleanToken(token);
+  const upper = cleaned.toUpperCase();
+  
+  if (cleaned.length < 3 || cleaned.length > 30) return -100;
+  if (NOISE_WORDS.has(upper)) return -100;
+  if (isCommonCode(cleaned)) return -100;
+  if (!/^[A-Z0-9_\-\.\/]+$/i.test(cleaned)) return -100;
+
+  let score = 10;
+
+  const hasLetters = /[A-Z]/i.test(cleaned);
+  const hasDigits = /[0-9]/.test(cleaned);
+  const hasSeparators = /[_\-\.\/]/.test(cleaned);
+  const isAllUppercase = (cleaned === upper);
+
+  if (isAllUppercase) {
+    score += 5;
+  }
+
+  if (hasLetters) {
+    score += 5;
+  }
+
+  if (hasLetters && hasDigits) {
+    score += 10;
+  }
+
+  if (hasSeparators) {
+    score += 15;
+  }
+
+  // Description word detection / penalty:
+  // If the token contains letters but is NOT all-uppercase, AND it has no digits and no separators
+  // (e.g. "Alinora", "Stainless", "Plated"), it is almost certainly a description word.
+  if (hasLetters && !isAllUppercase && !hasDigits && !hasSeparators) {
+    score -= 25;
+  }
+
+  // Also penalize purely lowercase words aggressively (e.g. "alinora", "jewels")
+  if (/^[a-z]+$/.test(cleaned)) {
+    score -= 25;
+  }
+
+  if (isGlobalScan) {
+    if (/^\d{10,}$/.test(cleaned)) score -= 15;
+    if (/^OD\d{10,}$/i.test(cleaned) || /^FMPC\d{10,}$/i.test(cleaned)) score -= 30;
+  }
+
+  return score;
+}
+
+function parseSKUGenerically(text) {
+  if (!text) return 'UNKNOWN';
+  
+  const cleanText = text.replace(/[|\r\n]/g, ' ').replace(/\s+/g, ' ').trim();
+  const upperText = cleanText.toUpperCase();
+  const foundSkus = new Set();
+
+  // 1. Keyword-based SKU extraction
+  const skuKeywordRegexes = [
+    /(?:SELLER\s+)?SKU\s*(?:CODE|ID|NAME)?\s*[:\-|=\s]\s*([A-Z0-9_\-\.\/]{3,30})/gi,
+    /STYLE\s*(?:CODE|NAME|ID)?\s*[:\-|=\s]\s*([A-Z0-9_\-\.\/]{3,30})/gi,
+    /ITEM\s*(?:CODE|NAME|ID)?\s*[:\-|=\s]\s*([A-Z0-9_\-\.\/]{3,30})/gi,
+    /LISTING\s*(?:CODE|NAME|ID)?\s*[:\-|=\s]\s*([A-Z0-9_\-\.\/]{3,30})/gi
+  ];
+
+  for (const regex of skuKeywordRegexes) {
+    regex.lastIndex = 0;
+    let match;
+    while ((match = regex.exec(cleanText)) !== null) {
+      const val = cleanToken(match[1]);
+      const score = getSkuScore(val, false);
+      if (score > 0) {
+        foundSkus.add(val.toUpperCase());
+      }
+    }
+  }
+
+  // 2. Table-based SKU extraction
+  const tableHeaders = [
+    'SKU ID DESCRIPTION QTY',
+    'SKU ID DESCRIPTION QUANTITY',
+    'SKU DESCRIPTION QTY',
+    'STYLE CODE DESCRIPTION QTY',
+    'ITEM CODE DESCRIPTION QTY',
+    'SELLER SKU ID',
+    'SKU ID',
+    'SKU CODE',
+    'STYLE CODE',
+    'ITEM CODE'
+  ].sort((a, b) => b.length - a.length);
+
+  let headerMatched = false;
+  for (const header of tableHeaders) {
+    if (headerMatched) break;
+
+    const headerIdx = upperText.indexOf(header);
+    if (headerIdx !== -1) {
+      headerMatched = true; // Match only the most specific header
+      const sub = cleanText.substring(headerIdx + header.length).trim();
+      const tokens = sub.split(' ');
+      
+      // Score the first 20 tokens after the table header
+      const scoredTokens = [];
+      for (let i = 0; i < Math.min(tokens.length, 20); i++) {
+        const token = tokens[i].trim();
+        const cleaned = cleanToken(token);
+        const score = getSkuScore(cleaned, false);
+        if (score > 0) {
+          scoredTokens.push({ token: cleaned, score });
+        }
+      }
+
+      if (scoredTokens.length > 0) {
+        const maxScore = Math.max(...scoredTokens.map(t => t.score));
+        scoredTokens.forEach(t => {
+          if (t.score >= maxScore - 10 && t.score >= 15) {
+            foundSkus.add(t.token.toUpperCase());
+          }
+        });
+      }
+    }
+  }
+
+  // 3. Fallback to global scan if nothing found yet
+  if (foundSkus.size === 0) {
+    const tokens = cleanText.split(' ');
+    let bestToken = null;
+    let maxScore = 0;
+    for (const token of tokens) {
+      const cleaned = cleanToken(token);
+      const score = getSkuScore(cleaned, true);
+      if (score > maxScore) {
+        maxScore = score;
+        bestToken = cleaned;
+      }
+    }
+    if (bestToken) {
+      foundSkus.add(bestToken.toUpperCase());
+    }
+  }
+
+  return foundSkus.size > 0 ? Array.from(foundSkus).sort().join('+') : 'UNKNOWN';
+}
+
+/**
  * Scans page text to find Order IDs, SKUs, and Date strings.
  */
 function parseMetadata(text, platform) {
@@ -116,28 +303,8 @@ function parseMetadata(text, platform) {
     if (match) orderId = match[0];
   }
 
-  // 2. Extract SKU names
-  // Looks for terms like "SKU", "Listing ID", "Item Code", or capitalized codes
-  const skuRegexes = [
-    /SKU\s*(?:Code|Name|Id)?\s*[:\-]?\s*([A-Z0-9_\-\.\/]+)/i,
-    /Listing\s*(?:Code|Name|Id)?\s*[:\-]?\s*([A-Z0-9_\-\.\/]+)/i,
-    /Item\s*(?:Code|Name)?\s*[:\-]?\s*([A-Z0-9_\-\.\/]+)/i,
-    /Style\s*(?:Code|Name)?\s*[:\-]?\s*([A-Z0-9_\-\.\/]+)/i
-  ];
-
-  for (const regex of skuRegexes) {
-    const match = text.match(regex);
-    if (match && match[1]) {
-      sku = match[1].trim();
-      break;
-    }
-  }
-
-  // Fallback: search for words in brackets or parentheses that look like SKUs
-  if (sku === 'UNKNOWN') {
-    const match = text.match(/\[([A-Z0-9_\-\.]{5,20})\]/);
-    if (match) sku = match[1];
-  }
+  // 2. Extract SKU using the advanced, format-agnostic Token Scoring Parser
+  sku = parseSKUGenerically(text);
 
   // 3. Extract Date
   const dateMatch = text.match(/\b\d{2}[\-\/\.]\d{2}[\-\/\.]\d{4}\b/) || 
@@ -490,6 +657,17 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
 
   console.log(`[LabelProcessor] Step 1: Text extraction completed: ${allPages.length} pages in ${Date.now() - tIngestionStart}ms.`);
 
+  // Diagnostic: log extracted text snippet + parsed metadata for first 10 pages
+  // This helps trace SKU extraction issues without flooding the console
+  const diagCount = Math.min(allPages.length, 10);
+  for (let i = 0; i < diagCount; i++) {
+    const p = allPages[i];
+    const textSnippet = (p.text || '').substring(0, 250).replace(/\n/g, ' ');
+    console.log(`[LabelProcessor] DIAG page[${i}] file=${p.originalFilename} pageIdx=${p.pageIndex} type=${p.pageType}`);
+    console.log(`[LabelProcessor] DIAG page[${i}] text="${textSnippet}..."`);
+    console.log(`[LabelProcessor] DIAG page[${i}] metadata=${JSON.stringify(p.metadata)}`);
+  }
+
   // Step 2: Filter page types based on outputType
   // outputType: 'labels' (labels only), 'invoices' (invoices only), 'zip' (labels + invoices separated)
   let filteredPages = [...allPages];
@@ -499,19 +677,68 @@ async function processLabels(files, { platform, sortBy, sortOrder, outputType, m
     filteredPages = allPages.filter(p => p.pageType === 'invoice');
   }
 
+  // Assign stable original-order index to each page BEFORE sorting.
+  // This is used as a tiebreaker so pages with UNKNOWN metadata stay near
+  // their original neighbors rather than clumping randomly.
+  filteredPages.forEach((p, idx) => { p._originalIndex = idx; });
+
   // Step 3: Sort page list according to criteria
+  // KEY FIX: Multi-level stable sort:
+  //   1. Primary: sortBy field (sku, orderId, or date)
+  //   2. Secondary: orderId (groups same-SKU labels by order)
+  //   3. Tertiary: original file position (preserves input order for ties)
+  // UNKNOWN values sort LAST so they don't break up properly-identified groups.
   const tSortStart = Date.now();
+
+  // Log SKU extraction diagnostics for debugging
+  const skuDistribution = {};
+  filteredPages.forEach(p => {
+    const s = p.metadata.sku || 'UNKNOWN';
+    skuDistribution[s] = (skuDistribution[s] || 0) + 1;
+  });
+  const uniqueSkus = Object.keys(skuDistribution).length;
+  const unknownCount = skuDistribution['UNKNOWN'] || 0;
+  console.log(`[LabelProcessor] SKU extraction: ${uniqueSkus} unique SKUs found, ${unknownCount} pages with UNKNOWN SKU.`);
+  if (uniqueSkus <= 30) {
+    console.log(`[LabelProcessor] SKU distribution:`, JSON.stringify(skuDistribution));
+  }
+
   filteredPages.sort((a, b) => {
-    let valA = a.metadata[sortBy] || '';
-    let valB = b.metadata[sortBy] || '';
+    // Helper: get the sort value, treating UNKNOWN as a special high-value
+    // so unrecognized pages sort to the end rather than the beginning
+    const getSortVal = (page, field) => {
+      const raw = page.metadata[field] || '';
+      const val = typeof raw === 'string' ? raw.toLowerCase() : raw;
+      return val === 'unknown' || val === '' ? null : val;
+    };
 
-    // Case insensitive sorting
-    valA = typeof valA === 'string' ? valA.toLowerCase() : valA;
-    valB = typeof valB === 'string' ? valB.toLowerCase() : valB;
+    const primaryA = getSortVal(a, sortBy);
+    const primaryB = getSortVal(b, sortBy);
 
-    if (valA < valB) return sortOrder === 'asc' ? -1 : 1;
-    if (valA > valB) return sortOrder === 'asc' ? 1 : -1;
-    return 0;
+    // Both UNKNOWN → preserve original order
+    if (primaryA === null && primaryB === null) {
+      return a._originalIndex - b._originalIndex;
+    }
+    // UNKNOWN sorts last
+    if (primaryA === null) return 1;
+    if (primaryB === null) return -1;
+
+    // Primary comparison
+    if (primaryA < primaryB) return sortOrder === 'asc' ? -1 : 1;
+    if (primaryA > primaryB) return sortOrder === 'asc' ? 1 : -1;
+
+    // Secondary: sort by orderId within same primary key
+    // This groups all pages for the same order together, which is critical
+    // for multi-item orders where multiple labels share the same orderId
+    if (sortBy !== 'orderId') {
+      const orderA = (a.metadata.orderId || '').toLowerCase();
+      const orderB = (b.metadata.orderId || '').toLowerCase();
+      if (orderA < orderB) return -1;
+      if (orderA > orderB) return 1;
+    }
+
+    // Tertiary: preserve original input order for complete stability
+    return a._originalIndex - b._originalIndex;
   });
 
   console.log(`[LabelProcessor] Step 2 & 3: Filtering & Sorting: ${Date.now() - tSortStart}ms. Pages count = ${filteredPages.length}`);

@@ -83,23 +83,23 @@ export class ImageDownloaderPageComponent {
   }
   faqs = [
     {
-      question: 'Which marketplaces are supported by the image downloader?',
-      answer: 'Currently, SellerOS supports downloading product listing images from Flipkart, Amazon.in, Meesho, and Myntra. We extract the highest resolution original images directly from the official listings.',
+      question: 'Which marketplaces are supported?',
+      answer: 'You can download product photos from Flipkart, Amazon.in, Meesho, and Myntra. We fetch the highest quality original photos directly from the listing.',
       open: false
     },
     {
-      question: 'Is there a limit on how many images I can download?',
-      answer: 'No. SellerOS is 100% free and unlimited. You can paste and download images from as many product listings as you need, without any daily caps or watermarks.',
+      question: 'Is there a limit on download counts?',
+      answer: 'No. Our tool is 100% free and unlimited. You can download product images from as many links as you want.',
       open: false
     },
     {
-      question: 'Does this tool download high-quality zoom images?',
-      answer: 'Yes! The downloader automatically locates the highest resolution Zoom/HD source images in the platform metadata rather than the low-res search thumbnails.',
+      question: 'Does it download high-quality zoom photos?',
+      answer: 'Yes! We find and download the original high-resolution zoom photos that the seller uploaded, not the small, blurry thumbnails.',
       open: false
     },
     {
-      question: 'How do I download Myntra or Meesho images?',
-      answer: 'Simply copy the product details URL from your browser or mobile sharing link, paste it into our Downloader search bar, and click "Extract Images". You can download them individually or as a single ZIP file.',
+      question: 'How do I download Meesho or Myntra photos?',
+      answer: 'Just copy the product link from your browser or mobile app, paste it into the downloader search box, and click "Search". You can download photos one by one or all of them together in a single ZIP folder.',
       open: false
     }
   ];

@@ -30,23 +30,23 @@ export class ImageCropperPageComponent implements OnInit {
 
   faqs = [
     {
-      question: 'Why is the 1:1 ratio important for online marketplaces?',
-      answer: 'Amazon, Flipkart, and Meesho recommend or enforce 1:1 square aspect ratio images for product listings. Square images occupy maximum real estate in search feeds, resulting in higher click-through rates (CTR) and professional-looking catalogs.',
+      question: 'Why is a 1:1 square image important?',
+      answer: 'Amazon, Flipkart, and Meesho ask for square (1:1) images. Square photos take the maximum space on mobile screens, making your products look professional and getting you more clicks and orders.',
       open: false
     },
     {
-      question: 'Can I crop multiple images at the same time?',
-      answer: 'Yes! Our bulk cropper lets you upload dozens of images simultaneously. You can set the crop boundary or choose preset aspect ratios and apply adjustments across all files at once.',
+      question: 'Can I crop many photos at once?',
+      answer: 'Yes! You can upload multiple images together. You can resize them all in one click to save time.',
       open: false
     },
     {
-      question: 'Does this tool compromise image quality or compress too much?',
-      answer: 'No. SellerOS processes images locally inside your browser, maintaining original pixel clarity. You can optionally compress the final output to reduce file sizes for faster page loading on listing sheets.',
+      question: 'Will it reduce my image quality?',
+      answer: 'No. Our tool resizes photos right inside your browser without losing quality. You can also compress them if you want smaller files that upload faster.',
       open: false
     },
     {
-      question: 'Are my images secure? Do you upload them to a server?',
-      answer: 'Absolutely secure. All cropping, aspect ratio locking, and compression processes occur directly inside your local browser sandbox. No image data is sent to our servers, respecting your catalog privacy.',
+      question: 'Are my photos safe? Do you upload them?',
+      answer: 'Your photos are 100% safe. All cropping and saving happens on your computer or phone. We never upload or save any of your photos on our servers.',
       open: false
     }
   ];
