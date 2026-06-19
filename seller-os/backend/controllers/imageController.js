@@ -2,7 +2,7 @@ const scraperService = require('../services/scraperService');
 
 async function fetchImages(req, res) {
   try {
-    const { urls } = req.body;
+    const { urls, platform: requestedPlatform } = req.body;
 
     if (!urls || !Array.isArray(urls)) {
       return res.status(400).json({
@@ -19,7 +19,7 @@ async function fetchImages(req, res) {
     // Scrape all pages concurrently in parallel
     const scrapePromises = validUrls.map(async (url) => {
       try {
-        return await scraperService.validateAndScrape(url);
+        return await scraperService.validateAndScrape(url, requestedPlatform);
       } catch (e) {
         return {
           success: false,

@@ -87,8 +87,14 @@ export class ImageDownloaderComponent {
         return 'Paste Meesho product links here (one per line)...';
       case 'myntra':
         return 'Paste Myntra product links here (one per line)...';
+      case 'shopify':
+        return 'Paste Shopify store product links here...';
+      case 'woocommerce':
+        return 'Paste WooCommerce store product links here...';
+      case 'pinterest':
+        return 'Paste Pinterest links here...';
       default:
-        return 'Paste Flipkart, Amazon, Meesho, or Myntra product links here (one per line)...';
+        return 'Paste Flipkart, Amazon, Meesho, Myntra, Shopify, WooCommerce, or Pinterest product links here (one per line)...';
     }
   }
 
@@ -122,6 +128,11 @@ export class ImageDownloaderComponent {
         matches = false;
       } else if (this.selectedPlatform === 'myntra' && !cleanUrl.includes('myntra.com')) {
         matches = false;
+      } else if (this.selectedPlatform === 'pinterest' && !cleanUrl.includes('pinterest.com') && !cleanUrl.includes('pin.it') && !cleanUrl.includes('pinterest.co')) {
+        matches = false;
+      } else if (this.selectedPlatform === 'shopify' || this.selectedPlatform === 'woocommerce') {
+        // We cannot validate custom domains statically, so trust the user if they specifically selected Shopify/WooCommerce
+        matches = true;
       }
 
       if (matches) {
@@ -139,7 +150,7 @@ export class ImageDownloaderComponent {
       return;
     }
 
-    this.http.post<FetchImagesResult>(this.apiEndpoint, { urls: filteredUrls })
+    this.http.post<FetchImagesResult>(this.apiEndpoint, { urls: filteredUrls, platform: this.selectedPlatform })
       .subscribe({
         next: (response) => {
           try {
@@ -235,25 +246,44 @@ export class ImageDownloaderComponent {
         const proxyUrl = `http://localhost:3333/api/proxy-image?url=${encodeURIComponent(img.url)}`;
         this.http.get(proxyUrl, { responseType: 'blob' })
           .subscribe({
-            next: (blob) => {
-              const fileExtension = blob.type.split('/')[1] || 'jpg';
-              const platformPrefix = img.platform.toLowerCase();
-              const fileName = `${platformPrefix}_scraped_${img.id.split('_')[2] || 'img'}_${index + 1}.${fileExtension}`;
-              
-              zip.file(fileName, blob);
-              resolve();
+            next: async (blob) => {
+              try {
+                const jpegBlob = await this.convertBlobToJpeg(blob);
+                const platformPrefix = img.platform.toLowerCase();
+                const fileName = `${platformPrefix}_scraped_${img.id.split('_')[2] || 'img'}_${index + 1}.jpg`;
+                
+                zip.file(fileName, jpegBlob);
+                resolve();
+              } catch (e) {
+                console.warn('Failed to convert to jpeg:', e);
+                // Fallback to original blob
+                const fileExtension = blob.type.split('/')[1] || 'jpg';
+                const platformPrefix = img.platform.toLowerCase();
+                const fileName = `${platformPrefix}_scraped_${img.id.split('_')[2] || 'img'}_${index + 1}.${fileExtension}`;
+                
+                zip.file(fileName, blob);
+                resolve();
+              }
             },
             error: (err) => {
               console.warn(`Failed to fetch image for zip ${img.id} via proxy, trying direct fallback:`, err);
               // Fallback to direct client-side fetch in case proxy fails
               this.http.get(img.url, { responseType: 'blob' })
                 .subscribe({
-                  next: (directBlob) => {
-                    const fileExtension = directBlob.type.split('/')[1] || 'jpg';
-                    const platformPrefix = img.platform.toLowerCase();
-                    const fileName = `${platformPrefix}_scraped_${img.id.split('_')[2] || 'img'}_${index + 1}.${fileExtension}`;
-                    zip.file(fileName, directBlob);
-                    resolve();
+                  next: async (directBlob) => {
+                    try {
+                      const jpegBlob = await this.convertBlobToJpeg(directBlob);
+                      const platformPrefix = img.platform.toLowerCase();
+                      const fileName = `${platformPrefix}_scraped_${img.id.split('_')[2] || 'img'}_${index + 1}.jpg`;
+                      zip.file(fileName, jpegBlob);
+                      resolve();
+                    } catch (e) {
+                      const fileExtension = directBlob.type.split('/')[1] || 'jpg';
+                      const platformPrefix = img.platform.toLowerCase();
+                      const fileName = `${platformPrefix}_scraped_${img.id.split('_')[2] || 'img'}_${index + 1}.${fileExtension}`;
+                      zip.file(fileName, directBlob);
+                      resolve();
+                    }
                   },
                   error: (directErr) => {
                     console.error(`Direct fallback fetch failed for zip image ${img.id}:`, directErr);
@@ -298,42 +328,73 @@ export class ImageDownloaderComponent {
     const proxyUrl = `http://localhost:3333/api/proxy-image?url=${encodeURIComponent(img.url)}`;
     this.http.get(proxyUrl, { responseType: 'blob' })
       .subscribe({
-        next: (blob) => {
-          const blobUrl = window.URL.createObjectURL(blob);
-          const link = document.createElement('a');
-          link.href = blobUrl;
-          
-          // Generate a clean professional filename
-          const fileExtension = blob.type.split('/')[1] || 'jpg';
-          const platformPrefix = img.platform.toLowerCase();
-          link.download = `${platformPrefix}_scraped_${img.id.split('_')[2] || 'img'}.${fileExtension}`;
-          
-          document.body.appendChild(link);
-          link.click();
-          
-          // Clean up
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(blobUrl);
+        next: async (blob) => {
+          try {
+            const jpegBlob = await this.convertBlobToJpeg(blob);
+            const blobUrl = window.URL.createObjectURL(jpegBlob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            
+            const platformPrefix = img.platform.toLowerCase();
+            link.download = `${platformPrefix}_scraped_${img.id.split('_')[2] || 'img'}.jpg`;
+            
+            document.body.appendChild(link);
+            link.click();
+            
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+          } catch (e) {
+            console.warn('Failed to convert single image to jpeg, falling back', e);
+            const blobUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            
+            const fileExtension = blob.type.split('/')[1] || 'jpg';
+            const platformPrefix = img.platform.toLowerCase();
+            link.download = `${platformPrefix}_scraped_${img.id.split('_')[2] || 'img'}.${fileExtension}`;
+            
+            document.body.appendChild(link);
+            link.click();
+            
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+          }
         },
         error: (proxyErr) => {
           console.warn(`Failed to download image ${img.id} via proxy, trying direct fallback:`, proxyErr);
           // Try direct fallback
           this.http.get(img.url, { responseType: 'blob' })
             .subscribe({
-              next: (blob) => {
-                const blobUrl = window.URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = blobUrl;
-                
-                const fileExtension = blob.type.split('/')[1] || 'jpg';
-                const platformPrefix = img.platform.toLowerCase();
-                link.download = `${platformPrefix}_scraped_${img.id.split('_')[2] || 'img'}.${fileExtension}`;
-                
-                document.body.appendChild(link);
-                link.click();
-                
-                document.body.removeChild(link);
-                window.URL.revokeObjectURL(blobUrl);
+              next: async (blob) => {
+                try {
+                  const jpegBlob = await this.convertBlobToJpeg(blob);
+                  const blobUrl = window.URL.createObjectURL(jpegBlob);
+                  const link = document.createElement('a');
+                  link.href = blobUrl;
+                  
+                  const platformPrefix = img.platform.toLowerCase();
+                  link.download = `${platformPrefix}_scraped_${img.id.split('_')[2] || 'img'}.jpg`;
+                  
+                  document.body.appendChild(link);
+                  link.click();
+                  
+                  document.body.removeChild(link);
+                  window.URL.revokeObjectURL(blobUrl);
+                } catch (e) {
+                  const blobUrl = window.URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = blobUrl;
+                  
+                  const fileExtension = blob.type.split('/')[1] || 'jpg';
+                  const platformPrefix = img.platform.toLowerCase();
+                  link.download = `${platformPrefix}_scraped_${img.id.split('_')[2] || 'img'}.${fileExtension}`;
+                  
+                  document.body.appendChild(link);
+                  link.click();
+                  
+                  document.body.removeChild(link);
+                  window.URL.revokeObjectURL(blobUrl);
+                }
               },
               error: (directErr) => {
                 console.error(`Failed to download image ${img.id} directly, falling back to new window:`, directErr);
@@ -347,5 +408,41 @@ export class ImageDownloaderComponent {
 
   clearInput(): void {
     this.urlsInput = '';
+  }
+
+  private convertBlobToJpeg(blob: Blob): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const objectUrl = window.URL.createObjectURL(blob);
+      
+      img.onload = () => {
+        window.URL.revokeObjectURL(objectUrl);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return reject(new Error('Failed to get 2d context'));
+        
+        // Fill white background in case of transparency
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+        
+        canvas.toBlob((jpegBlob) => {
+          if (jpegBlob) {
+            resolve(jpegBlob);
+          } else {
+            reject(new Error('Failed to convert canvas to blob'));
+          }
+        }, 'image/jpeg', 0.9);
+      };
+      
+      img.onerror = () => {
+        window.URL.revokeObjectURL(objectUrl);
+        reject(new Error('Failed to load image for conversion'));
+      };
+      
+      img.src = objectUrl;
+    });
   }
 }

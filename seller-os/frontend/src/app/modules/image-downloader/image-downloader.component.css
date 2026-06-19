@@ -110,23 +110,24 @@
 }
 
 .platform-pills {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   background-color: var(--bg-pill-container);
-  padding: 3px;
+  padding: 6px;
   border-radius: 8px;
   border: 1px solid var(--border-light-color);
 }
 
 .platform-pill-btn {
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   border: none;
   background: transparent;
-  padding: 6px 4px;
+  padding: 6px 12px;
   font-family: 'Outfit', sans-serif;
   font-size: 11px;
   font-weight: 600;
@@ -170,6 +171,12 @@
   background-color: rgba(255, 63, 108, 0.03);
 }
 
+.platform-pill-btn.pinterest-pill.active {
+  color: #E60023 !important;
+  border: 1px solid rgba(230, 0, 35, 0.2);
+  background-color: rgba(230, 0, 35, 0.03);
+}
+
 .pill-icon {
   font-size: 14px;
 }
@@ -201,6 +208,10 @@
 
 .my-badge {
   background: linear-gradient(135deg, #ff3f6c, #d11243);
+}
+
+.pin-badge {
+  background: linear-gradient(135deg, #E60023, #a10018);
 }
 
 /* Textarea fitment */

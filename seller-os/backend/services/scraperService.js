@@ -166,7 +166,7 @@ async function fetchAndParse(url) {
   return await response.text();
 }
 
-async function validateAndScrape(url) {
+async function validateAndScrape(url, requestedPlatform = "") {
   if (!url || typeof url !== 'string') {
     return {
       success: false,
@@ -189,7 +189,11 @@ async function validateAndScrape(url) {
   }
 
   let platform = "";
-  if (cleanUrl.includes("flipkart.com")) {
+  if (requestedPlatform === 'shopify') {
+    platform = "shopify";
+  } else if (requestedPlatform === 'woocommerce') {
+    platform = "woocommerce";
+  } else if (cleanUrl.includes("flipkart.com")) {
     platform = "flipkart";
   } else if (cleanUrl.includes("amazon.com") || cleanUrl.includes("amazon.in") || cleanUrl.includes("amzn.to")) {
     platform = "amazon";
@@ -197,11 +201,13 @@ async function validateAndScrape(url) {
     platform = "meesho";
   } else if (cleanUrl.includes("myntra.com")) {
     platform = "myntra";
+  } else if (cleanUrl.includes("pinterest.com") || cleanUrl.includes("pinterest.co") || cleanUrl.includes("pin.it") || requestedPlatform === 'pinterest') {
+    platform = "pinterest";
   } else {
     return {
       success: false,
       url: trimmedUrl,
-      error: "Unrecognized platform. Only Flipkart, Amazon, Meesho, and Myntra URLs are currently supported."
+      error: "Unrecognized platform. Only Flipkart, Amazon, Meesho, Myntra, Shopify, WooCommerce, and Pinterest URLs are currently supported."
     };
   }
 
@@ -239,6 +245,27 @@ async function validateAndScrape(url) {
             } catch (e) {}
           }
         });
+        
+        console.log('[Scraper] Running regex scanner on directHtml for Amazon.');
+        
+        let targetHtml = directHtml;
+        const colorImagesMatch = /'colorImages':\s*({.*?}),\n/s.exec(directHtml) || /"colorImages":\s*({.*?}),\n/s.exec(directHtml);
+        if (colorImagesMatch) {
+          console.log('[Scraper] Found colorImages block, restricting search to gallery.');
+          targetHtml = colorImagesMatch[1];
+        }
+
+        const regex = /(https:\/\/(?:images-na\.ssl-images-amazon|m\.media-amazon|images-eu\.ssl-images-amazon)\.com\/images\/I\/[a-zA-Z0-9%_\-\.\+]+)/gi;
+        let match;
+        while ((match = regex.exec(targetHtml)) !== null) {
+          let matchedUrl = match[1];
+          if (matchedUrl.includes('._')) {
+            matchedUrl = matchedUrl.replace(/\._[A-Z0-9_\+]+?\.(jpg|jpeg|png|gif)$/i, '.$1');
+          }
+          if (matchedUrl.endsWith('.jpg') || matchedUrl.endsWith('.png') || matchedUrl.endsWith('.jpeg')) {
+            discoveredUrls.add(matchedUrl);
+          }
+        }
       }
       else if (platform === 'meesho') {
         $('img').each((i, el) => {
@@ -268,6 +295,44 @@ async function validateAndScrape(url) {
         while ((match = regex.exec(unescapedHtml)) !== null) {
           let matchedUrl = match[1];
           matchedUrl = matchedUrl.replace(/[,\.\/]+$/, ''); // clean up trailing punctuation
+          discoveredUrls.add(matchedUrl);
+        }
+      }
+      else if (platform === 'shopify') {
+        console.log('[Scraper] Running regex scanner on directHtml for Shopify.');
+        const regex = /(?:https?:)?\/\/([a-zA-Z0-9\-\.]+\/(?:cdn\/shop\/files|s\/files)\/[a-zA-Z0-9%_\-\/\.]+\.(?:jpg|jpeg|png|webp|avif))/gi;
+        let match;
+        while ((match = regex.exec(directHtml)) !== null) {
+          // Prepend https:// since protocol-relative URLs don't have it
+          let matchedUrl = 'https://' + match[1];
+          // Strip Shopify dimension modifiers (e.g., _1024x1024, _50x50@2x, _large, etc)
+          matchedUrl = matchedUrl.replace(/_[0-9]+x[0-9]+(?:@[0-9]+x)?\.(jpg|jpeg|png|webp|avif)$/i, '.$1');
+          matchedUrl = matchedUrl.replace(/_(?:large|medium|small|compact|grande|master)\.(jpg|jpeg|png|webp|avif)$/i, '.$1');
+          discoveredUrls.add(matchedUrl);
+        }
+      }
+      else if (platform === 'woocommerce') {
+        console.log('[Scraper] Running regex scanner on directHtml for WooCommerce.');
+        const regex = /(https:\/\/[a-zA-Z0-9\-\.]+\/wp-content\/uploads\/[0-9]{4}\/[0-9]{2}\/[a-zA-Z0-9%_\-\.]+\.(?:jpg|jpeg|png|webp|avif))/gi;
+        let match;
+        while ((match = regex.exec(directHtml)) !== null) {
+          let matchedUrl = match[1];
+          // Strip WP dimension modifiers (e.g., -150x150, -300x300, -1024x1024)
+          matchedUrl = matchedUrl.replace(/-[0-9]+x[0-9]+\.(jpg|jpeg|png|webp|avif)$/i, '.$1');
+          // Skip woocommerce placeholder images
+          if (!matchedUrl.includes('woocommerce-placeholder')) {
+            discoveredUrls.add(matchedUrl);
+          }
+        }
+      }
+      else if (platform === 'pinterest') {
+        console.log('[Scraper] Running regex scanner on directHtml for Pinterest.');
+        const regex = /(https:\/\/i\.pinimg\.com\/[a-zA-Z0-9%_\-\/\.]+\.(?:jpg|jpeg|png|webp|avif))/gi;
+        let match;
+        while ((match = regex.exec(directHtml)) !== null) {
+          let matchedUrl = match[1];
+          // Upgrade any resolution folder (like /736x/ or /564x/) to /originals/ for maximum quality
+          matchedUrl = matchedUrl.replace(/\/(?:[0-9]+x|[0-9]+x[0-9]+)\//i, '/originals/');
           discoveredUrls.add(matchedUrl);
         }
       }
@@ -386,18 +451,32 @@ async function validateAndScrape(url) {
           if (cleanUrl.includes('_250')) s += 15;
           if (cleanUrl.includes('_128') || cleanUrl.includes('h_200') || cleanUrl.includes('w_200')) s -= 20;
           
+          // Shopify/WooCommerce master/high-res keywords
+          if (cleanUrl.includes('master')) s += 40;
+          if (cleanUrl.includes('grande')) s += 30;
+          
           return s;
         };
         return score(b) - score(a);
       })
-      // De-duplicate based on unique image identifier in the filename (excluding formats and resolution suffixes)
+      // De-duplicate based on unique image identifier in the filename
       .filter(imgUrl => {
         const cleanUrl = imgUrl.split('?')[0];
         const filename = cleanUrl.substring(cleanUrl.lastIndexOf('/') + 1);
-        const dotIdx = filename.lastIndexOf('.');
-        const nameWithoutExt = dotIdx !== -1 ? filename.substring(0, dotIdx) : filename;
-        const underscoreIdx = nameWithoutExt.lastIndexOf('_');
-        const uniqueId = underscoreIdx !== -1 ? nameWithoutExt.substring(0, underscoreIdx) : nameWithoutExt;
+        
+        let uniqueId = filename;
+        if (platform === 'amazon') {
+          // Amazon images usually look like: 71YyM8p-j7L._AC_SL1500_.jpg
+          uniqueId = filename.split('.')[0];
+        } else if (platform === 'shopify' || platform === 'woocommerce' || platform === 'pinterest') {
+          // For generic sites, use exact match without modifiers
+          uniqueId = filename;
+        } else {
+          const dotIdx = filename.lastIndexOf('.');
+          const nameWithoutExt = dotIdx !== -1 ? filename.substring(0, dotIdx) : filename;
+          const underscoreIdx = nameWithoutExt.lastIndexOf('_');
+          uniqueId = underscoreIdx !== -1 ? nameWithoutExt.substring(0, underscoreIdx) : nameWithoutExt;
+        }
         
         if (seenFiles.has(uniqueId)) {
           return false;
@@ -405,7 +484,7 @@ async function validateAndScrape(url) {
         seenFiles.add(uniqueId);
         return true;
       })
-      .slice(0, 8)
+      .slice(0, 15)
       .map((imgUrl, index) => {
         let cleanUrl = imgUrl;
         if (platform === 'meesho') {
@@ -432,7 +511,11 @@ async function validateAndScrape(url) {
       };
     } else {
       console.log(`[Scraper] Scraped 0 images for ${trimmedUrl}. Falling back to high-res thematic assets.`);
-      const fallbackImages = MOCK_IMAGES[platform].map((img, index) => ({
+      let mockPlatform = platform;
+      if (!MOCK_IMAGES[mockPlatform]) {
+         mockPlatform = 'amazon'; // Generic fallback if we don't have mock images for shopify/woo
+      }
+      const fallbackImages = MOCK_IMAGES[mockPlatform].map((img, index) => ({
         id: `${img.id}_fallback_${Date.now()}_${index}`,
         platform: img.platform,
         url: img.url,
@@ -449,7 +532,10 @@ async function validateAndScrape(url) {
   } catch (error) {
     console.error(`[Scraper] Scraping failed completely for ${trimmedUrl}:`, error.message || error);
     
-    const fallbackImages = MOCK_IMAGES[platform].map((img, index) => ({
+    let mockPlatform = platform;
+    if (!MOCK_IMAGES[mockPlatform]) mockPlatform = 'amazon';
+    
+    const fallbackImages = MOCK_IMAGES[mockPlatform].map((img, index) => ({
       id: `${img.id}_error_fallback_${Date.now()}_${index}`,
       platform: img.platform,
       url: img.url,

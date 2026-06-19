@@ -59,6 +59,30 @@
                 <span class="pill-badge my-badge">Y</span>
                 Myntra
               </button>
+              <button 
+                type="button" 
+                class="platform-pill-btn shopify-pill" 
+                [class.active]="selectedPlatform === 'shopify'" 
+                (click)="selectedPlatform = 'shopify'">
+                <span class="pill-badge sh-badge">S</span>
+                Shopify
+              </button>
+              <button 
+                type="button" 
+                class="platform-pill-btn woo-pill" 
+                [class.active]="selectedPlatform === 'woocommerce'" 
+                (click)="selectedPlatform = 'woocommerce'">
+                <span class="pill-badge woo-badge">W</span>
+                WooCommerce
+              </button>
+              <button 
+                type="button" 
+                class="platform-pill-btn pinterest-pill" 
+                [class.active]="selectedPlatform === 'pinterest'" 
+                (click)="selectedPlatform = 'pinterest'">
+                <span class="pill-badge pin-badge">P</span>
+                Pinterest
+              </button>
             </div>
           </div>
 
