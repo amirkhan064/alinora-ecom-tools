@@ -1,0 +1,153 @@
+<div class="tool-seo-container">
+  <!-- Hero Section -->
+  <section class="tool-hero">
+    <div class="hero-content">
+      <div class="category-badge">
+        <span class="material-symbols-outlined">branding_watermark</span>
+        AI PHOTO CLEANER
+      </div>
+      <h1>
+        Free E-Commerce
+        <span class="gradient-text watermark-gradient">AI Watermark Remover</span>
+      </h1>
+      <p class="hero-desc">
+        Remove logos, copyright stamps, and text overlays from product photos instantly. Keep your images in full original resolution with 100% local browser-based privacy.
+      </p>
+
+      <div class="hero-cta-box">
+        <a routerLink="/app/watermark-remover" class="btn-primary-large watermark-btn">
+          <span class="material-symbols-outlined">bolt</span>
+          Start Removing Watermarks
+        </a>
+        <span class="cta-note">100% Free &bull; No Sign-Up &bull; High-Resolution Local Exports</span>
+      </div>
+
+      <!-- Supported Platforms Bar -->
+      <div class="platforms-supported">
+        <span class="platform-label">Optimized For:</span>
+        <div class="platform-badges">
+          <span class="p-badge amazon">Amazon Store</span>
+          <span class="p-badge flipkart">Flipkart Catalog</span>
+          <span class="p-badge meesho">Meesho Supplier</span>
+          <span class="p-badge myntra">Myntra PPMP</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Visual Interactive Mockup -->
+    <div class="hero-visual">
+      <div class="mockup-browser">
+        <div class="browser-header">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <div class="browser-address-bar">selleros.com/app/watermark-remover</div>
+        </div>
+        <div class="browser-body">
+          <div class="mockup-watermark-split">
+            <!-- Left Side: Painted Mask -->
+            <div class="mockup-canvas-pane">
+              <span class="pane-label">1. Paint Mask Over Watermark</span>
+              <div class="canvas-mock-img kurti-mock">
+                <!-- Diagonal painted red overlay representing brush mask -->
+                <div class="mock-watermark-overlay">STOCK LOGO</div>
+                <div class="painted-mask-stroke"></div>
+                <!-- Mock brush cursor -->
+                <span class="material-symbols-outlined brush-cursor-mock">brush</span>
+              </div>
+            </div>
+            <!-- Right Side: Inpainted Result -->
+            <div class="mockup-canvas-pane">
+              <span class="pane-label">2. Pristine Restored Image</span>
+              <div class="canvas-mock-img kurti-mock clean">
+                <span class="material-symbols-outlined spark-indicator">auto_awesome</span>
+                <!-- Clean image, watermark removed! -->
+                <span class="clean-badge">Watermark Removed</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="mockup-footer-action">
+            <span class="mockup-text-sm success-color">Processed Client-Side (0.08s)</span>
+            <div class="mockup-btn-group">
+              <span class="mockup-badge-download watermark-dl">Download original size (4K)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="features-section">
+    <h2 class="section-title">Zero Compression, Full Original Resolution</h2>
+    <div class="features-grid">
+      <div class="feat-card">
+        <span class="material-symbols-outlined feat-icon watermark-color">photo_filter</span>
+        <h3>Original Image Quality</h3>
+        <p>No blurring or down-scaling. The FMM algorithm calculates texture weights directly on your full-size canvas, exporting the restored image in its exact original quality.</p>
+      </div>
+
+      <div class="feat-card">
+        <span class="material-symbols-outlined feat-icon watermark-color">security</span>
+        <h3>100% Private (No Uploads)</h3>
+        <p>Your catalog designs are safe. All inpainting calculations run client-side inside your browser window. No files are uploaded to our servers, keeping your data confidential.</p>
+      </div>
+
+      <div class="feat-card">
+        <span class="material-symbols-outlined feat-icon watermark-color">tune</span>
+        <h3>Precision Manual Brush</h3>
+        <p>Adjust brush sizes and zoom/pan to paint over thin letters or thick logos with absolute accuracy. Erase mistakes instantly with the built-in eraser mask tool.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it Works Roadmap -->
+  <section class="roadmap-section">
+    <h2 class="section-title">Three Steps to Watermark-Free Photos</h2>
+    <div class="roadmap-steps">
+      <div class="step-card">
+        <div class="step-num watermark-bg-sub">1</div>
+        <h4>Upload Product Photo</h4>
+        <p>Drag and drop your photo or pick one of our ready-made fabric and accessory test samples.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num watermark-bg-sub">2</div>
+        <h4>Brush Over Watermark</h4>
+        <p>Use the paint brush tool to mark the watermark in red. Zoom in for thin letters or tiny logo badges.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num watermark-bg-sub">3</div>
+        <h4>Remove and Download</h4>
+        <p>Click Remove Watermark. Use the slider to verify the seamless blend, and save your high-res JPG.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQs Accordion -->
+  <section class="faq-section">
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item" *ngFor="let faq of faqs; let i = index" [class.faq-open]="faq.open">
+        <button 
+          type="button"
+          class="faq-question" 
+          [attr.aria-expanded]="faq.open"
+          [attr.aria-controls]="'faq-answer-wtrmk-' + i"
+          [id]="'faq-btn-wtrmk-' + i"
+          (click)="toggleFaq(i)">
+          <span>{{ faq.question }}</span>
+          <span class="material-symbols-outlined faq-arrow">expand_more</span>
+        </button>
+        <div 
+          class="faq-answer" 
+          [id]="'faq-answer-wtrmk-' + i" 
+          role="region" 
+          [attr.aria-labelledby]="'faq-btn-wtrmk-' + i" 
+          *ngIf="faq.open">
+          <p>{{ faq.answer }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

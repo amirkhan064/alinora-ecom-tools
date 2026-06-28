@@ -97,6 +97,8 @@ export class WorkspaceShellComponent {
         this.pageTitle.set('Bulk Image Cropper');
       } else if (url.includes('listing-builder')) {
         this.pageTitle.set('AI Listing Builder');
+      } else if (url.includes('watermark-remover')) {
+        this.pageTitle.set('AI Watermark Remover');
       } else {
         this.pageTitle.set('Image Downloader');
       }
@@ -111,7 +113,8 @@ export class WorkspaceShellComponent {
             'downloader': '/app/image-downloader',
             'cropper': '/app/label-cropper',
             'listing': '/app/listing-builder',
-            'bulk-cropper': '/app/bulk-cropper'
+            'bulk-cropper': '/app/bulk-cropper',
+            'watermark': '/app/watermark-remover'
           };
           const target = toolRouteMap[tool];
           if (target) {

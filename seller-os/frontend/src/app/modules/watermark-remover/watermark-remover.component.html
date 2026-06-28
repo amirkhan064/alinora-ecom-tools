@@ -1,0 +1,242 @@
+<div class="watermark-remover-console">
+  <!-- LEFT COLUMN: Controls & Configurations Panel -->
+  <aside class="controls-panel" role="complementary" aria-label="Watermark Remover Controls">
+    <div class="panel-header">
+      <span class="material-symbols-outlined header-badge-icon">branding_watermark</span>
+      <h3>Watermark Remover</h3>
+      <p class="panel-desc">Remove text, stamps, logos, and AI watermarks from catalog photos instantly with zero quality loss.</p>
+    </div>
+
+    <div class="panel-body custom-scrollbar">
+      <!-- 1. Dropzone or quick samples if no image is loaded -->
+      <div class="section-group" *ngIf="!imageLoaded()">
+        <label class="section-title">Get Started</label>
+        <p class="section-desc">Upload a watermark-laden product photo or test with our ready-made samples.</p>
+        
+        <div 
+          class="compact-dropzone" 
+          [class.drag-active]="isDragActive"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+          (click)="triggerFilePicker()"
+        >
+          <span class="material-symbols-outlined cloud-icon">cloud_upload</span>
+          <span class="dropzone-text">Click or Drag Image</span>
+          <span class="dropzone-subtext">JPG, PNG, WebP up to 25MB</span>
+        </div>
+
+        <div class="samples-container">
+          <label class="subsection-title">Try With Demo Samples</label>
+          <div class="sample-grid">
+            <button class="sample-btn" (click)="loadSampleImage('kurti')" [class.active]="activeSample() === 'kurti'">
+              <span class="material-symbols-outlined sample-icon">apparel</span>
+              <span class="sample-name">Kurti Fabric</span>
+            </button>
+            <button class="sample-btn" (click)="loadSampleImage('shoe')" [class.active]="activeSample() === 'shoe'">
+              <span class="material-symbols-outlined sample-icon">checkroom</span>
+              <span class="sample-name">Sports Shoe</span>
+            </button>
+            <button class="sample-btn" (click)="loadSampleImage('watch')" [class.active]="activeSample() === 'watch'">
+              <span class="material-symbols-outlined sample-icon">watch</span>
+              <span class="sample-name">Smart Watch</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Interactive Editing Tools (Only if image is loaded) -->
+      <div class="section-group animate-fade-in" *ngIf="imageLoaded()">
+        <div class="section-header-flex">
+          <label class="section-title">Mask Tools</label>
+          <button class="text-link-btn" (click)="loadImage(originalImage!.src)">Reset Image</button>
+        </div>
+
+        <!-- Mode Buttons: Paint vs Erase vs Pan -->
+        <div class="tool-modes-selector" *ngIf="!hasResult()">
+          <button 
+            type="button" 
+            class="mode-btn" 
+            [class.active]="toolMode() === 'draw'" 
+            (click)="toolMode.set('draw')"
+            title="Brush Paint Tool"
+          >
+            <span class="material-symbols-outlined">brush</span>
+            <span>Paint Mask</span>
+          </button>
+          <button 
+            type="button" 
+            class="mode-btn" 
+            [class.active]="toolMode() === 'erase'" 
+            (click)="toolMode.set('erase')"
+            title="Eraser Tool"
+          >
+            <span class="material-symbols-outlined">ink_eraser</span>
+            <span>Eraser</span>
+          </button>
+          <button 
+            type="button" 
+            class="mode-btn" 
+            [class.active]="toolMode() === 'pan'" 
+            (click)="toolMode.set('pan')"
+            title="Pan & Zoom Mode"
+          >
+            <span class="material-symbols-outlined">pan_tool</span>
+            <span>Pan & Zoom</span>
+          </button>
+        </div>
+
+        <!-- Brush Configuration (Draw/Erase only) -->
+        <div class="brush-config-box" *ngIf="toolMode() !== 'pan' && !hasResult()">
+          <div class="config-label-row">
+            <span>Brush Size</span>
+            <span class="config-val">{{ brushSize() }}px</span>
+          </div>
+          <div class="slider-row">
+            <input 
+              type="range" 
+              min="5" 
+              max="100" 
+              [value]="brushSize()"
+              (input)="brushSize.set(+$any($event.target).value)" 
+              class="range-slider"
+            />
+          </div>
+          <div class="brush-preview-circle-container">
+            <div class="brush-preview-circle" [style.width.px]="brushSize()" [style.height.px]="brushSize()"></div>
+          </div>
+        </div>
+
+        <!-- Undo/Redo & Utility Actions -->
+        <div class="utility-actions-row" *ngIf="!hasResult()">
+          <button class="util-btn" [disabled]="!canUndo()" (click)="undo()" title="Undo Stroke">
+            <span class="material-symbols-outlined">undo</span>
+            <span>Undo</span>
+          </button>
+          <button class="util-btn" [disabled]="!canRedo()" (click)="redo()" title="Redo Stroke">
+            <span class="material-symbols-outlined">redo</span>
+            <span>Redo</span>
+          </button>
+          <button class="util-btn destructive" (click)="clearMask()" title="Clear Entire Mask">
+            <span class="material-symbols-outlined">delete_sweep</span>
+            <span>Clear</span>
+          </button>
+        </div>
+
+        <!-- Watermark Removal Execution Trigger -->
+        <div class="execution-trigger-box" *ngIf="!hasResult()">
+          <button 
+            class="btn-remove-watermark" 
+            (click)="removeWatermark()"
+            [disabled]="isProcessing()"
+          >
+            <span class="material-symbols-outlined icon-spin-heavy" *ngIf="isProcessing()">progress_activity</span>
+            <span class="material-symbols-outlined" *ngIf="!isProcessing()">auto_awesome</span>
+            <span>{{ isProcessing() ? 'Processing Inpaint...' : 'Remove Watermark' }}</span>
+          </button>
+          <p class="execution-tip">Tip: Paint directly over watermarks. The AI engine fills the texture smoothly.</p>
+        </div>
+
+        <!-- Result / Post-processing Actions -->
+        <div class="result-actions-box animate-fade-in" *ngIf="hasResult()">
+          <div class="success-alert-badge">
+            <span class="material-symbols-outlined check-ic">check_circle</span>
+            <span>Watermark Removed successfully!</span>
+          </div>
+
+          <p class="result-tip">Drag the slider horizontally on the canvas to inspect the before and after details.</p>
+
+          <div class="btn-group-vertical">
+            <button class="btn-download-result" (click)="downloadResult()">
+              <span class="material-symbols-outlined">download</span>
+              <span>Download High-Res JPG</span>
+            </button>
+            <button class="btn-edit-again" (click)="loadImage(originalImage!.src)">
+              <span class="material-symbols-outlined">brush</span>
+              <span>Draw Mask Again</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Tips Box -->
+      <div class="section-group tips-card">
+        <span class="material-symbols-outlined tip-card-icon">lightbulb</span>
+        <h4>Premium Quality Tips</h4>
+        <ul>
+          <li><strong>Brush size:</strong> Use a brush slightly wider than the letters or lines.</li>
+          <li><strong>No Quality Loss:</strong> Processing runs on original dimensions, downloading full quality.</li>
+          <li><strong>Complete Privacy:</strong> Zero files are uploaded. It works 100% locally on your computer.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Panel Footer -->
+    <div class="panel-footer" *ngIf="imageLoaded()">
+      <button class="btn-back-upload" (click)="imageLoaded.set(false); hasResult.set(false); activeSample.set('')">
+        <span class="material-symbols-outlined">arrow_back</span>
+        <span>Upload Another File</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- RIGHT COLUMN: Workspace Interactive Canvas -->
+  <main class="canvas-workspace" [class.panning-cursor]="toolMode() === 'pan'">
+    <div class="canvas-container" #canvasContainer (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+      <!-- Large drop zone when no image is loaded -->
+      <div 
+        class="large-ingestion-zone animate-fade-in" 
+        *ngIf="!imageLoaded()"
+        [class.drag-active]="isDragActive"
+        (click)="triggerFilePicker()"
+      >
+        <div class="ingest-artwork">
+          <span class="material-symbols-outlined ingest-icon">image</span>
+          <h2>AI Watermark Remover</h2>
+          <p>Drag and drop your product photo here or click to browse</p>
+          <span class="file-limits">Supports JPG, PNG, WEBP &bull; Full original resolution maintained</span>
+        </div>
+      </div>
+
+      <!-- Active Interactive Canvas -->
+      <div class="canvas-wrapper" [class.hidden-canvas]="!imageLoaded()">
+        <canvas 
+          #displayCanvas 
+          (mousedown)="onCanvasMouseDown($event)"
+          (mousemove)="onCanvasMouseMove($event)"
+          (wheel)="onCanvasWheel($event)"
+          (mouseleave)="onCanvasMouseLeave()"
+          [style.cursor]="getCursorStyle()"
+          class="interactive-canvas"
+        ></canvas>
+
+        <!-- Floating UI Overlays inside canvas viewport -->
+        <div class="canvas-floating-controls" *ngIf="imageLoaded()">
+          <!-- Zoom multiplier indicator badge -->
+          <div class="floating-badge font-mono-premium">
+            {{ Math.round(zoomScale() * 100) }}% Zoom
+          </div>
+          <!-- Reset viewport to default bounds -->
+          <button class="floating-btn" (click)="resetViewport()" title="Reset Zoom / Pan">
+            <span class="material-symbols-outlined">center_focus_strong</span>
+          </button>
+        </div>
+
+        <!-- floating Before/After labels when results are active -->
+        <div class="comparison-markers" *ngIf="hasResult()">
+          <span class="marker before-tag">Original Photo</span>
+          <span class="marker after-tag">Restored Photo</span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Hidden input for file selection -->
+<input 
+  type="file" 
+  #fileInput 
+  class="hidden-input" 
+  accept="image/*"
+  (change)="onFilePicked($event)"
+/>

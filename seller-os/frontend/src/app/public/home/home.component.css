@@ -1316,7 +1316,8 @@
   
   .cell-large,
   .cell-medium,
-  .cell-compact {
+  .cell-compact,
+  .cell-full {
     grid-column: span 12;
   }
   
@@ -1401,3 +1402,120 @@
 .reveal-on-scroll.delay-3 {
   transition-delay: 0.36s;
 }
+
+.reveal-on-scroll.delay-4 {
+  transition-delay: 0.48s;
+}
+
+/* ========== NEW CELL STYLING FOR WATERMARK REMOVER ========== */
+.cell-full {
+  grid-column: span 12;
+}
+
+.watermark-visual-bento {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.mock-canvas-watermark {
+  width: 260px;
+  height: 160px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  background: #111827;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 25px rgba(99, 102, 241, 0.15);
+}
+
+.mock-tile {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mock-tile.before-wtrmk {
+  background: linear-gradient(135deg, #10b981 0%, #064e3b 100%);
+  z-index: 1;
+}
+
+.mock-tile.before-wtrmk::before,
+.mock-tile.after-wtrmk::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.15) 1.5px, transparent 1.5px);
+  background-size: 16px 16px;
+}
+
+.text-pattern {
+  font-family: 'Outfit', sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.35);
+  transform: rotate(-12deg);
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.brush-scrub-indicator {
+  position: absolute;
+  width: 90px;
+  height: 30px;
+  background-color: rgba(239, 68, 68, 0.6);
+  border-radius: 15px;
+  transform: rotate(-12deg);
+  z-index: 2;
+  animation: scrubBrush 4s infinite ease-in-out;
+}
+
+@keyframes scrubBrush {
+  0%, 100% { transform: translate(-50px, 0) rotate(-12deg); opacity: 0; }
+  20% { opacity: 1; }
+  60% { transform: translate(50px, 0) rotate(-12deg); opacity: 1; }
+  80% { opacity: 0; }
+}
+
+.mock-tile.after-wtrmk {
+  background: linear-gradient(135deg, #10b981 0%, #064e3b 100%);
+  z-index: 0;
+}
+
+.star-glowing {
+  font-size: 44px;
+  color: var(--accent-cyan);
+  filter: drop-shadow(0 0 10px var(--accent-cyan));
+  animation: glowPulse 2s infinite alternate;
+}
+
+.mock-scrub-slider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2.5px;
+  background-color: var(--accent-cyan);
+  z-index: 3;
+  left: 50%;
+  box-shadow: 0 0 12px var(--accent-cyan);
+  animation: scrubSlider 4s infinite ease-in-out;
+}
+
+.mock-tile.before-wtrmk {
+  clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+  animation: clipBefore 4s infinite ease-in-out;
+}
+
+@keyframes clipBefore {
+  0%, 100% { clip-path: polygon(0 0, 20% 0, 20% 100%, 0 100%); }
+  50% { clip-path: polygon(0 0, 80% 0, 80% 100%, 0 100%); }
+}
+
+@keyframes scrubSlider {
+  0%, 100% { left: 20%; }
+  50% { left: 80%; }
+}
+

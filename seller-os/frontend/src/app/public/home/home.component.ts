@@ -33,6 +33,11 @@ export class HomeComponent implements OnInit {
       question: 'Can I generate listings in Hinglish?',
       answer: 'Yes. While the main description is in English (which Flipkart and Amazon require), our AI automatically adds popular Hinglish search keywords (like "cotton printed suit" or "daily wear kurti") to attract more buyers.',
       open: false
+    },
+    {
+      question: 'How does the AI Watermark Remover work?',
+      answer: 'Our watermark remover runs a local texture inpainting algorithm directly in your browser. Just brush over the watermark, logo, or stamp, and the tool rebuilds the background without compressing or quality-reducing your high-resolution original product photos.',
+      open: false
     }
   ];
   constructor(

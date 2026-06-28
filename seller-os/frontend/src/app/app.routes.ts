@@ -31,6 +31,11 @@ export const routes: Routes = [
         path: 'tools/ai-listing-generator',
         loadComponent: () => import('./public/tools/listing-builder-page.component')
           .then(m => m.ListingBuilderPageComponent)
+      },
+      {
+        path: 'tools/ai-watermark-remover',
+        loadComponent: () => import('./public/tools/watermark-remover-page.component')
+          .then(m => m.WatermarkRemoverPageComponent)
       }
     ]
   },
@@ -62,6 +67,11 @@ export const routes: Routes = [
           .then(m => m.ListingBuilderComponent)
       },
       {
+        path: 'watermark-remover',
+        loadComponent: () => import('./modules/watermark-remover/watermark-remover.component')
+          .then(m => m.WatermarkRemoverComponent)
+      },
+      {
         path: '',
         redirectTo: 'image-downloader',
         pathMatch: 'full'
@@ -88,6 +98,11 @@ export const routes: Routes = [
   {
     path: 'listing-builder',
     redirectTo: 'app/listing-builder',
+    pathMatch: 'full'
+  },
+  {
+    path: 'watermark-remover',
+    redirectTo: 'app/watermark-remover',
     pathMatch: 'full'
   },
 
