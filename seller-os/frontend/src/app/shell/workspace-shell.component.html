@@ -22,33 +22,9 @@
     <nav class="sidebar-nav" role="navigation" aria-label="Core Utilities">
       <div class="nav-section-title">Core Utilities</div>
       
-      <a routerLink="/app/image-downloader" routerLinkActive="active-link" class="nav-link" id="nav-img-dl" aria-label="Image Downloader Utility" role="menuitem">
-        <span class="material-symbols-outlined nav-icon">download_for_offline</span>
-        <span class="nav-label">Image Downloader</span>
-        <span class="nav-hover-pill"></span>
-      </a>
-
-      <a routerLink="/app/label-cropper" routerLinkActive="active-link" class="nav-link" id="nav-lbl-crop" aria-label="Shipping Label Cropper Utility" role="menuitem">
-        <span class="material-symbols-outlined nav-icon">crop_free</span>
-        <span class="nav-label">Label Cropper</span>
-        <span class="nav-hover-pill"></span>
-      </a>
-      
-      <a routerLink="/app/bulk-cropper" routerLinkActive="active-link" class="nav-link" id="nav-blk-crop" aria-label="Bulk Image Cropper Utility" role="menuitem">
+      <a routerLink="/app/tools" [class.active-link]="isToolsActive()" class="nav-link" id="nav-tools-dashboard" aria-label="E-com Tools Dashboard" role="menuitem">
         <span class="material-symbols-outlined nav-icon">grid_view</span>
-        <span class="nav-label">Bulk Cropper</span>
-        <span class="nav-hover-pill"></span>
-      </a>
-
-      <a routerLink="/app/listing-builder" routerLinkActive="active-link" class="nav-link" id="nav-lst-bld" aria-label="AI SEO Listing Builder Utility" role="menuitem">
-        <span class="material-symbols-outlined nav-icon">auto_awesome</span>
-        <span class="nav-label">AI Listing Builder</span>
-        <span class="nav-hover-pill"></span>
-      </a>
-      
-      <a routerLink="/app/watermark-remover" routerLinkActive="active-link" class="nav-link" id="nav-wtrmk-rm" aria-label="AI Watermark Remover Utility" role="menuitem">
-        <span class="material-symbols-outlined nav-icon">branding_watermark</span>
-        <span class="nav-label">Watermark Remover</span>
+        <span class="nav-label">E-com Tools</span>
         <span class="nav-hover-pill"></span>
       </a>
     </nav>
@@ -71,7 +47,13 @@
           <span class="material-symbols-outlined">menu</span>
         </button>
         <span class="material-symbols-outlined header-icon">hub</span>
-        <span class="header-title">{{ pageTitle() }}</span>
+        <div class="header-breadcrumbs">
+          <ng-container *ngIf="showBreadcrumbs()">
+            <a routerLink="/app/tools" class="breadcrumb-link">E-com Tools</a>
+            <span class="material-symbols-outlined breadcrumb-separator">chevron_right</span>
+          </ng-container>
+          <span class="header-title">{{ pageTitle() }}</span>
+        </div>
       </div>
       <div class="header-right">
         <!-- Theme Toggle Switcher -->

@@ -1,6 +1,6 @@
 import { Component, Inject, PLATFORM_ID, signal, inject } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
+import { RouterOutlet, RouterLink, Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { filter } from 'rxjs/operators';
 import { ThemeService } from '../services/theme.service';
@@ -8,7 +8,7 @@ import { ThemeService } from '../services/theme.service';
 @Component({
   selector: 'app-workspace-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, CommonModule],
+  imports: [RouterOutlet, RouterLink, CommonModule],
   templateUrl: './workspace-shell.component.html',
   styleUrl: './workspace-shell.component.css'
 })
@@ -30,6 +30,21 @@ export class WorkspaceShellComponent {
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
+  }
+
+  isToolsActive(): boolean {
+    const url = this.router.url;
+    return url.includes('/app/tools') || 
+           url.includes('/app/image-downloader') || 
+           url.includes('/app/label-cropper') || 
+           url.includes('/app/bulk-cropper') || 
+           url.includes('/app/listing-builder') || 
+           url.includes('/app/watermark-remover');
+  }
+
+  showBreadcrumbs(): boolean {
+    // Show breadcrumbs if the user is inside a specific tool, not on the main dashboard
+    return this.router.url !== '/app/tools';
   }
 
   openFeedbackModal(): void {
@@ -99,8 +114,10 @@ export class WorkspaceShellComponent {
         this.pageTitle.set('AI Listing Builder');
       } else if (url.includes('watermark-remover')) {
         this.pageTitle.set('AI Watermark Remover');
-      } else {
+      } else if (url.includes('image-downloader')) {
         this.pageTitle.set('Image Downloader');
+      } else {
+        this.pageTitle.set('E-com Tools Dashboard');
       }
     });
 

@@ -72,8 +72,13 @@ export const routes: Routes = [
           .then(m => m.WatermarkRemoverComponent)
       },
       {
+        path: 'tools',
+        loadComponent: () => import('./modules/tools-dashboard/tools-dashboard.component')
+          .then(m => m.ToolsDashboardComponent)
+      },
+      {
         path: '',
-        redirectTo: 'image-downloader',
+        redirectTo: 'tools',
         pathMatch: 'full'
       }
     ]

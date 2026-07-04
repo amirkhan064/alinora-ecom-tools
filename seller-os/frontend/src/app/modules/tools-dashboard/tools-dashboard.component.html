@@ -1,0 +1,48 @@
+<div class="tools-dashboard-container animate-fade-in">
+  <div class="dashboard-header">
+    <div class="header-left">
+      <span class="material-symbols-outlined dashboard-title-icon">widgets</span>
+      <div>
+        <h1>E-commerce Seller Tools</h1>
+        <p class="subtitle">Streamline your online store operations with our premium local processing utilities.</p>
+      </div>
+    </div>
+    <div class="system-badge">
+      <span class="material-symbols-outlined">shield</span>
+      <span>100% Local & Private</span>
+    </div>
+  </div>
+
+  <div class="tools-grid">
+    <div 
+      *ngFor="let tool of tools" 
+      class="tool-card" 
+      [routerLink]="tool.route"
+    >
+      <!-- Background Glow effect -->
+      <div class="card-glow" [style.background]="tool.gradient"></div>
+      
+      <div class="card-content">
+        <div class="card-top">
+          <div class="icon-wrapper" [style.background]="tool.gradient">
+            <span class="material-symbols-outlined">{{ tool.icon }}</span>
+          </div>
+          <div class="badges-row">
+            <span class="category-badge">{{ tool.category }}</span>
+            <span class="action-badge" *ngIf="tool.badge">{{ tool.badge }}</span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <h3>{{ tool.title }}</h3>
+          <p>{{ tool.description }}</p>
+        </div>
+
+        <div class="card-footer">
+          <span class="launch-text">Launch Utility</span>
+          <span class="material-symbols-outlined arrow-icon">arrow_forward</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

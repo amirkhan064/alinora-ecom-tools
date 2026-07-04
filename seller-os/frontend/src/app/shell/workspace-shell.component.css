@@ -547,6 +547,31 @@
   gap: 12px;
 }
 
+.header-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breadcrumb-link {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.breadcrumb-link:hover {
+  color: var(--accent-color);
+}
+
+.breadcrumb-separator {
+  font-size: 16px;
+  color: var(--text-muted);
+  user-select: none;
+}
+
 .header-icon {
   font-size: 22px;
   color: var(--accent-color);

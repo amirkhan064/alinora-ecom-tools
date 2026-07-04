@@ -1,0 +1,241 @@
+.tools-dashboard-container {
+  padding: 32px;
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  box-sizing: border-box;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: var(--border-light);
+  padding-bottom: 24px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dashboard-title-icon {
+  font-size: 32px;
+  color: var(--accent-color);
+  background-color: var(--accent-light);
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: var(--shadow-glow);
+}
+
+.dashboard-header h1 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.system-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.system-badge .material-symbols-outlined {
+  font-size: 16px;
+}
+
+/* Tools Grid */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 24px;
+}
+
+/* Tool Card */
+.tool-card {
+  position: relative;
+  background-color: var(--bg-card);
+  border: var(--border-light);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-soft);
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.tool-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-color);
+  box-shadow: 0 16px 32px rgba(99, 102, 241, 0.06), var(--shadow-card);
+}
+
+/* Hover Background Glow Effect */
+.card-glow {
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.08;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+.tool-card:hover .card-glow {
+  opacity: 0.16;
+}
+
+.card-content {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  z-index: 2;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.icon-wrapper .material-symbols-outlined {
+  font-size: 22px;
+}
+
+.badges-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.category-badge {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  background-color: var(--bg-pill-container);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.action-badge {
+  font-size: 9px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(135deg, #818cf8, #6366f1);
+  padding: 4px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(99, 102, 241, 0.15);
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-body h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.card-body p {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-top: auto;
+  transition: color 0.2s ease;
+}
+
+.tool-card:hover .card-footer {
+  color: var(--accent-color);
+}
+
+.arrow-icon {
+  font-size: 15px;
+  transition: transform 0.2s ease;
+}
+
+.tool-card:hover .arrow-icon {
+  transform: translateX(3px);
+}
+
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 640px) {
+  .tools-dashboard-container {
+    padding: 16px;
+  }
+  .dashboard-header h1 {
+    font-size: 20px;
+  }
+  .tools-grid {
+    grid-template-columns: 1fr;
+  }
+}
