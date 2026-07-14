@@ -621,6 +621,38 @@
   margin: 0;
 }
 
+.rate-limit-alert-box {
+  background-color: #fffbeb;
+  border: 1px solid #fef3c7;
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.alert-icon-warn {
+  color: #d97706;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.rate-limit-alert-box .alert-content h5 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #92400e;
+  margin: 0 0 3px 0;
+}
+
+.rate-limit-alert-box .alert-content p {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #b45309;
+  line-height: 1.4;
+  margin: 0;
+}
+
 /* Primary buttons elements styling */
 .btn {
   font-family: 'Outfit', sans-serif;

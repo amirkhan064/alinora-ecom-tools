@@ -233,6 +233,9 @@ async function callGemini(apiKey, systemInstruction, promptParts, temperature = 
   if (!response.ok) {
     const errorText = await response.text();
     console.error(`[Gemini Service] HTTP Error ${response.status}:`, errorText);
+    if (response.status === 429 || errorText.includes('RESOURCE_EXHAUSTED') || errorText.includes('Quota exceeded') || errorText.includes('429')) {
+      throw new Error("GEMINI_RATE_LIMIT_EXHAUSTED");
+    }
     throw new Error(`Google Gemini API Error: ${errorText}`);
   }
 

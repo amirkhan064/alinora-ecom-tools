@@ -77,6 +77,11 @@ export const routes: Routes = [
           .then(m => m.ToolsDashboardComponent)
       },
       {
+        path: 'settlement-reconciliation',
+        loadComponent: () => import('./modules/settlement-reconciliation/settlement-reconciliation.component')
+          .then(m => m.SettlementReconciliationComponent)
+      },
+      {
         path: '',
         redirectTo: 'tools',
         pathMatch: 'full'

@@ -43,8 +43,9 @@ export class WorkspaceShellComponent {
   }
 
   showBreadcrumbs(): boolean {
-    // Show breadcrumbs if the user is inside a specific tool, not on the main dashboard
-    return this.router.url !== '/app/tools';
+    const url = this.router.url;
+    // Show breadcrumbs if the user is inside a specific tool, not on the main dashboard or premium settlement page
+    return url !== '/app/tools' && !url.includes('settlement-reconciliation');
   }
 
   openFeedbackModal(): void {
@@ -116,6 +117,8 @@ export class WorkspaceShellComponent {
         this.pageTitle.set('AI Watermark Remover');
       } else if (url.includes('image-downloader')) {
         this.pageTitle.set('Image Downloader');
+      } else if (url.includes('settlement-reconciliation')) {
+        this.pageTitle.set('Settlement Reconciliation');
       } else {
         this.pageTitle.set('E-com Tools Dashboard');
       }

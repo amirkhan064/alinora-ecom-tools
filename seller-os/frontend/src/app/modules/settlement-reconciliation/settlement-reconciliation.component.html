@@ -1,0 +1,515 @@
+<div class="settlement-recon-console custom-scrollbar">
+
+  <!-- TOP APP BAR HEADER CONTEXT OR SUB-HEADER -->
+  <div class="recon-intro-header hide-on-print">
+    <div class="header-desc-block">
+      <h2>Flipkart Settlement Reconciliation</h2>
+      <p>Audit SKU-level P&L margins, stuck payments, and Flipkart deductions. 100% processed locally inside your browser.</p>
+    </div>
+    
+    <!-- Pro Member testing switch -->
+    <div class="pro-test-toggle-card">
+      <div class="pro-toggle-label-group">
+        <span class="material-symbols-outlined text-amber">workspace_premium</span>
+        <span class="toggle-label-main">SellerOS Pro Tier</span>
+      </div>
+      <label class="switch-toggle-button">
+        <input type="checkbox" [checked]="isProUser()" (change)="isProUser.set(!isProUser())" />
+        <span class="switch-slider"></span>
+      </label>
+      <span class="tier-indicator-pill" [class.pro-active]="isProUser()">
+        {{ isProUser() ? 'PRO ACTIVE' : 'FREE USER' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- SECTION 1 — FILE UPLOAD & EMPTY STATE -->
+  <section class="recon-section hide-on-print" *ngIf="!fileLoaded()">
+    <div 
+      class="upload-dropzone"
+      [class.drag-active]="isDragActive"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      (click)="triggerFilePicker(fileInput)"
+    >
+      <span class="material-symbols-outlined upload-icon-large">upload_file</span>
+      <h3>Upload Flipkart P&L Report</h3>
+      <p class="upload-hint">Drag and drop your Flipkart Excel spreadsheet here or click to browse</p>
+      <span class="file-spec">Upload up to 3 quarterly reports to compare trends (.xlsx only) &bull; Safe & Secure</span>
+      
+      <input 
+        type="file" 
+        #fileInput 
+        class="hidden-input" 
+        accept=".xlsx" 
+        (change)="onFilePicked($event)" 
+      />
+    </div>
+
+    <!-- Empty State Download Instructions -->
+    <div class="instructions-card animate-fade-in">
+      <div class="instructions-header">
+        <span class="material-symbols-outlined instructions-icon">download</span>
+        <h4>How to get this report:</h4>
+      </div>
+      <ol class="instructions-list">
+        <li>Go to the <strong>Flipkart Seller Hub</strong>.</li>
+        <li>Navigate to <strong>Reports</strong> &rarr; <strong>Payment Reports</strong>.</li>
+        <li>Select <strong>"Profit and Loss Report"</strong>.</li>
+        <li>Choose your preferred date range.</li>
+        <li>Click <strong>Request Report</strong>.</li>
+        <li>Download the file once ready and upload it above.</li>
+      </ol>
+    </div>
+
+    <!-- Error Alert Box -->
+    <div *ngIf="parseError()" class="recon-error-box animate-fade-in">
+      <span class="material-symbols-outlined">error</span>
+      <p>{{ parseError() }}</p>
+    </div>
+
+    <!-- Parsing Loading Spinner Overlay -->
+    <div class="parsing-loader-overlay" *ngIf="isParsing()">
+      <div class="loader-card">
+        <span class="spinner"></span>
+        <h4>Auditing Settlement Ledger...</h4>
+        <p>Parsing formulas, cross-checking SKU sheets, and verifying calculations.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECON ACTIVE DATA DASHBOARD CONTAINER -->
+  <ng-container *ngIf="fileLoaded() && !isParsing()">
+
+    <div class="dashboard-active-header animate-fade-in hide-on-print">
+      <div class="loaded-file-badge">
+        <span class="material-symbols-outlined text-green">check_circle</span>
+        <span>Active Audit: <strong>{{ fileName() }}</strong> ({{ uploadedFilesList().length }} {{ uploadedFilesList().length === 1 ? 'Quarter' : 'Quarters' }} Loaded)</span>
+      </div>
+      <div class="header-action-buttons-flex">
+        <!-- Trigger file upload again for multi-quarter compare -->
+        <button 
+          *ngIf="uploadedFilesList().length < 3"
+          class="btn btn-secondary btn-reset-file" 
+          (click)="triggerFilePicker(fileInput)"
+          title="Upload another quarter report sheet (Max 3)"
+        >
+          <span class="material-symbols-outlined">add_circle</span>
+          <span>Upload Next Quarter</span>
+        </button>
+
+        <button class="btn btn-secondary btn-reset-file btn-danger-text" (click)="resetFile()">
+          <span class="material-symbols-outlined">refresh</span>
+          <span>Reset All</span>
+        </button>
+
+        <!-- Premium PDF Export Button -->
+        <button class="btn btn-primary btn-export-premium" (click)="exportReport()">
+          <span class="material-symbols-outlined">
+            {{ isProUser() ? 'print' : 'lock' }}
+          </span>
+          <span>Export PDF Report</span>
+        </button>
+      </div>
+
+      <input 
+        type="file" 
+        #fileInput 
+        class="hidden-input" 
+        accept=".xlsx" 
+        (change)="onFilePicked($event)" 
+      />
+    </div>
+
+    <!-- SECTION 6 — MULTI-QUARTER COMPARISON TREND ROW -->
+    <section class="multi-quarter-trend-row animate-fade-in" *ngIf="uploadedFilesList().length > 1">
+      <div class="trend-section-title-bar hide-on-print">
+        <span class="material-symbols-outlined text-amber">trending_up</span>
+        <h4>Quarterly Financial Trends (Q1 to Q{{ uploadedFilesList().length }})</h4>
+      </div>
+
+      <div class="trend-cards-grid">
+        <!-- Trend 1: Return Rate -->
+        <div class="trend-card">
+          <div class="trend-card-header">
+            <span class="trend-title">Return Rate Trend</span>
+            <span class="trend-pill" [ngClass]="isReturnRateImproving() ? 'trend-green' : 'trend-red'">
+              {{ isReturnRateImproving() ? 'Improving' : 'Worsening' }} {{ getReturnRateDiff() }}
+            </span>
+          </div>
+          <div class="trend-values-sequence">
+            <div class="sequence-item" *ngFor="let record of uploadedFilesList(); let idx = index">
+              <span class="seq-label">Q{{ idx + 1 }}</span>
+              <span class="seq-value">{{ (record.returnRate * 100).toFixed(1) }}%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trend 2: Reverse Shipping -->
+        <div class="trend-card">
+          <div class="trend-card-header">
+            <span class="trend-title">Reverse Shipping Costs</span>
+            <span class="material-symbols-outlined trend-card-icon text-orange">local_shipping</span>
+          </div>
+          <div class="trend-values-sequence">
+            <div class="sequence-item" *ngFor="let record of uploadedFilesList(); let idx = index">
+              <span class="seq-label">Q{{ idx + 1 }}</span>
+              <span class="seq-value text-orange-value">{{ formatCurrency(record.reverseShipping) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trend 3: Net Earnings -->
+        <div class="trend-card">
+          <div class="trend-card-header">
+            <span class="trend-title">Net Earnings Trend</span>
+            <span class="material-symbols-outlined trend-card-icon text-green">payments</span>
+          </div>
+          <div class="trend-values-sequence">
+            <div class="sequence-item" *ngFor="let record of uploadedFilesList(); let idx = index">
+              <span class="seq-label">Q{{ idx + 1 }}</span>
+              <span class="seq-value text-green-value">{{ formatCurrency(record.netEarnings) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1 — UPGRADED HERO SECTION (Large numbers split) -->
+    <section class="recon-hero-split-card animate-fade-in">
+      <div class="hero-split-column col-left">
+        <span class="hero-title-label">Flipkart Settlement Status</span>
+        <h2 class="hero-primary-val">{{ formatCurrency(pending()) }}</h2>
+        <p class="hero-sub-label">Flipkart owes you in pending settlements across <strong>{{ getPendingSkusCount() }}</strong> unique SKUs</p>
+      </div>
+      
+      <div class="hero-split-divider"></div>
+
+      <div class="hero-split-column col-right">
+        <span class="hero-title-label text-red">Reverse Logistics Drain</span>
+        <h2 class="hero-primary-val text-red">{{ formatCurrency(returns()) }}</h2>
+        <p class="hero-sub-label">Lost to return fees and cancellations (<strong>{{ (getOverallReturnRate() * 100).toFixed(1) }}%</strong> overall return rate)</p>
+      </div>
+    </section>
+
+    <!-- SECTION 2 — PRIORITY ACTIONS ("Fix This Today") -->
+    <section class="recon-priority-actions-section animate-fade-in">
+      <div class="section-header-row">
+        <div class="title-with-badge">
+          <span class="material-symbols-outlined panel-header-icon text-red">gavel</span>
+          <h3>Fix This Today</h3>
+        </div>
+        <span class="action-helper-label hide-on-print">Top 3 issues ranked by financial leakage magnitude</span>
+      </div>
+
+      <div class="priority-actions-grid">
+        <div 
+          *ngFor="let action of priorityActions(); let idx = index" 
+          class="priority-action-card"
+          [class.card-losing]="action.isLosing"
+        >
+          <div class="action-card-header">
+            <span class="action-rank-badge">#{{ idx + 1 }}</span>
+            <span class="action-impact-badge">{{ action.badge }}</span>
+          </div>
+
+          <h4 class="action-card-title">{{ action.title }}</h4>
+          <p class="action-card-explanation">{{ action.explanation }}</p>
+          
+          <!-- Affected SKUs details list -->
+          <div class="action-sku-list-detail" *ngIf="action.skuListDetail">
+            <strong>Affected SKUs:</strong> <span class="sku-detail-text">{{ action.skuListDetail }}</span>
+          </div>
+
+          <div class="action-card-direction">
+            <span class="material-symbols-outlined action-arrow-icon">arrow_forward</span>
+            <span class="action-text"><strong>Recommendation:</strong> {{ action.action }}</span>
+          </div>
+
+          <!-- Break even alert for losing items -->
+          <div class="break-even-banner" *ngIf="action.isLosing && action.breakEvenValue">
+            <span class="material-symbols-outlined break-even-ic">info</span>
+            <span class="break-even-text">{{ action.breakEvenValue }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MIDDLE COLUMN SPLIT: DEDUCTIONS (EXPENSES) & COST SEGREGATIONS -->
+    <div class="dashboard-middle-split animate-fade-in">
+      
+      <!-- EXPENSE BREAKDOWN CHART -->
+      <div class="expenses-panel-card">
+        <div class="expenses-header">
+          <span class="material-symbols-outlined panel-header-icon text-orange">pie_chart</span>
+          <h3>Flipkart Deductions Breakdown</h3>
+        </div>
+
+        <!-- SECTION 4 — COMMISSION FEE ANOMALY WARNING BANNER -->
+        <div *ngIf="commissionFee() === 0" class="commission-anomaly-warning animate-fade-in">
+          <span class="material-symbols-outlined warning-anomaly-icon">warning</span>
+          <div class="warning-anomaly-content">
+            <strong>⚠ Commission fee is ₹0.</strong>
+            <p>For jewellery sellers this is highly unusual. Verify your categories rate card in Flipkart Seller Hub — this could indicate a classification mismatch issue.</p>
+          </div>
+        </div>
+
+        <div class="expenses-chart-list custom-scrollbar">
+          <div class="chart-item-row" *ngFor="let exp of expensesList()">
+            <div class="chart-labels-flex">
+              <span class="chart-label">{{ exp.label }}</span>
+              <span class="chart-amount">{{ formatCurrency(exp.amount) }}</span>
+            </div>
+            <div class="chart-bar-container">
+              <div 
+                class="chart-bar-fill" 
+                [style.width.%]="exp.percentWidth"
+                [title]="exp.label + ': ' + formatCurrency(exp.amount)"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 5 — CONTROLLABLE vs PLATFORM COSTS PANEL -->
+        <div class="costs-segregation-row">
+          <!-- Box 1: Controllable Costs -->
+          <div class="cost-box cost-box-controllable">
+            <div class="cost-box-header">
+              <span class="cost-box-title">You Can Reduce This</span>
+              <span class="material-symbols-outlined cost-box-icon text-orange">psychology</span>
+            </div>
+            <h4 class="cost-box-val">{{ formatCurrency(controllableCosts()) }}</h4>
+            <p class="cost-box-desc">Shipping & Ads. Control these values by optimizing catalog listings and packaging.</p>
+          </div>
+
+          <!-- Box 2: Platform Fixed Charges -->
+          <div class="cost-box cost-box-platform">
+            <div class="cost-box-header">
+              <span class="cost-box-title">Platform Charges (Fixed)</span>
+              <span class="material-symbols-outlined cost-box-icon text-muted">lock</span>
+            </div>
+            <h4 class="cost-box-val">{{ formatCurrency(platformCosts()) }}</h4>
+            <p class="cost-box-desc">Fixed Fee, GST & TCS. Static statutory dues determined by Flipkart fee sheets.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALERTS LIST PANEL -->
+      <div class="alerts-panel-card hide-on-print">
+        <div class="alerts-header">
+          <div class="header-title-section">
+            <span class="material-symbols-outlined panel-header-icon text-red">crisis_alert</span>
+            <h3>Issues detected in your account</h3>
+          </div>
+          <div class="alerts-risk-badge" *ngIf="totalRiskAmount() > 0">
+            <span class="risk-label">Total Cash At Risk:</span>
+            <span class="risk-value">{{ formatCurrency(totalRiskAmount()) }}</span>
+          </div>
+        </div>
+
+        <!-- Alert Counts Summary Bar -->
+        <div class="alerts-summary-grid">
+          <div class="alert-badge-pill pill-red">
+            <span class="badge-count">{{ losingAlertsCount() }}</span>
+            <span class="badge-label">Losing SKUs</span>
+          </div>
+          <div class="alert-badge-pill pill-orange">
+            <span class="badge-count">{{ highReturnsAlertsCount() }}</span>
+            <span class="badge-label">High Returns</span>
+          </div>
+          <div class="alert-badge-pill pill-yellow">
+            <span class="badge-count">{{ pendingAlertsCount() }}</span>
+            <span class="badge-label">Payment Stuck</span>
+          </div>
+          <div class="alert-badge-pill pill-red-border">
+            <span class="badge-count">{{ negativeSettlementAlertsCount() }}</span>
+            <span class="badge-label">Neg Deductions</span>
+          </div>
+        </div>
+
+        <!-- Scrollable Alerts List -->
+        <div class="alerts-list scroll-y custom-scrollbar" *ngIf="alerts().length > 0">
+          <div 
+            *ngFor="let alert of alerts()" 
+            class="alert-row"
+            [ngClass]="{
+              'alert-critical': alert.severity === 'critical',
+              'alert-orange': alert.severity === 'warning-orange',
+              'alert-yellow': alert.severity === 'warning-yellow'
+            }"
+          >
+            <div class="alert-icon-block">
+              <span class="material-symbols-outlined icon-alert">
+                {{ alert.severity === 'critical' ? 'cancel' : 'warning' }}
+              </span>
+            </div>
+            <div class="alert-message-content">
+              <span class="alert-badge" [ngClass]="{
+                'badge-critical': alert.severity === 'critical',
+                'badge-orange': alert.severity === 'warning-orange',
+                'badge-yellow': alert.severity === 'warning-yellow'
+              }">
+                {{ alert.severity === 'critical' ? 'Critical' : 'Warning' }}
+              </span>
+              <p class="alert-desc">{{ alert.message }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty Alerts State -->
+        <div class="empty-alerts-state" *ngIf="alerts().length === 0">
+          <span class="material-symbols-outlined check-circle-large">verified</span>
+          <h4>No issues detected in your account!</h4>
+          <p>Your SKUs are profitable, returns are low, and payments are settled normally.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SECTION 3 — SKU PERFORMANCE TABLE -->
+    <section class="recon-table-section animate-fade-in">
+      <div class="table-header-block hide-on-print">
+        <div class="table-title-left">
+          <span class="material-symbols-outlined panel-header-icon text-blue">view_list</span>
+          <h3>SKU-Level Profitability & Settlements</h3>
+        </div>
+        
+        <!-- Search Filtering -->
+        <div class="search-input-wrapper">
+          <span class="material-symbols-outlined search-ic">search</span>
+          <input 
+            type="text" 
+            [(ngModel)]="searchSku"
+            placeholder="Search SKU ID..." 
+            class="sku-search-input" 
+          />
+        </div>
+      </div>
+
+      <div class="table-container scroll-x custom-scrollbar">
+        <table class="sku-performance-table">
+          <thead>
+            <tr>
+              <th (click)="toggleSort('skuId')" class="sortable-header">
+                SKU ID
+                <span class="material-symbols-outlined sort-arrow" *ngIf="sortColumn() === 'skuId'">
+                  {{ sortAscending() ? 'arrow_upward' : 'arrow_downward' }}
+                </span>
+              </th>
+              <th (click)="toggleSort('grossUnits')" class="sortable-header text-right">
+                Gross Units
+                <span class="material-symbols-outlined sort-arrow" *ngIf="sortColumn() === 'grossUnits'">
+                  {{ sortAscending() ? 'arrow_upward' : 'arrow_downward' }}
+                </span>
+              </th>
+              <th (click)="toggleSort('returnRate')" class="sortable-header text-right">
+                Return Rate
+                <span class="material-symbols-outlined sort-arrow" *ngIf="sortColumn() === 'returnRate'">
+                  {{ sortAscending() ? 'arrow_upward' : 'arrow_downward' }}
+                </span>
+              </th>
+              <th (click)="toggleSort('netEarnings')" class="sortable-header text-right">
+                Net Earnings
+                <span class="material-symbols-outlined sort-arrow" *ngIf="sortColumn() === 'netEarnings'">
+                  {{ sortAscending() ? 'arrow_upward' : 'arrow_downward' }}
+                </span>
+              </th>
+              <th (click)="toggleSort('amountSettled')" class="sortable-header text-right">
+                Settled Amount
+                <span class="material-symbols-outlined sort-arrow" *ngIf="sortColumn() === 'amountSettled'">
+                  {{ sortAscending() ? 'arrow_upward' : 'arrow_downward' }}
+                </span>
+              </th>
+              <th (click)="toggleSort('amountPending')" class="sortable-header text-right">
+                Pending Amount
+                <span class="material-symbols-outlined sort-arrow" *ngIf="sortColumn() === 'amountPending'">
+                  {{ sortAscending() ? 'arrow_upward' : 'arrow_downward' }}
+                </span>
+              </th>
+              <th>Status</th>
+              <th>Rupee Impact Recommendation</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              *ngFor="let row of getFilteredSkuRows()"
+              [class.row-danger-highlight]="row.netEarnings < 0"
+            >
+              <td class="font-mono-sku"><strong>{{ row.skuId }}</strong></td>
+              <td class="text-right">{{ row.grossUnits }}</td>
+              <td class="text-right">{{ (row.returnRate * 100).toFixed(1) }}%</td>
+              <td class="text-right" [class.text-red-value]="row.netEarnings < 0">
+                <strong>{{ formatCurrency(row.netEarnings) }}</strong>
+              </td>
+              <td class="text-right">{{ formatCurrency(row.amountSettled) }}</td>
+              <td class="text-right" [class.text-orange-value]="row.amountPending > 500">
+                {{ formatCurrency(row.amountPending) }}
+              </td>
+              <td>
+                <span class="table-badge" [ngClass]="row.statusClass">
+                  {{ row.status }}
+                </span>
+              </td>
+              <td class="impact-cell-recommendation" [ngClass]="row.impactClass">
+                {{ row.impactText }}
+              </td>
+            </tr>
+            <tr *ngIf="getFilteredSkuRows().length === 0">
+              <td colspan="8" class="empty-table-row">No SKU entries match your search.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </ng-container>
+
+  <!-- Premium Pro Export Gating Upsell Modal -->
+  <div class="pro-modal-overlay animate-fade-in hide-on-print" *ngIf="showProUpsellModal()">
+    <div class="pro-modal-card">
+      <button class="close-pro-btn" (click)="closeUpsellModal()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+
+      <div class="pro-modal-header">
+        <span class="material-symbols-outlined pro-lock-icon">lock_open</span>
+        <h3>Unlock PDF Export</h3>
+        <p class="pro-tagline">Download clean, printable reports and logistics claims templates.</p>
+      </div>
+
+      <div class="pro-modal-pricing">
+        <span class="currency-tag">₹</span>
+        <span class="price-value">499</span>
+        <span class="period-tag">/ month</span>
+      </div>
+
+      <ul class="pro-features-bullets">
+        <li>
+          <span class="material-symbols-outlined bullet-check">check_circle</span>
+          <span>Unlimited PDF audits and print layouts</span>
+        </li>
+        <li>
+          <span class="material-symbols-outlined bullet-check">check_circle</span>
+          <span>Multi-Quarter trend reports (compare up to 3 reports)</span>
+        </li>
+        <li>
+          <span class="material-symbols-outlined bullet-check">check_circle</span>
+          <span>Weight category overcharge claims generator</span>
+        </li>
+      </ul>
+
+      <div class="pro-modal-actions">
+        <!-- Allows sandbox testing of pro state -->
+        <button class="btn btn-primary btn-pro-upgrade" (click)="unlockProUpgrade()">
+          <span class="material-symbols-outlined">bolt</span>
+          <span>Upgrade to SellerOS Pro</span>
+        </button>
+        <button class="btn btn-secondary btn-pro-cancel" (click)="closeUpsellModal()">Cancel</button>
+      </div>
+      
+      <p class="pro-modal-helper">Sandbox mode: Click Upgrade to activate immediately and test the PDF layout.</p>
+    </div>
+  </div>
+
+</div>

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -36,7 +36,7 @@ interface CatalogResults {
   templateUrl: './listing-builder.component.html',
   styleUrls: ['./listing-builder.component.css']
 })
-export class ListingBuilderComponent {
+export class ListingBuilderComponent implements OnDestroy {
   Object = Object;
 
   // Target platforms selector state mapping (multiple choices allowed)
@@ -72,6 +72,11 @@ export class ListingBuilderComponent {
 
   isGenerating = signal<boolean>(false);
   errorMsg = signal<string | null>(null);
+
+  // Rate Limiting Cooldown State
+  isRateLimited = signal<boolean>(false);
+  rateLimitCountdown = signal<number>(0);
+  private countdownInterval: any = null;
 
   // Frosted Glass Lead Gating Modal States
   showLeadModal = false;
@@ -154,6 +159,31 @@ export class ListingBuilderComponent {
     this.errorMsg.set(null);
   }
 
+  // Rate Limiting Timer Trigger
+  startRateLimitTimer(): void {
+    this.isRateLimited.set(true);
+    this.rateLimitCountdown.set(60);
+    
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
+
+    this.countdownInterval = setInterval(() => {
+      const current = this.rateLimitCountdown();
+      if (current > 1) {
+        this.rateLimitCountdown.set(current - 1);
+      } else {
+        this.isRateLimited.set(false);
+        this.rateLimitCountdown.set(0);
+        this.errorMsg.set(null);
+        if (this.countdownInterval) {
+          clearInterval(this.countdownInterval);
+          this.countdownInterval = null;
+        }
+      }
+    }, 1000);
+  }
+
   // Call backend compiler
   async generateListing(): Promise<void> {
     const chosenPlatforms = Object.keys(this.selectedPlatforms).filter(p => this.selectedPlatforms[p]);
@@ -165,6 +195,14 @@ export class ListingBuilderComponent {
     this.isGenerating.set(true);
     this.errorMsg.set(null);
     this.catalogResults.set(null);
+
+    // Reset rate limit state
+    this.isRateLimited.set(false);
+    this.rateLimitCountdown.set(0);
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
+    }
 
     const formData = new FormData();
     formData.append('platforms', JSON.stringify(chosenPlatforms));
@@ -188,7 +226,13 @@ export class ListingBuilderComponent {
       });
 
       if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error("RATE_LIMIT_EXHAUSTED");
+        }
         const errData = await response.json().catch(() => ({}));
+        if (errData.error === 'GEMINI_RATE_LIMIT_EXHAUSTED') {
+          throw new Error("RATE_LIMIT_EXHAUSTED");
+        }
         throw new Error(errData.error || `Server failed with status HTTP ${response.status}`);
       }
 
@@ -200,7 +244,11 @@ export class ListingBuilderComponent {
 
     } catch (err: any) {
       console.error("AI Catalog Engine compile failure:", err);
-      this.errorMsg.set(err.message || "Failed to compile product catalog. Verify your Gemini API credentials.");
+      if (err.message === 'RATE_LIMIT_EXHAUSTED') {
+        this.startRateLimitTimer();
+      } else {
+        this.errorMsg.set(err.message || "Failed to compile product catalog. Verify your Gemini API credentials.");
+      }
     } finally {
       this.isGenerating.set(false);
     }
@@ -214,6 +262,14 @@ export class ListingBuilderComponent {
 
     this.isRefreshingNode[nodeType] = true;
     this.errorMsg.set(null);
+
+    // Reset rate limit state
+    this.isRateLimited.set(false);
+    this.rateLimitCountdown.set(0);
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+      this.countdownInterval = null;
+    }
 
     try {
       const response = await fetch('http://localhost:3333/api/catalog/refresh-node', {
@@ -229,7 +285,13 @@ export class ListingBuilderComponent {
       });
 
       if (!response.ok) {
+        if (response.status === 429) {
+          throw new Error("RATE_LIMIT_EXHAUSTED");
+        }
         const errData = await response.json().catch(() => ({}));
+        if (errData.error === 'GEMINI_RATE_LIMIT_EXHAUSTED') {
+          throw new Error("RATE_LIMIT_EXHAUSTED");
+        }
         throw new Error(errData.error || `Refresh failed with status HTTP ${response.status}`);
       }
 
@@ -248,7 +310,11 @@ export class ListingBuilderComponent {
 
     } catch (err: any) {
       console.error(`Isolated refresh failed for ${nodeType}:`, err);
-      this.errorMsg.set(err.message || "Failed to update node. Check backend logs.");
+      if (err.message === 'RATE_LIMIT_EXHAUSTED') {
+        this.startRateLimitTimer();
+      } else {
+        this.errorMsg.set(err.message || "Failed to update node. Check backend logs.");
+      }
     } finally {
       this.isRefreshingNode[nodeType] = false;
     }
@@ -328,14 +394,6 @@ export class ListingBuilderComponent {
     const currentResults = this.catalogResults();
     if (!currentResults) return;
 
-    /* GATING DISABLED FOR NOW - UNCOMMENT TO RE-ENABLE LEAD CAPTURE
-    if (localStorage.getItem('isGatedUser') !== 'true') {
-      this.pendingDownloadCallback = () => this.executeExportListing();
-      this.showLeadModal = true;
-      return;
-    }
-    */
-
     this.executeExportListing();
   }
 
@@ -350,5 +408,11 @@ export class ListingBuilderComponent {
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
+  }
+
+  ngOnDestroy(): void {
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
   }
 }

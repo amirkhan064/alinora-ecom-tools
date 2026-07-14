@@ -217,8 +217,17 @@
       </div>
     </div>
 
+    <!-- Rate Limit Warning Alert -->
+    <div *ngIf="isRateLimited()" class="rate-limit-alert-box animate-fade-in">
+      <span class="material-symbols-outlined alert-icon-warn">history</span>
+      <div class="alert-content">
+        <h5>AI Service Temporarily Busy</h5>
+        <p>We are currently processing a high volume of requests. Please wait <strong>{{ rateLimitCountdown() }} seconds</strong> before trying again.</p>
+      </div>
+    </div>
+
     <!-- Server generation failure alerts -->
-    <div *ngIf="errorMsg()" class="error-alert-box animate-fade-in">
+    <div *ngIf="errorMsg() && !isRateLimited()" class="error-alert-box animate-fade-in">
       <span class="material-symbols-outlined alert-icon">error</span>
       <div class="alert-content">
         <h5>Generation Failed</h5>
@@ -229,15 +238,19 @@
     <!-- Primary Generation Button trigger -->
     <button 
       (click)="generateListing()" 
-      [disabled]="isGenerating() || (inputMethod === 'image' && !selectedFile) || (inputMethod === 'text' && !rawTitle && !rawDescription) || (inputMethod === 'url' && !competitorUrl)"
+      [disabled]="isGenerating() || isRateLimited() || (inputMethod === 'image' && !selectedFile) || (inputMethod === 'text' && !rawTitle && !rawDescription) || (inputMethod === 'url' && !competitorUrl)"
       class="btn btn-primary btn-generate">
-      <span *ngIf="!isGenerating()" class="btn-content">
+      <span *ngIf="!isGenerating() && !isRateLimited()" class="btn-content">
         <span class="material-symbols-outlined">auto_awesome</span>
         Generate Listings
       </span>
       <span *ngIf="isGenerating()" class="btn-loader-flex">
         <span class="spinner"></span>
         Analyzing...
+      </span>
+      <span *ngIf="isRateLimited() && !isGenerating()" class="btn-loader-flex">
+        <span class="material-symbols-outlined">schedule</span>
+        Cooldown ({{ rateLimitCountdown() }}s)
       </span>
     </button>
 

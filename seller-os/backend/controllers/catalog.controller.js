@@ -73,7 +73,8 @@ const buildCatalog = async (req, res) => {
 
   } catch (error) {
     console.error("[Catalog Controller] Generate Catalog Error:", error.message);
-    return res.status(500).json({ 
+    const status = error.message === 'GEMINI_RATE_LIMIT_EXHAUSTED' ? 429 : 500;
+    return res.status(status).json({ 
       error: error.message || "Failed to generate optimized listing details." 
     });
   }
@@ -95,7 +96,8 @@ const refreshCatalogNode = async (req, res) => {
 
   } catch (error) {
     console.error("[Catalog Controller] Refresh Node Error:", error.message);
-    return res.status(500).json({ 
+    const status = error.message === 'GEMINI_RATE_LIMIT_EXHAUSTED' ? 429 : 500;
+    return res.status(status).json({ 
       error: error.message || "Failed to refresh listing node." 
     });
   }
