@@ -71,6 +71,7 @@ app.use(express.json());
 app.post('/api/fetch-images', imageController.fetchImages);
 app.get('/api/proxy-image', imageController.proxyImage);
 app.post('/api/labels/process', upload.any(), labelController.processLabels);
+app.post('/api/labels/scan', upload.any(), labelController.scanLabels);
 app.post('/api/process-pdf', upload.any(), labelController.processLabels);
 app.post('/api/seo/generate', upload.any(), seoController.generateSeo);
 app.post('/api/catalog/build', upload.any(), catalogController.buildCatalog);

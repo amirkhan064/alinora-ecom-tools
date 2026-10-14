@@ -12,7 +12,7 @@
   </div>
 
   <div class="cropper-workspace-split">
-    
+
     <!-- LEFT PANEL: Marketplace, Dropzone, File Queue & Diagnostics -->
     <div class="cropper-left-pane">
       <!-- Target Marketplace -->
@@ -20,78 +20,70 @@
         <h3 class="section-label">1. Marketplace</h3>
         <div class="platform-cards-grid" role="radiogroup" aria-label="Target Marketplace">
           <!-- Flipkart -->
-          <div class="platform-card flipkart-card" 
-               tabindex="0"
-               role="radio"
-               [attr.aria-checked]="selectedPlatform === 'flipkart'"
-               [class.active]="selectedPlatform === 'flipkart'"
-               (click)="selectedPlatform = 'flipkart'; logDebug('Platform switched to Flipkart')"
-               (keydown.enter)="selectedPlatform = 'flipkart'; logDebug('Platform switched to Flipkart')"
-               (keydown.space)="$event.preventDefault(); selectedPlatform = 'flipkart'; logDebug('Platform switched to Flipkart')">
+          <div class="platform-card flipkart-card" tabindex="0" role="radio"
+            [attr.aria-checked]="selectedPlatform === 'flipkart'" [class.active]="selectedPlatform === 'flipkart'"
+            (click)="selectedPlatform = 'flipkart'; logDebug('Platform switched to Flipkart')"
+            (keydown.enter)="selectedPlatform = 'flipkart'; logDebug('Platform switched to Flipkart')"
+            (keydown.space)="$event.preventDefault(); selectedPlatform = 'flipkart'; logDebug('Platform switched to Flipkart')">
             <div class="platform-logo-box fk-logo-box">F</div>
             <div class="platform-details">
               <h3>Flipkart</h3>
               <p>Official 3" × 5" labels.</p>
             </div>
             <div class="radio-indicator">
-              <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatform === 'flipkart'">check_circle</span>
+              <span class="material-symbols-outlined check-icon"
+                *ngIf="selectedPlatform === 'flipkart'">check_circle</span>
             </div>
           </div>
 
           <!-- Amazon -->
-          <div class="platform-card amazon-card" 
-               tabindex="0"
-               role="radio"
-               [attr.aria-checked]="selectedPlatform === 'amazon'"
-               [class.active]="selectedPlatform === 'amazon'"
-               (click)="selectedPlatform = 'amazon'; logDebug('Platform switched to Amazon')"
-               (keydown.enter)="selectedPlatform = 'amazon'; logDebug('Platform switched to Amazon')"
-               (keydown.space)="$event.preventDefault(); selectedPlatform = 'amazon'; logDebug('Platform switched to Amazon')">
+          <div class="platform-card amazon-card" tabindex="0" role="radio"
+            [attr.aria-checked]="selectedPlatform === 'amazon'" [class.active]="selectedPlatform === 'amazon'"
+            (click)="selectedPlatform = 'amazon'; logDebug('Platform switched to Amazon')"
+            (keydown.enter)="selectedPlatform = 'amazon'; logDebug('Platform switched to Amazon')"
+            (keydown.space)="$event.preventDefault(); selectedPlatform = 'amazon'; logDebug('Platform switched to Amazon')">
             <div class="platform-logo-box amz-logo-box">A</div>
             <div class="platform-details">
               <h3>Amazon</h3>
               <p>Standard 4" × 6" labels.</p>
             </div>
             <div class="radio-indicator">
-              <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatform === 'amazon'">check_circle</span>
+              <span class="material-symbols-outlined check-icon"
+                *ngIf="selectedPlatform === 'amazon'">check_circle</span>
             </div>
           </div>
 
           <!-- Meesho -->
-          <div class="platform-card meesho-card" 
-               tabindex="0"
-               role="radio"
-               [attr.aria-checked]="selectedPlatform === 'meesho'"
-               [class.active]="selectedPlatform === 'meesho'"
-               (click)="selectedPlatform = 'meesho'; logDebug('Platform switched to Meesho')"
-               (keydown.enter)="selectedPlatform = 'meesho'; logDebug('Platform switched to Meesho')"
-               (keydown.space)="$event.preventDefault(); selectedPlatform = 'meesho'; logDebug('Platform switched to Meesho')">
+          <div class="platform-card meesho-card" tabindex="0" role="radio"
+            [attr.aria-checked]="selectedPlatform === 'meesho'" [class.active]="selectedPlatform === 'meesho'"
+            (click)="selectedPlatform = 'meesho'; logDebug('Platform switched to Meesho')"
+            (keydown.enter)="selectedPlatform = 'meesho'; logDebug('Platform switched to Meesho')"
+            (keydown.space)="$event.preventDefault(); selectedPlatform = 'meesho'; logDebug('Platform switched to Meesho')">
             <div class="platform-logo-box ms-logo-box">M</div>
             <div class="platform-details">
               <h3>Meesho</h3>
               <p>Official 4" × 5" labels.</p>
             </div>
             <div class="radio-indicator">
-              <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatform === 'meesho'">check_circle</span>
+              <span class="material-symbols-outlined check-icon"
+                *ngIf="selectedPlatform === 'meesho'">check_circle</span>
             </div>
           </div>
 
           <!-- Myntra -->
-          <div class="platform-card myntra-card" 
-               tabindex="0"
-               role="radio"
-               [attr.aria-checked]="selectedPlatform === 'myntra'"
-               [class.active]="selectedPlatform === 'myntra'"
-               (click)="selectedPlatform = 'myntra'; logDebug('Platform switched to Myntra')"
-               (keydown.enter)="selectedPlatform = 'myntra'; logDebug('Platform switched to Myntra')"
-               (keydown.space)="$event.preventDefault(); selectedPlatform = 'myntra'; logDebug('Platform switched to Myntra')">
+          <div class="platform-card myntra-card" tabindex="0" role="radio"
+            [attr.aria-checked]="selectedPlatform === 'myntra'" [class.active]="selectedPlatform === 'myntra'"
+            (click)="selectedPlatform = 'myntra'; logDebug('Platform switched to Myntra')"
+            (keydown.enter)="selectedPlatform = 'myntra'; logDebug('Platform switched to Myntra')"
+            (keydown.space)="$event.preventDefault(); selectedPlatform = 'myntra'; logDebug('Platform switched to Myntra')">
             <div class="platform-logo-box myntra-logo-box">M</div>
             <div class="platform-details">
               <h3>Myntra</h3>
               <p>Official 3" × 5" labels.</p>
             </div>
             <div class="radio-indicator">
-              <span class="material-symbols-outlined check-icon" *ngIf="selectedPlatform === 'myntra'">check_circle</span>
+              <span class="material-symbols-outlined check-icon"
+                *ngIf="selectedPlatform === 'myntra'">check_circle</span>
             </div>
           </div>
         </div>
@@ -100,18 +92,16 @@
       <!-- Batch Dropzone -->
       <section class="console-section dropzone-section">
         <h3 class="section-label">2. Upload Labels</h3>
-        <div class="dropzone-box"
-             [class.drag-active]="isDragActive"
-             (dragover)="onDragOver($event)"
-             (dragleave)="onDragLeave($event)"
-             (drop)="onDrop($event)"
-             (click)="fileInput.click()">
-          <input type="file" #fileInput multiple accept="application/pdf" (change)="onFilePicked($event)" style="display: none;">
-          
+        <div class="dropzone-box" [class.drag-active]="isDragActive" (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" (click)="fileInput.click()">
+          <input type="file" #fileInput multiple accept="application/pdf" (change)="onFilePicked($event)"
+            style="display: none;">
+
           <div class="dropzone-content">
             <span class="material-symbols-outlined upload-icon">upload_file</span>
             <div class="upload-headline">Drag & drop your PDF here</div>
-            <p class="upload-subtext">or click to browse <span class="upload-subtext-detail">(Max 500 pages, 100MB)</span></p>
+            <p class="upload-subtext">or click to browse <span class="upload-subtext-detail">(Max 500 pages,
+                100MB)</span></p>
           </div>
         </div>
       </section>
@@ -123,11 +113,19 @@
             <div class="header-left-group">
               <span class="material-symbols-outlined list-icon">view_list</span>
               <span class="queue-title">Uploaded Files</span>
-              <span class="queue-badge">{{ uploadedFiles.length }} {{ uploadedFiles.length === 1 ? 'File' : 'Files' }}</span>
+              <span class="queue-badge">{{ uploadedFiles.length }} {{ uploadedFiles.length === 1 ? 'File' : 'Files'
+                }}</span>
             </div>
-            <button class="clear-btn" (click)="clearAll()">Remove All</button>
+            <div class="queue-header-actions">
+              <button class="scan-parent-btn" (click)="scanParentLabels()" [disabled]="isScanning">
+                <span class="material-symbols-outlined btn-mini-icon" *ngIf="!isScanning">format_list_bulleted</span>
+                <span class="btn-spinner sm-spinner" *ngIf="isScanning"></span>
+                <span>{{ isScanning ? 'Scanning...' : 'Scan Parent List' }}</span>
+              </button>
+              <button class="clear-btn" (click)="clearAll()">Remove All</button>
+            </div>
           </div>
-          
+
           <div class="files-table-container custom-scrollbar">
             <table class="files-table">
               <thead>
@@ -170,7 +168,8 @@
           </summary>
           <div class="diagnostics-logs-box custom-scrollbar">
             <div class="log-entry" *ngFor="let log of debugLogs">{{ log }}</div>
-            <div class="log-entry empty-log" *ngIf="debugLogs.length === 0">All systems ready. Waiting for files...</div>
+            <div class="log-entry empty-log" *ngIf="debugLogs.length === 0">All systems ready. Waiting for files...
+            </div>
           </div>
         </details>
       </section>
@@ -190,7 +189,7 @@
         <!-- Sorting Criteria -->
         <div class="config-group">
           <label class="group-title">Sort Orders By</label>
-          
+
           <div class="form-field">
             <label class="field-label">Sort By</label>
             <div class="pill-radio-group">
@@ -228,14 +227,9 @@
         <div class="config-group border-top">
           <label class="group-title">Output Format</label>
           <div class="output-matrix" role="radiogroup" aria-label="Output Format">
-            <div class="matrix-cell labels-cell" 
-                 tabindex="0"
-                 role="radio"
-                 [attr.aria-checked]="outputType === 'labels'"
-                 [class.selected]="outputType === 'labels'"
-                 (click)="outputType = 'labels'"
-                 (keydown.enter)="outputType = 'labels'"
-                 (keydown.space)="$event.preventDefault(); outputType = 'labels'">
+            <div class="matrix-cell labels-cell" tabindex="0" role="radio" [attr.aria-checked]="outputType === 'labels'"
+              [class.selected]="outputType === 'labels'" (click)="outputType = 'labels'"
+              (keydown.enter)="outputType = 'labels'" (keydown.space)="$event.preventDefault(); outputType = 'labels'">
               <div class="cell-header">
                 <span class="cell-badge label-badge">PDF</span>
                 <h4>Shipping Labels Only</h4>
@@ -243,14 +237,10 @@
               <p>Cropped labels in a single PDF.</p>
             </div>
 
-            <div class="matrix-cell invoices-cell" 
-                 tabindex="0"
-                 role="radio"
-                 [attr.aria-checked]="outputType === 'invoices'"
-                 [class.selected]="outputType === 'invoices'"
-                 (click)="outputType = 'invoices'"
-                 (keydown.enter)="outputType = 'invoices'"
-                 (keydown.space)="$event.preventDefault(); outputType = 'invoices'">
+            <div class="matrix-cell invoices-cell" tabindex="0" role="radio"
+              [attr.aria-checked]="outputType === 'invoices'" [class.selected]="outputType === 'invoices'"
+              (click)="outputType = 'invoices'" (keydown.enter)="outputType = 'invoices'"
+              (keydown.space)="$event.preventDefault(); outputType = 'invoices'">
               <div class="cell-header">
                 <span class="cell-badge inv-badge">PDF</span>
                 <h4>Invoices Only</h4>
@@ -258,14 +248,9 @@
               <p>Customer invoices in a single PDF.</p>
             </div>
 
-            <div class="matrix-cell zip-cell" 
-                 tabindex="0"
-                 role="radio"
-                 [attr.aria-checked]="outputType === 'zip'"
-                 [class.selected]="outputType === 'zip'"
-                 (click)="outputType = 'zip'"
-                 (keydown.enter)="outputType = 'zip'"
-                 (keydown.space)="$event.preventDefault(); outputType = 'zip'">
+            <div class="matrix-cell zip-cell" tabindex="0" role="radio" [attr.aria-checked]="outputType === 'zip'"
+              [class.selected]="outputType === 'zip'" (click)="outputType = 'zip'" (keydown.enter)="outputType = 'zip'"
+              (keydown.space)="$event.preventDefault(); outputType = 'zip'">
               <div class="cell-header">
                 <span class="cell-badge zip-badge">ZIP</span>
                 <h4>Both (ZIP Package)</h4>
@@ -278,9 +263,20 @@
         <!-- Advanced Processing Options -->
         <div class="config-group border-top" *ngIf="outputType === 'labels' || outputType === 'zip'">
           <label class="group-title">Page Settings</label>
-          
-          <!-- A4 Merge Switch -->
+
           <div class="switch-control-field">
+            <div class="control-text">
+              <span class="control-title">Sort only</span>
+              <span class="control-desc">Keep original label sizes and just reorder pages.</span>
+            </div>
+            <label class="switch-toggle">
+              <input type="checkbox" [ngModel]="sortOnly" (ngModelChange)="onSortOnlyToggle($event)">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- A4 Merge Switch -->
+          <div class="switch-control-field" *ngIf="!sortOnly">
             <div class="control-text">
               <span class="control-title">Combine 4 labels per A4 page</span>
               <span class="control-desc">Arrange 4 labels on one A4 sheet.</span>
@@ -292,18 +288,124 @@
           </div>
 
           <!-- Branding overlay -->
-          <div class="text-input-field">
+          <div class="text-input-field" *ngIf="!sortOnly">
             <div class="control-text">
               <span class="control-title">Add Custom Label Text</span>
               <span class="control-desc">Add text like 'Thank you!' on labels.</span>
             </div>
             <div class="input-input-wrapper">
-              <input type="text" 
-                     [(ngModel)]="customText" 
-                     maxlength="50" 
-                     placeholder="e.g. Thank you for your purchase!" 
-                     class="premium-input">
+              <input type="text" [(ngModel)]="customText" maxlength="50" placeholder="e.g. Thank you for your purchase!"
+                class="premium-input">
               <span class="char-count">{{ customText.length }}/50</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter by Order IDs Section -->
+        <div class="config-group border-top">
+          <div class="group-title-row">
+            <label class="group-title">Filter by Order IDs</label>
+            <span class="filter-count-badge" *ngIf="filterByOrderIds && parsedOrderIds.length > 0">
+              {{ parsedOrderIds.length }} {{ parsedOrderIds.length === 1 ? 'Order' : 'Orders' }}
+            </span>
+          </div>
+
+          <div class="switch-control-field">
+            <div class="control-text">
+              <span class="control-title">Filter by Order IDs</span>
+              <span class="control-desc">Process only selected orders from the parent PDF.</span>
+            </div>
+            <label class="switch-toggle">
+              <input type="checkbox" [(ngModel)]="filterByOrderIds">
+              <span class="switch-slider"></span>
+            </label>
+          </div>
+
+          <!-- Expanded Filter Subpanel -->
+          <div class="filter-subpanel animate-fade-in" *ngIf="filterByOrderIds">
+            <!-- Filter Action Pills (Include vs Exclude) -->
+            <div class="form-field">
+              <label class="field-label">Filter Action</label>
+              <div class="pill-radio-group">
+                <label class="pill-radio" [class.checked]="filterMode === 'include'" title="Only crop & keep matching orders">
+                  <input type="radio" name="filterMode" value="include" [(ngModel)]="filterMode">
+                  <span>Keep Matched</span>
+                </label>
+                <label class="pill-radio" [class.checked]="filterMode === 'exclude'" title="Remove matching orders (e.g. cancellations)">
+                  <input type="radio" name="filterMode" value="exclude" [(ngModel)]="filterMode">
+                  <span>Exclude (Omit)</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Textarea for Order IDs -->
+            <div class="form-field">
+              <div class="field-label-row">
+                <label class="field-label">Target Order IDs</label>
+                <span class="detected-badge" *ngIf="parsedOrderIds.length > 0">{{ parsedOrderIds.length }} detected</span>
+              </div>
+              <textarea
+                class="order-ids-textarea custom-scrollbar"
+                [(ngModel)]="orderIdsInput"
+                (ngModelChange)="onOrderIdsInputChange()"
+                rows="4"
+                placeholder="Paste Order IDs here...&#10;e.g. OD332309712019827000&#10;403-1234567-1234567&#10;(Newline, comma or space separated)"
+              ></textarea>
+            </div>
+
+            <!-- Action buttons for Order IDs -->
+            <div class="filter-actions-row">
+              <input
+                type="file"
+                #orderIdFileInput
+                accept=".txt,.csv,.xlsx,.xls"
+                style="display: none;"
+                (change)="onOrderIdsFilePicked($event)"
+              >
+              <button
+                type="button"
+                class="filter-tool-btn upload-order-btn"
+                (click)="orderIdFileInput.click()"
+                title="Upload Excel (.xlsx/.xls), CSV, or TXT file of Order IDs"
+              >
+                <span class="material-symbols-outlined btn-mini-icon">upload_file</span>
+                Upload (.xlsx/.csv)
+              </button>
+
+              <button
+                type="button"
+                class="filter-tool-btn clean-order-btn"
+                (click)="cleanAndDeduplicateOrderIds()"
+                [disabled]="parsedOrderIds.length === 0"
+                title="Deduplicate and clean format"
+              >
+                <span class="material-symbols-outlined btn-mini-icon">auto_fix_high</span>
+                Clean
+              </button>
+
+              <button
+                type="button"
+                class="filter-tool-btn clear-order-btn"
+                (click)="clearOrderIds()"
+                [disabled]="!orderIdsInput"
+                title="Clear entered order IDs"
+              >
+                <span class="material-symbols-outlined btn-mini-icon">delete_sweep</span>
+                Clear
+              </button>
+            </div>
+
+            <!-- Shortcut to browse parent PDF orders -->
+            <div class="parent-scan-shortcut" *ngIf="uploadedFiles.length > 0">
+              <button
+                type="button"
+                class="parent-preview-link-btn"
+                (click)="scanParentLabels()"
+                [disabled]="isScanning"
+              >
+                <span class="material-symbols-outlined btn-mini-icon">format_list_bulleted</span>
+                <span>{{ isScanning ? 'Scanning...' : 'Browse Parent Orders List' }}</span>
+              </button>
             </div>
           </div>
         </div>
@@ -331,7 +433,8 @@
         <div class="stepper-line-fill" [style.width.%]="(currentStep - 1) * 33.33"></div>
       </div>
       <div class="stepper-nodes">
-        <div class="step-node" [class.active]="currentStep === 1" [class.completed]="currentStep > 1" (click)="setStep(1)">
+        <div class="step-node" [class.active]="currentStep === 1" [class.completed]="currentStep > 1"
+          (click)="setStep(1)">
           <div class="step-circle">
             <span *ngIf="currentStep <= 1">1</span>
             <span class="material-symbols-outlined done-icon" *ngIf="currentStep > 1">done</span>
@@ -339,11 +442,8 @@
           <span class="step-label">Marketplace</span>
         </div>
 
-        <div class="step-node" 
-             [class.active]="currentStep === 2" 
-             [class.completed]="currentStep > 2"
-             [class.disabled]="uploadedFiles.length === 0"
-             (click)="uploadedFiles.length > 0 ? setStep(2) : null">
+        <div class="step-node" [class.active]="currentStep === 2" [class.completed]="currentStep > 2"
+          [class.disabled]="uploadedFiles.length === 0" (click)="uploadedFiles.length > 0 ? setStep(2) : null">
           <div class="step-circle">
             <span *ngIf="currentStep <= 2">2</span>
             <span class="material-symbols-outlined done-icon" *ngIf="currentStep > 2">done</span>
@@ -351,11 +451,8 @@
           <span class="step-label">Upload</span>
         </div>
 
-        <div class="step-node" 
-             [class.active]="currentStep === 3" 
-             [class.completed]="currentStep > 3"
-             [class.disabled]="uploadedFiles.length === 0"
-             (click)="uploadedFiles.length > 0 ? setStep(3) : null">
+        <div class="step-node" [class.active]="currentStep === 3" [class.completed]="currentStep > 3"
+          [class.disabled]="uploadedFiles.length === 0" (click)="uploadedFiles.length > 0 ? setStep(3) : null">
           <div class="step-circle">
             <span *ngIf="currentStep <= 3">3</span>
             <span class="material-symbols-outlined done-icon" *ngIf="currentStep > 3">done</span>
@@ -363,11 +460,8 @@
           <span class="step-label">Settings</span>
         </div>
 
-        <div class="step-node" 
-             [class.active]="currentStep === 4" 
-             [class.completed]="processingStage === 'completed'"
-             [class.disabled]="uploadedFiles.length === 0"
-             (click)="uploadedFiles.length > 0 ? setStep(4) : null">
+        <div class="step-node" [class.active]="currentStep === 4" [class.completed]="processingStage === 'completed'"
+          [class.disabled]="uploadedFiles.length === 0" (click)="uploadedFiles.length > 0 ? setStep(4) : null">
           <div class="step-circle">
             <span>4</span>
           </div>
@@ -390,8 +484,8 @@
         <div *ngSwitchCase="'processing'" class="stage-label-flex animate-pulse">
           <span class="btn-spinner active-spinner"></span>
           <div>
-            <h4>Processing labels & invoices...</h4>
-            <p>Cropping and sorting files...</p>
+            <h4>{{ sortOnly ? 'Sorting labels...' : 'Processing labels & invoices...' }}</h4>
+            <p>{{ sortOnly ? 'Reordering files without resizing.' : 'Cropping and sorting files...' }}</p>
           </div>
         </div>
         <div *ngSwitchCase="'completed'" class="stage-label-flex">
@@ -412,32 +506,199 @@
 
       <!-- Compilation triggers -->
       <div class="action-buttons-flex">
-        <button class="btn btn-secondary reset-btn" 
-                [disabled]="processingStage === 'processing' || uploadedFiles.length === 0" 
-                (click)="clearAll()">
+        <button class="btn btn-secondary reset-btn"
+          [disabled]="processingStage === 'processing' || uploadedFiles.length === 0" (click)="clearAll()">
           Reset Workspace
         </button>
 
-        <button class="btn btn-primary compile-trigger-btn" 
-                [disabled]="uploadedFiles.length === 0 || processingStage === 'processing'" 
-                (click)="processLabels()">
+        <button class="btn btn-primary compile-trigger-btn"
+          [disabled]="uploadedFiles.length === 0 || processingStage === 'processing'" (click)="processLabels()">
           <span *ngIf="processingStage !== 'processing'" class="compile-btn-content">
-            Crop & Compile
+            {{ sortOnly ? 'Sort & Download' : 'Crop & Compile' }}
             <span class="material-symbols-outlined bolt-icon">bolt</span>
           </span>
           <span *ngIf="processingStage === 'processing'" class="loader-flex">
             <span class="btn-spinner"></span>
-            Processing...
+            {{ sortOnly ? 'Sorting...' : 'Processing...' }}
           </span>
         </button>
 
-        <button class="btn btn-success redownload-btn"
-                *ngIf="processingStage === 'completed' && downloadUrl"
-                (click)="triggerDownload()">
+        <button class="btn btn-success redownload-btn" *ngIf="processingStage === 'completed' && downloadUrl"
+          (click)="triggerDownload()">
           <span class="material-symbols-outlined">download</span>
           Download Again
         </button>
       </div>
     </div>
   </footer>
+
+  <!-- PARENT LABELS LIST MODAL / DRAWER -->
+  <div class="modal-backdrop animate-fade-in" *ngIf="showParentOrdersModal" (click)="showParentOrdersModal = false">
+    <div class="parent-orders-modal animate-scale-up" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="modal-header-icon-box">
+            <span class="material-symbols-outlined">receipt_long</span>
+          </div>
+          <div>
+            <h3>Parent Labels List — Orders Overview</h3>
+            <p>Review orders from your uploaded PDF and select which labels to crop & print.</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" (click)="showParentOrdersModal = false">&times;</button>
+      </div>
+
+      <!-- Summary Stats Chips -->
+      <div class="modal-stats-bar" *ngIf="parentSummary">
+        <div class="stat-pill">
+          <span class="stat-num">{{ parentSummary.totalOrders }}</span>
+          <span class="stat-lbl">Orders</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-num">{{ parentSummary.totalPages }}</span>
+          <span class="stat-lbl">Pages</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-num">{{ parentSummary.totalLabels }}</span>
+          <span class="stat-lbl">Labels</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-num">{{ parentSummary.totalInvoices }}</span>
+          <span class="stat-lbl">Invoices</span>
+        </div>
+        <div class="stat-pill selected-pill">
+          <span class="stat-num">{{ selectedParentOrdersCount }}</span>
+          <span class="stat-lbl">Selected to Crop</span>
+        </div>
+      </div>
+
+      <!-- Search & Bulk Action Bar -->
+      <div class="modal-toolbar">
+        <div class="modal-search-box">
+          <span class="material-symbols-outlined search-icon">search</span>
+          <input
+            type="text"
+            [(ngModel)]="parentOrdersSearchQuery"
+            placeholder="Search by Order ID or SKU..."
+            class="modal-search-input"
+          >
+          <button
+            class="search-clear-btn"
+            *ngIf="parentOrdersSearchQuery"
+            (click)="parentOrdersSearchQuery = ''"
+          >&times;</button>
+        </div>
+
+        <div class="modal-batch-actions">
+          <button class="batch-btn" (click)="selectAllParentOrders(true)">Select All</button>
+          <button class="batch-btn" (click)="selectAllParentOrders(false)">Deselect All</button>
+          <button
+            class="batch-btn sync-btn"
+            *ngIf="parsedOrderIds.length > 0"
+            (click)="syncParentOrdersWithFilter()"
+            title="Auto-select orders that match your pasted Order IDs"
+          >
+            Match Pasted IDs ({{ parsedOrderIds.length }})
+          </button>
+        </div>
+      </div>
+
+      <!-- Orders List Table -->
+      <div class="modal-table-wrapper custom-scrollbar">
+        <table class="parent-orders-table">
+          <thead>
+            <tr>
+              <th style="width: 44px; text-align: center;">
+                <input
+                  type="checkbox"
+                  [checked]="selectedParentOrdersCount === parentOrders.length && parentOrders.length > 0"
+                  (change)="selectAllParentOrders($any($event.target).checked)"
+                >
+              </th>
+              <th>Order ID</th>
+              <th>Detected SKUs</th>
+              <th>Pages</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let order of filteredParentOrders"
+              [class.selected-row]="order.selected"
+              (click)="toggleParentOrderSelection(order)"
+            >
+              <td style="text-align: center;" (click)="$event.stopPropagation()">
+                <input
+                  type="checkbox"
+                  [(ngModel)]="order.selected"
+                >
+              </td>
+              <td class="order-id-cell">
+                <span class="order-id-text" [class.unknown-order]="order.isUnknown">
+                  {{ order.orderId }}
+                </span>
+                <button
+                  type="button"
+                  class="copy-id-btn"
+                  *ngIf="!order.isUnknown"
+                  (click)="$event.stopPropagation(); copyToClipboard(order.orderId)"
+                  title="Copy Order ID"
+                >
+                  <span class="material-symbols-outlined copy-icon">
+                    {{ copyFeedback === order.orderId ? 'check' : 'content_copy' }}
+                  </span>
+                </button>
+              </td>
+              <td>
+                <div class="sku-tags-flex" *ngIf="order.skus.length > 0">
+                  <span class="order-sku-badge" *ngFor="let s of order.skus">{{ s }}</span>
+                </div>
+                <span class="empty-sku-text" *ngIf="order.skus.length === 0">—</span>
+              </td>
+              <td>
+                <span class="page-count-badge">
+                  {{ order.pageCount }} {{ order.pageCount === 1 ? 'page' : 'pages' }}
+                </span>
+              </td>
+              <td class="date-cell">{{ order.date }}</td>
+            </tr>
+
+            <tr *ngIf="filteredParentOrders.length === 0">
+              <td colspan="5" class="empty-search-row">
+                No orders match "{{ parentOrdersSearchQuery }}".
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <div class="modal-footer-info">
+          <span>{{ selectedParentOrdersCount }} of {{ parentOrders.length }} orders selected</span>
+        </div>
+        <div class="modal-footer-actions">
+          <button class="btn btn-secondary modal-cancel-btn" (click)="showParentOrdersModal = false">Cancel</button>
+          <button
+            class="btn btn-secondary apply-filter-btn"
+            [disabled]="selectedParentOrdersCount === 0"
+            (click)="applyParentOrdersSelection()"
+            title="Save selected orders to filter settings"
+          >
+            Apply to Filter ({{ selectedParentOrdersCount }})
+          </button>
+          <button
+            class="btn btn-primary download-now-btn"
+            [disabled]="selectedParentOrdersCount === 0 || processingStage === 'processing'"
+            (click)="applyAndDownloadParentOrders()"
+            title="Apply filter and crop/compile filtered labels immediately"
+          >
+            <span class="material-symbols-outlined bolt-icon-sm">bolt</span>
+            {{ sortOnly ? 'Sort & Download' : 'Crop & Download' }} ({{ selectedParentOrdersCount }})
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

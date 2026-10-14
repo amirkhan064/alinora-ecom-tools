@@ -2,7 +2,7 @@ const labelService = require('../services/label-processor.service');
 
 async function processLabels(req, res) {
   try {
-    let { platform, marketplace, outputType, invoiceFilter, sortBy = 'sku', sortOrder = 'asc', mergeLabels = 'false', customText = '' } = req.body;
+    let { platform, marketplace, outputType, invoiceFilter, sortBy = 'sku', sortOrder = 'asc', mergeLabels = 'false', customText = '', sortOnly = 'false', skipCropping = 'false', orderIds = '', filterMode = 'include' } = req.body;
 
     // Normalize platform / marketplace
     const finalPlatform = (platform || marketplace || 'flipkart').toLowerCase();
@@ -40,7 +40,9 @@ async function processLabels(req, res) {
       });
     }
 
-    console.log(`[LabelController] Request received: filesCount=${files ? files.length : 0}, platform=${finalPlatform}, sortBy=${finalSortBy}, sortOrder=${sortOrder}, outputType=${finalOutputType}, mergeLabels=${mergeLabels}, customText="${customText}"`);
+    const finalSortOnly = String(sortOnly ?? skipCropping ?? 'false').toLowerCase() === 'true';
+
+    console.log(`[LabelController] Request received: filesCount=${files ? files.length : 0}, platform=${finalPlatform}, sortBy=${finalSortBy}, sortOrder=${sortOrder}, outputType=${finalOutputType}, mergeLabels=${mergeLabels}, customText="${customText}", sortOnly=${finalSortOnly}, filterMode=${filterMode}`);
 
     if (!files || !Array.isArray(files) || files.length === 0) {
       return res.status(400).json({
@@ -55,7 +57,11 @@ async function processLabels(req, res) {
       sortOrder,
       outputType: finalOutputType,
       mergeLabels,
-      customText
+      customText,
+      sortOnly: finalSortOnly,
+      skipCropping: finalSortOnly,
+      orderIds,
+      filterMode
     });
 
     if (result.type === 'zip') {
@@ -104,6 +110,48 @@ async function processLabels(req, res) {
   }
 }
 
+async function scanLabels(req, res) {
+  try {
+    let { platform, marketplace, orderIds, filterMode } = req.body;
+    const finalPlatform = (platform || marketplace || 'flipkart').toLowerCase();
+
+    let files = req.files;
+    if (files && files.length > 0) {
+      const seen = new Set();
+      files = files.filter(file => {
+        const key = `${file.originalname}_${file.size}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      });
+    }
+
+    if (!files || !Array.isArray(files) || files.length === 0) {
+      return res.status(400).json({
+        error: "No files uploaded to scan. Please upload one or more shipping label PDF files."
+      });
+    }
+
+    console.log(`[LabelController] scanLabels requested: filesCount=${files.length}, platform=${finalPlatform}, orderIdsProvided=${Boolean(orderIds)}`);
+    const result = await labelService.scanParentLabels(files, {
+      platform: finalPlatform,
+      orderIds,
+      filterMode
+    });
+    return res.json({
+      success: true,
+      summary: result.summary,
+      orders: result.orders
+    });
+  } catch (error) {
+    console.error('[LabelController] Error scanning parent labels:', error);
+    return res.status(500).json({
+      error: `Failed to scan parent label PDF: ${error.message || error}`
+    });
+  }
+}
+
 module.exports = {
-  processLabels
+  processLabels,
+  scanLabels
 };
