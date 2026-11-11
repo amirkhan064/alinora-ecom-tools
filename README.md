@@ -94,18 +94,18 @@ npm run build
 
 ## API Endpoints
 
-| Method | Path                        | Purpose                          |
-| ------ | --------------------------- | -------------------------------- |
-| `GET`  | `/api/health`               | Backend health check             |
-| `POST` | `/api/fetch-images`         | Fetch product images             |
-| `GET`  | `/api/proxy-image`          | Proxy an image request           |
-| `POST` | `/api/labels/process`       | Process uploaded shipping labels |
-| `POST` | `/api/labels/scan`          | Scan uploaded shipping labels    |
-| `POST` | `/api/seo/generate`         | Generate SEO content             |
-| `POST` | `/api/catalog/build`        | Build a product catalog          |
-| `POST` | `/api/catalog/refresh-node` | Refresh catalog data             |
-| `POST` | `/api/lead/capture`         | Record a lead                    |
-| `POST` | `/api/feedback/submit`      | Record feedback                  |
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/health` | Backend health check |
+| `POST` | `/api/fetch-images` | Fetch product images |
+| `GET` | `/api/proxy-image` | Proxy an image request |
+| `POST` | `/api/labels/process` | Process uploaded shipping labels |
+| `POST` | `/api/labels/scan` | Scan uploaded shipping labels |
+| `POST` | `/api/seo/generate` | Generate SEO content |
+| `POST` | `/api/catalog/build` | Build a product catalog |
+| `POST` | `/api/catalog/refresh-node` | Refresh catalog data |
+| `POST` | `/api/lead/capture` | Record a lead |
+| `POST` | `/api/feedback/submit` | Record feedback |
 
 File upload routes use multipart form data. Uploaded files are processed in memory, with a 50 MB per-file limit configured in the backend.
 
