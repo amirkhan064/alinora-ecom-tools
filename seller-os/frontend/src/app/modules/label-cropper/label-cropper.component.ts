@@ -37,6 +37,7 @@ export class LabelCropperComponent {
   parentOrders: {
     orderId: string;
     isUnknown: boolean;
+    matchedFilter?: boolean;
     skus: string[];
     date: string;
     pageCount: number;
